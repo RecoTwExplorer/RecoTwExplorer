@@ -58,6 +58,9 @@ a, a:focus, button {
 input::-moz-focus-inner, button::-moz-focus-inner {
     border: 0;
 }
+.icon-bar{
+    background-color: white;
+}
 #nav-container {
     margin-bottom: 24px;
     background: #44607b;
