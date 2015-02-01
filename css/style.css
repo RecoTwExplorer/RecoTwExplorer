@@ -163,9 +163,6 @@ ul.nav>li>a {
 #loading-panel {
     width: 400px;
     margin: 0 auto;
-    background: white;
-    padding: 32px;
-    border: 1px solid #dfdfdf;
 }
 #search-result-panel {
     margin: 4px 10px 10px 10px;
