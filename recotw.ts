@@ -1061,6 +1061,7 @@ module RecoTwExplorer {
                     }
                     break;
                 case Tab.Statistics:
+                    $("#statistics-filter-textbox").focus();
                     window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
                     if (!Controller.statisticsRendered) {
                         View.renderStatistics();

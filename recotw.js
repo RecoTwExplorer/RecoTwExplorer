@@ -966,6 +966,7 @@ var RecoTwExplorer;
                     }
                     break;
                 case 2 /* Statistics */:
+                    $("#statistics-filter-textbox").focus();
                     window.setTimeout(function () { return $("#statistics-table").animate({ scrollTop: 0 }, 400); }, 100);
                     if (!Controller.statisticsRendered) {
                         View.renderStatistics();
