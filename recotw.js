@@ -873,7 +873,7 @@ var RecoTwExplorer;
             $("#clear-search-filter").click(function () {
                 Controller.setOptions(new Options(), false, true, true);
             });
-            $("#order-form input, #order-base-form input").change(function () {
+            $(".order-radio-box").change(function () {
                 Controller.options.order = Controller.getOrder();
                 Controller.options.orderBy = Controller.getOrderBy();
                 Controller.setOptions(Controller.options, true, false, false);
@@ -921,10 +921,10 @@ var RecoTwExplorer;
             });
         };
         Controller.getOrder = function () {
-            return $("[name='orderWay']:checked").index("[name='orderWay']") + 1;
+            return $(".order-radio-box:checked").index(".order-radio-box") % 2 + 1;
         };
         Controller.getOrderBy = function () {
-            return $("[name='orderBy']:checked").index("[name='orderBy']") + 1;
+            return (($(".order-radio-box:checked").index(".order-radio-box") / 2) ^ 0) + 1;
         };
         Controller.reload = function () {
             if (Model.getEntries() === null) {

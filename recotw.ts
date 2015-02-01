@@ -962,7 +962,7 @@ module RecoTwExplorer {
             $("#clear-search-filter").click(() => {
                 Controller.setOptions(new Options(), false, true, true);
             });
-            $("#order-form input, #order-base-form input").change(() => {
+            $(".order-radio-box").change(() => {
                 Controller.options.order = Controller.getOrder();
                 Controller.options.orderBy = Controller.getOrderBy();
                 Controller.setOptions(Controller.options, true, false, false);
@@ -1011,11 +1011,11 @@ module RecoTwExplorer {
         }
 
         public static getOrder(): Order {
-            return $("[name='orderWay']:checked").index("[name='orderWay']") + 1;
+            return $(".order-radio-box:checked").index(".order-radio-box") % 2 + 1;
         }
 
         public static getOrderBy(): OrderBy {
-            return $("[name='orderBy']:checked").index("[name='orderBy']") + 1;
+            return (($(".order-radio-box:checked").index(".order-radio-box") / 2) ^ 0) + 1;
         }
 
         public static reload(): void {

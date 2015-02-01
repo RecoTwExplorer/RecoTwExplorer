@@ -47,7 +47,6 @@ a, a:focus, button {
     color: #fff;
     background-color: #613d69;
     border-color: #603f68;
-
 }
 .alert {
     border-radius: 0;
@@ -82,6 +81,10 @@ nav.navbar-violet, footer {
 ul.nav>li>a {
     padding: 20px 30px;
 }
+.navbar-brand-icon {
+    display: none;
+    margin-top: -5px;
+}
 .navbar-nav>li>a, .dropdown-menu>li>a {
     transition: background-color .3s;
 }
@@ -106,16 +109,19 @@ ul.nav>li>a {
 }
 .navbar-violet .dropdown-menu {
     background-color: #6e587e;
-    border-color: #395168;
+    border-color: #3f2751;
     padding: 0;
     min-width: 100%;
+    border-radius: 0;
+    margin-top: -14px;
+    right: auto;
 }
 .navbar-violet .dropdown:hover .dropdown-menu {
     border-top: none;
     border-radius: 0;
 }
 .navbar-violet .dropdown-menu>li>a {
-    padding: 15px 30px;
+    padding: 0;
 }
 .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus, .navbar-default .dropdown:hover>a, .navbar-default .dropdown-menu>li>a:hover, .navbar-default .dropdown-menu>li>a:focus, .navbar-default .dropdown-menu>.active>a:hover, .navbar-default .dropdown-menu>.active>a:focus {
     background-color: #ececec;
@@ -123,23 +129,38 @@ ul.nav>li>a {
 .nav>li.nav-icon {
     display: none;
 }
-.navbar-violet .navbar-btn {
+.navbar-violet .navbar-btn, .navbar-violet .btn-group .btn {
     margin: 13px 0;
     border-radius: 0;
 }
 .navbar-violet .btn {
-    background: #8d7b9c;
-    color: lightgray;
+    background: #3f2751;
+    color: white;
     border-color: #3f2751 !important;
 }
 .navbar-violet .btn:hover {
     background: #593e6f;
 }
-.navbar-violet .btn:active, .navbar-violet .btn.active, #search-form .btn {
+.navbar-violet .btn:active, .navbar-violet .btn.active, .navbar-violet .btn-group.open .dropdown-toggle {
     box-shadow: none;
-    -webkit-box-shadow: none;
-    background: #3f2751;
     color: white;
+    -webkit-box-shadow: none;
+}
+.navbar-violet .dropdown-menu label {
+    font-weight: normal;
+    padding: 10px 40px 10px 12px;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+.order-radio-box {
+    display: none;
+}
+.order-radio-box + a .glyphicon {
+    visibility: hidden;
+    padding-right: 8px;
+}
+.order-radio-box:checked + a .glyphicon {
+    visibility: visible;
 }
 .modal-content {
     border-radius: 0;
@@ -360,3 +381,16 @@ footer a:hover {
     line-height: 1.8;
 }
 
+@media (max-width: 1152px) {
+    ul.nav > li > a {
+        padding: 20px;
+    }
+}
+@media (max-width: 1024px) {
+    .navbar-brand-icon {
+        display: block;
+    }
+    .navbar-brand-text {
+        display: none;
+    }
+}
