@@ -7,16 +7,53 @@
     /* Turns off the new scrollbars behavior since IE 10 */
     -ms-overflow-style: scrollbar;
 }
+a {
+    color: #9662a4;
+    text-decoration: none;
+}
+a:hover,
+a:focus {
+    color: #774c80;
+    text-decoration: underline;
+}
 a, a:focus, button {
     outline: none !important;
 }
 .form-control {
+    border-color: #977eaf;
     box-shadow: none;
     -webkit-box-shadow: none;
     border-radius: 0;
 }
+.form-control:focus {
+    border-color: #73618A;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(159, 136, 188, 0.60);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(159, 136, 188, 0.60);
+}
+.btn {
+    border-radius: 0;
+}
+.btn-violet {
+    color: #fff;
+    background-color: #73618A;
+    border-color: #68587D;
+}
+.btn-violet:hover,
+.btn-violet:focus,
+.btn-violet.focus,
+.btn-violet:active,
+.btn-violet.active,
+.open > .dropdown-toggle.btn-violet {
+    color: #fff;
+    background-color: #613d69;
+    border-color: #603f68;
+
+}
 .alert {
     border-radius: 0;
+}
+.progress-bar-violet {
+    background-color: #603f68;
 }
 input::-moz-focus-inner, button::-moz-focus-inner {
     border: 0;
@@ -100,6 +137,9 @@ ul.nav>li>a {
     -webkit-box-shadow: none;
     background: #3f2751;
     color: white;
+}
+.modal-content {
+    border-radius: 0;
 }
 #page-main {
     margin-top: 110px;
