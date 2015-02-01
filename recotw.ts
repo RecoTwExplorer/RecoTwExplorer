@@ -426,7 +426,7 @@ module RecoTwExplorer {
      * The model.
      */
     class Model {
-        private static ALTERNATIVE_ICON_URL = "./none.png";
+        private static ALTERNATIVE_ICON_URL = "./images/none.png";
         private static TWITTER_STATUS_URL = "https://twitter.com/show/status/{0}";
         private static TWITTER_USER_URL = "https://twitter.com/{0}";
         private static TWITTER_PROFILE_IMAGE_URL = "http://www.paper-glasses.com/api/twipi/{0}/";

@@ -591,7 +591,7 @@ var RecoTwExplorer;
                 return dfd;
             });
         };
-        Model.ALTERNATIVE_ICON_URL = "./none.png";
+        Model.ALTERNATIVE_ICON_URL = "./images/none.png";
         Model.TWITTER_STATUS_URL = "https://twitter.com/show/status/{0}";
         Model.TWITTER_USER_URL = "https://twitter.com/{0}";
         Model.TWITTER_PROFILE_IMAGE_URL = "http://www.paper-glasses.com/api/twipi/{0}/";
