@@ -14,7 +14,7 @@
 var RecoTwExplorer;
 (function (RecoTwExplorer) {
     var APP_NAME = "RecoTw Explorer";
-    var APP_VERSION = "2.00";
+    var APP_VERSION = "2.10";
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
      * http://www.bootply.com/60873

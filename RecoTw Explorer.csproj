@@ -23,6 +23,9 @@
     <Content Include="css\bootstrap.css" />
     <Content Include="css\bootstrap.min.css" />
     <Content Include="css\style.css" />
+    <Content Include="images\icon.png" />
+    <Content Include="images\icon_inverse.png" />
+    <Content Include="images\none.png" />
     <Content Include="index.html" />
     <Content Include="packages.config" />
     <Content Include="scripts\bootstrap.js" />
