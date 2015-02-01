@@ -306,6 +306,10 @@ footer a:hover {
 #statistics-filter-textbox {
     width: 100%;
     margin-bottom: 20px;
+    border-color: #ccc;
+}
+#statistics-filter-textbox:focus {
+    border-color: #977eaf;
 }
 #statistics-table {
     /* Enables momentum scrolling in smartphones */
