@@ -6,7 +6,7 @@ RecoTw Explorer は、[@G2U](https://twitter.com/G2U) 氏作成の黒歴史ツ�
 Internet Explorer 9 以上、Google Chrome、Firefox 上で動作することを確認していますが、これを保障するものではありません。
 
 このアプリケーションは MIT ライセンスのもとに GitHub 上で公開されています：  
-[https://github.com/RecoTwExplorer/recotwexplorer.github.com](https://github.com/RecoTwExplorer/recotwexplorer.github.com)  
+[https://github.com/RecoTwExplorer/RecoTwExplorer](https://github.com/RecoTwExplorer/RecoTwExplorer)  
 バグ報告ないしプルリクエスト等はこのレポジトリにお願いいたします。
 
 このアプリケーションは Twitter のユーザーアイコン表示のために次の Web サービスを使用しています：  
