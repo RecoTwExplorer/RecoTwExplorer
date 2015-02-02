@@ -14,7 +14,7 @@ function clean() {
 }
 
 function compile() {
-    return gulp.src(["./src/ts/*"])
+    return gulp.src(["./src/ts/*.ts"])
                .pipe(typescript({
                    noEmitOnError: true,
                    noImplicitAny: true,
