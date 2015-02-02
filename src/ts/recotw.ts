@@ -454,10 +454,12 @@ module RecoTwExplorer {
         public static init(): void {
             $.ajax({
                 url: Model.RECOTW_GET_ALL_URL,
-                dataType: "jsonp"
+                dataType: "json"
             }).done((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
                 Model.entries = new RecoTwEntryCollection(data);
                 Controller.onEntriesLoaded();
+            }).fail((xhr: JQueryXHR, status: string, e: Error) => {
+                Controller.onEntriesLoadFailed();
             });
         }
 
@@ -1063,6 +1065,10 @@ module RecoTwExplorer {
             }
             Model.startPolling();
             Controller.setOptions(Controller.options, false, false, true);
+        }
+
+        public static onEntriesLoadFailed(): void {
+            $("#loading-panel").fadeOut().promise().done(() => $("#loading-error-panel").fadeIn());
         }
 
         public static onNewEntries(): void {
