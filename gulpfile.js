@@ -3,6 +3,7 @@ var typescript = require("gulp-typescript");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
 var del = require("del");
+var notify = require("gulp-notify");
 
 function build() {
     compile().on("end", minify);
@@ -20,6 +21,7 @@ function compile() {
                    noImplicitAny: true,
                    target: "ES5",
                })).js
+               .on("error", notify.onError("Error: <%= error.message %>"))
                .pipe(gulp.dest("./dest/js/"))
 }
 
