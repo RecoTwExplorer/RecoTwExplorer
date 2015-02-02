@@ -750,6 +750,13 @@ module RecoTwExplorer {
             }
         }
 
+        public static setTitle(title: string): void {
+            if (location.hostname === "" || location.hostname === "localhost") {
+                title = "[DEBUG] " + title;
+            }
+            document.title = title;
+        }
+
         public static renderHome(): void {
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
@@ -912,10 +919,10 @@ module RecoTwExplorer {
 
             if (options.isFiltered()) {
                 $("#clear-search-filter").show();
-                document.title = String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords());
+                View.setTitle(String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords()));
             } else {
                 $("#clear-search-filter").hide();
-                document.title = Resources.PAGE_TITLE_NORMAL;
+                View.setTitle(Resources.PAGE_TITLE_NORMAL);
             }
 
             $("#statistics-filter-textbox").val("");
@@ -941,6 +948,7 @@ module RecoTwExplorer {
         }
 
         public static main(): void {
+            View.setTitle(Resources.PAGE_TITLE_NORMAL);
             $("#app-version").text(APP_VERSION);
 
             Model.init();

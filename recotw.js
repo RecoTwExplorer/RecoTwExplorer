@@ -633,6 +633,12 @@ var RecoTwExplorer;
                     return null;
             }
         };
+        View.setTitle = function (title) {
+            if (location.hostname === "" || location.hostname === "localhost") {
+                title = "[DEBUG] " + title;
+            }
+            document.title = title;
+        };
         View.renderHome = function () {
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
@@ -827,11 +833,11 @@ var RecoTwExplorer;
             }
             if (options.isFiltered()) {
                 $("#clear-search-filter").show();
-                document.title = String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords());
+                View.setTitle(String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords()));
             }
             else {
                 $("#clear-search-filter").hide();
-                document.title = Resources.PAGE_TITLE_NORMAL;
+                View.setTitle(Resources.PAGE_TITLE_NORMAL);
             }
             $("#statistics-filter-textbox").val("");
             if (Model.getEntries() === null) {
@@ -855,6 +861,7 @@ var RecoTwExplorer;
             Controller.loading = state;
         };
         Controller.main = function () {
+            View.setTitle(Resources.PAGE_TITLE_NORMAL);
             $("#app-version").text(APP_VERSION);
             Model.init();
             google.load("visualization", "1.0", { "packages": ["corechart"] });
