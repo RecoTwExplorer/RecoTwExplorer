@@ -35,8 +35,8 @@ module RecoTwExplorer {
             var $this = $(this);
             for (var i = 0; i < shakes; i++) {
                 $this.animate({ left: -distance }, duration / shakes / 4)
-                    .animate({ left: distance }, duration / shakes / 2)
-                    .animate({ left: 0 }, duration / shakes / 4);
+                     .animate({ left: distance }, duration / shakes / 2)
+                     .animate({ left: 0 }, duration / shakes / 4);
             }
         });
     };
@@ -229,9 +229,9 @@ module RecoTwExplorer {
                 return options;
             }
             var queries = Enumerable.from(queryString.substring(1).split("&"))
-                .select(x => x.split("="))
-                .where(x => x.length === 2)
-                .select(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
+                                    .select(x => x.split("="))
+                                    .where(x => x.length === 2)
+                                    .select(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
 
             queries.where(x => x.property === "body").forEach(x => {
                 var match: RegExpMatchArray;
