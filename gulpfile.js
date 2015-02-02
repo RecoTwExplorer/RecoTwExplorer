@@ -6,7 +6,7 @@ var reload = browserSync.reload;
 var runSequence = require("run-sequence");
 
 function build() {
-    compile().on("end", minify);
+    compile()
 }
 
 function clean() {
@@ -110,7 +110,7 @@ function serveDist() {
 }
 
 gulp.task("default", ["clean"], function(cb){
-    runSequence("styles","build",["html","assets"],cb);
+    runSequence("styles","build",["html","assets"],"minify",cb);
 });
 gulp.task("assets", ["copy","images","fonts"]);
 

@@ -4,23 +4,5 @@ node_js:
   - "0.10"
 before_script:
   - npm install -g gulp
-  - git clone --quiet https://github.com/RecoTwExplorer/RecoTwExplorer build
-  - pushd build
-  - git checkout -b gh-pages
-  - popd
 script: gulp
 
-after_success:
-  - cd build
-  - git add -A
-  - git cmmit -m 'update'
-  - '[ "$TRAVIS_BRANCH" == "master" ] && [ $GH_TOKEN ] && git push --quiet https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git gh-pages 2> /dev/null'
-
-
-env:
-  global:
-    - GIT_COMITTER_NAME=Travis ci
-    - GIT_COMITTER_EMAIL=noreply@github.com
-    - GIT_AUTHOR_NAME=Travis ci
-    - GIT_AUTHOR_EMAIL=noreply@github.com
-    - secure: "iLUUc/LmjRCozVzudYdTk2nkhonLZ5BL2acguMjGV5ds2Wh6rcy+qvqOE456MpU+sggXtJHwPD5A8cJZyo++iWLUSvOB9GBdi3tfXCsW6/VofhMU8sOzpmGNbJdnTUn6XF0CY06Dw9xVLIaasHl/Zc3Y5g/csJbB+ab+pv1Naaw="
