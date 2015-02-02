@@ -1,0 +1,27 @@
+{
+  "name": "RecoTwExplorer",
+  "version": "2.1.0",
+  "description": "A web application to view Tweets recorded in RecoTw.",
+  "main": "recotw.js",
+  "dependencies": {
+    "gulp": "^3.8.10",
+    "gulp-typescript": "^2.4.2"
+  },
+  "devDependencies": {
+    "del": "^1.1.1",
+    "gulp-uglify": "^1.1.0",
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RecoTwExplorer/RecoTwExplorer.git"
+  },
+  "author": "Chitoku",
+  "license": "MIT-License",
+  "bugs": {
+    "url": "https://github.com/RecoTwExplorer/RecoTwExplorer/issues"
+  },
+  "homepage": "https://github.com/RecoTwExplorer/RecoTwExplorer"
+}

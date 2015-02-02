@@ -1,4 +1,12 @@
-/*
+/// <reference path="./recotw.d.ts"/>
+/// <reference path="../../lib/js/typings/bootstrap/bootstrap.d.ts"/>
+/// <reference path="../../lib/js/typings/google.visualization/google.visualization.d.ts"/>
+/// <reference path="../../lib/js/typings/jquery/jquery.d.ts"/>
+/// <reference path="../../lib/js/typings/libstring/libstring.d.ts"/>
+/// <reference path="../../lib/js/typings/linq/linq.d.ts"/>
+/// <reference path="../../lib/js/typings/linq/linq.jquery.d.ts"/>
+/// <reference path="../../lib/js/typings/twitter.d.ts"/>
+/*!
  * RecoTw Explorer - Copyright 2014, Chitoku
  * http://recotw.chitoku.jp/
  *
@@ -1047,4 +1055,3 @@ var RecoTwExplorer;
     RecoTwExplorer.Controller = Controller;
     Controller.main();
 })(RecoTwExplorer || (RecoTwExplorer = {}));
-//# sourceMappingURL=recotw.js.map
