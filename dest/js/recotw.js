@@ -389,10 +389,12 @@ var RecoTwExplorer;
         Model.init = function () {
             $.ajax({
                 url: Model.RECOTW_GET_ALL_URL,
-                dataType: "jsonp"
+                dataType: "json"
             }).done(function (data, status, xhr) {
                 Model.entries = new RecoTwEntryCollection(data);
                 Controller.onEntriesLoaded();
+            }).fail(function (xhr, status, e) {
+                Controller.onEntriesLoadFailed();
             });
         };
         /**
@@ -968,6 +970,9 @@ var RecoTwExplorer;
             }
             Model.startPolling();
             Controller.setOptions(Controller.options, false, false, true);
+        };
+        Controller.onEntriesLoadFailed = function () {
+            $("#loading-panel").fadeOut().promise().done(function () { return $("#loading-error-panel").fadeIn(); });
         };
         Controller.onNewEntries = function () {
             $("#polling-result").fadeIn();
