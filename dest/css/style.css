@@ -19,6 +19,9 @@ a:focus {
 a, a:focus, button {
     outline: none !important;
 }
+.white, .white a {
+    color: #fff;
+}
 .form-control {
     border-color: #977eaf;
     box-shadow: none;
@@ -83,7 +86,7 @@ ul.nav>li>a {
 }
 .navbar-brand-icon {
     display: none;
-    margin-top: -5px;
+    margin-top: -7px;
 }
 .navbar-nav>li>a, .dropdown-menu>li>a {
     transition: background-color .3s;

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
     <head>
         <title>RecoTw Explorer</title>
@@ -6,11 +6,12 @@
         <meta name="author" content="Chitoku">
         <meta name="description" content="Twitter の黒歴史を共有する Web サービス、RecoTw に登録されたツイートを閲覧・検索したり、新しく登録したりするための Web アプリケーションです。">
         <meta name="keywords" content="RecoTw,Twitter,黒歴史,Viewer,Explorer">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
         <link rel="stylesheet" href="./dest/css/style.css">
         <link rel="shortcut icon" href="./favicon.ico" />
         <!-- Currently working on responsive design -->
-        <!--meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
     <body>
         <div id="tracker">
@@ -20,13 +21,49 @@
         </div>
         <nav class="navbar navbar-violet navbar-fixed-top" role="navigation">
             <div class="navbar-header">
-                <a class="navbar-brand navbar-brand-icon"><img src="./images/icon_inverse.png" width="32" height="32" alt=""></a>
+                <a class="navbar-brand navbar-brand-icon" href="#home-tab" role="tab" data-toggle="tab">
+                    <img src="./images/icon_inverse.png" width="32" height="32" alt="">
+                </a>
                 <a class="navbar-brand navbar-brand-text">RecoTw Explorer</a>
+                <!--
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
+                </button>
+                -->
+                <button type="button" class="navbar-toggle" data-toggle="modal" data-target="#help-modal">
+                    <span class="glyphicon glyphicon-question-sign white"></span>
+                </button>
+                <div>
+                    <button type="button" class="navbar-toggle dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <span class="glyphicon glyphicon-sort white"></span><span class="caret white"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order">
+                            <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
+                        </li>
+                        <li>
+                            <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" checked>
+                            <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
+                        </li>
+                        <li>
+                            <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order">
+                            <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
+                        </li>
+                        <li>
+                            <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order">
+                            <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" class="navbar-toggle" href="#statistics-tab" role="tab" data-toggle="tab">
+                    <i class="fa fa-pie-chart fa-lg white"></i>
+                </button>
+                <button type="button" class="navbar-toggle" data-toggle="modal" data-target="#new-record-modal">
+                    <span class="glyphicon glyphicon-plus white"></span>
                 </button>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
