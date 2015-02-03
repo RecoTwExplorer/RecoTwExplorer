@@ -1,4 +1,4 @@
-RecoTw Explorer
+RecoTw Explorer[![Build Status](https://travis-ci.org/RecoTwExplorer/RecoTwExplorer.svg?branch=master)](https://travis-ci.org/RecoTwExplorer/RecoTwExplorer)
 ===============
 
 RecoTw Explorer は、[@G2U](https://twitter.com/G2U) 氏作成の黒歴史ツイート記録サービス RecoTw の閲覧/登録用の Web アプリケーションです。 RecoTw に登録されているすべての情報について作者（ちとく − [@java_shit](https://twitter.com/java_shit)）は一切関知しません。詳しくはサービスの運営元へお問い合わせください。 また、このアプリケーションを使用することによって発生した損害に対して作者は一切の責任を負いかねます。
