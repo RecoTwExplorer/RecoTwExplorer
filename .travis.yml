@@ -18,5 +18,5 @@ script: gulp
 after_success:
   - cd dest
   - git add -A
-  - git cmmit -m 'update'
+  - git commit -m 'update'
   - '[ "$TRAVIS_BRANCH" == "master" ] && [ $GH_TOKEN ] && git push --quiet https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git gh-pages 2> /dev/null'

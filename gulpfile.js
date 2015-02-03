@@ -10,7 +10,7 @@ function build() {
 }
 
 function clean() {
-    del(['./dest/**/*']);
+    del(['./dest/**/*','!./dest/.git/**/*']);
     del(['./dev/**/*']);
     //del(["./dest/css/*"]);
     //del(["./dest/js/*"]);
