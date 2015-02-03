@@ -768,6 +768,14 @@ module RecoTwExplorer {
             document.title = title;
         }
 
+        private static createTwitterCB(callback: (twttr: Twitter) => void): void {
+            if (!twttr.widgets) {
+                twttr.ready(callback);
+            } else {
+                callback(twttr);
+            }
+        }
+
         public static renderHome(): void {
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
@@ -778,11 +786,13 @@ module RecoTwExplorer {
                 return;
             }
             entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
-                twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then($.proxy((widgetID: number, entry: RecoTwEntry, element: Element) => {
-                    if (!element) {
-                        View.showStatusLoadFailedMessage(widgetID, entry);
-                    }
-                }, null, ++View.widgetID, entry));
+                View.createTwitterCB(() => {
+                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then($.proxy((widgetID: number, entry: RecoTwEntry, element: Element) => {
+                        if (!element) {
+                            View.showStatusLoadFailedMessage(widgetID, entry);
+                        }
+                    }, null, ++View.widgetID, entry));
+                });
             });
             View.current += View.TWEETS_COUNT;
         }

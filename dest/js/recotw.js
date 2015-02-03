@@ -649,6 +649,14 @@ var RecoTwExplorer;
             }
             document.title = title;
         };
+        View.createTwitterCB = function (callback) {
+            if (!twttr.widgets) {
+                twttr.ready(callback);
+            }
+            else {
+                callback(twttr);
+            }
+        };
         View.renderHome = function () {
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
@@ -658,11 +666,13 @@ var RecoTwExplorer;
                 return;
             }
             entries.skip(View.current).take(View.TWEETS_COUNT).forEach(function (entry) {
-                twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then($.proxy(function (widgetID, entry, element) {
-                    if (!element) {
-                        View.showStatusLoadFailedMessage(widgetID, entry);
-                    }
-                }, null, ++View.widgetID, entry));
+                View.createTwitterCB(function () {
+                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then($.proxy(function (widgetID, entry, element) {
+                        if (!element) {
+                            View.showStatusLoadFailedMessage(widgetID, entry);
+                        }
+                    }, null, ++View.widgetID, entry));
+                });
             });
             View.current += View.TWEETS_COUNT;
         };
