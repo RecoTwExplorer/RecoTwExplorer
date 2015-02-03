@@ -10,13 +10,13 @@ env:
     - secure: "iLUUc/LmjRCozVzudYdTk2nkhonLZ5BL2acguMjGV5ds2Wh6rcy+qvqOE456MpU+sggXtJHwPD5A8cJZyo++iWLUSvOB9GBdi3tfXCsW6/VofhMU8sOzpmGNbJdnTUn6XF0CY06Dw9xVLIaasHl/Zc3Y5g/csJbB+ab+pv1Naaw="
 before_script:
   - npm install -g gulp
-  - git clone --quiet https://github.com/RecoTwExplorer/RecoTwExplorer build
-  - pushd build
+  - git clone --quiet https://github.com/RecoTwExplorer/RecoTwExplorer dest
+  - pushd dest
   - git checkout -b gh-pages
   - popd
 script: gulp
 after_success:
-  - cd build
+  - cd dest
   - git add -A
   - git cmmit -m 'update'
   - '[ "$TRAVIS_BRANCH" == "master" ] && [ $GH_TOKEN ] && git push --quiet https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git gh-pages 2> /dev/null'
