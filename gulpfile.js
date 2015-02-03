@@ -68,7 +68,7 @@ function styles() {
 }
 
 function copy() {
-    return gulp.src(['favicon.ico'])
+    return gulp.src(['favicon.ico','CNAME'])
         .pipe(gulp.dest('./dest/'))
         .pipe($.size({title: 'copy'}))
 }
