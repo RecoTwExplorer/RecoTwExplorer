@@ -658,6 +658,7 @@ var RecoTwExplorer;
             }
         };
         View.renderHome = function () {
+            var _this = this;
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
             var entries = Model.getEntries();
@@ -667,11 +668,11 @@ var RecoTwExplorer;
             }
             entries.skip(View.current).take(View.TWEETS_COUNT).forEach(function (entry) {
                 View.createTwitterCB(function () {
-                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then($.proxy(function (widgetID, entry, element) {
+                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then((function (widgetID, entry, element) {
                         if (!element) {
                             View.showStatusLoadFailedMessage(widgetID, entry);
                         }
-                    }, null, ++View.widgetID, entry));
+                    }).bind(_this, ++View.widgetID, entry));
                 });
             });
             View.current += View.TWEETS_COUNT;
