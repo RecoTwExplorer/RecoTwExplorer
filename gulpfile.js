@@ -96,8 +96,8 @@ function serve() {
         server: ['.']
     });
     gulp.watch(["index.html"],reload);
-    gulp.watch(["./src/**/*.scss"],[styles,reload]);
-    gulp.watch(["./src/ts/*.ts"],[compile,reload]);
+    gulp.watch(["./src/**/*.scss"],["styles",reload]);
+    gulp.watch(["./src/ts/*.ts"],["build",reload]);
     gulp.watch(["./images/**/*"],reload);
 }
 
