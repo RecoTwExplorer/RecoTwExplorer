@@ -175,6 +175,7 @@ ul.nav>li>a {
     margin-top: 110px;
 }
 #alerts {
+    max-width: 640px;
     margin: -20px auto 42px;
 }
 #loading-panel-container, #no-result-container {
@@ -188,6 +189,7 @@ ul.nav>li>a {
     display: none;
 }
 #loading-panel, #loading-error-panel {
+    max-width: 400px;
     margin: 0 auto;
     line-height: 1.7;
 }
@@ -247,9 +249,6 @@ blockquote p {
 nav {
     padding-right: 8px;
 }
-.tab-content {
-    max-width: 930px;
-}
 .navbar-toggle {
     margin-right: 0;
 }
@@ -292,7 +291,6 @@ nav {
     right: auto;
 }
 #post-result, #polling-result {
-    width: 640px;
     padding: 15px 15px 15px 20px;
     margin: -1px auto 0;
     display: none;
@@ -320,6 +318,7 @@ footer a:hover {
     background: white;
     padding: 0 12px 0 18px;
     border: 1px solid #dfdfdf;
+    max-width: 970px;
 }
 #statistics-title {
     margin: 32px auto 16px;
