@@ -23,7 +23,7 @@
 
 module RecoTwExplorer {
     var APP_NAME = "RecoTw Explorer";
-    var APP_VERSION = "2.10";
+    var APP_VERSION = "2.20";
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
@@ -40,10 +40,6 @@ module RecoTwExplorer {
             }
         });
     };
-
-    if (!Array.isArray) {
-        Array.isArray = x => Object.prototype.toString.call(x) === "[object Array]";
-    }
 
     /**
      * Specifies how entries are sorted.
@@ -228,12 +224,11 @@ module RecoTwExplorer {
             if (queryString.length === 0 || queryString === "?") {
                 return options;
             }
-            var queries = Enumerable.from(queryString.substring(1).split("&"))
-                                    .select(x => x.split("="))
-                                    .where(x => x.length === 2)
-                                    .select(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
+            var queries = queryString.substring(1).split("&").map(x => x.split("="))
+                                                             .filter(x => x.length === 2)
+                                                             .map(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
 
-            queries.where(x => x.property === "body").forEach(x => {
+            queries.filter(x => x.property === "body").forEach(x => {
                 var match: RegExpMatchArray;
                 if ((match = x.value.match(/^\/(.*)\/$/)) !== null) {
                     options.body = match[1];
@@ -243,8 +238,8 @@ module RecoTwExplorer {
                     options.regex = false;
                 }
             });
-            queries.where(x => x.property === "username").forEach(x => options.usernames = x.value.split(","));
-            queries.where(x => x.property === "id").forEach(x => options.id = x.value);
+            queries.filter(x => x.property === "username").forEach(x => options.usernames = x.value.split(","));
+            queries.filter(x => x.property === "id").forEach(x => options.id = x.value);
             return options;
         }
 
@@ -363,7 +358,7 @@ module RecoTwExplorer {
                     { type: "string", label: Resources.USERNAME },
                     { type: "number", label: Resources.TWEETS_COUNT }
                 ],
-                rows: Enumerable.from(data).select(x => ({ c: [{ v: x.target_sn }, { v: x.count }] })).toArray()
+                rows: data.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
             }));
         }
 
@@ -421,8 +416,7 @@ module RecoTwExplorer {
                 }
             }
             if (options.usernames !== void 0 && options.usernames.length > 0) {
-                var usernames = Enumerable.from(options.usernames);
-                result.enumerable = result.enumerable.where(x => usernames.any(y => x.target_sn.toLowerCase() === y.toLowerCase()));
+                result.enumerable = result.enumerable.where(x => options.usernames.some(y => x.target_sn.toLowerCase() === y.toLowerCase()));
             }
             if (options.id !== null) {
                 result.enumerable = result.enumerable.where(x => x.tweet_id === options.id);
@@ -439,9 +433,9 @@ module RecoTwExplorer {
         private static TWITTER_STATUS_URL = "https://twitter.com/show/status/{0}";
         private static TWITTER_USER_URL = "https://twitter.com/{0}";
         private static TWITTER_PROFILE_IMAGE_URL = "http://www.paper-glasses.com/api/twipi/{0}/";
-        private static RECOTW_GET_ALL_URL = "http://recotw.tk/api/tweet/get_tweet_all";
-        private static RECOTW_POST_URL = "http://recotw.tk/api/tweet/record_tweet";
-        private static RECOTW_COUNT_URL = "http://recotw.tk/api/tweet/count_tweet";
+        private static RECOTW_GET_ALL_URL = "http://api.recotw.black/1/tweet/get_tweet_all";
+        private static RECOTW_POST_URL = "http://api.recotw.black/1/tweet/record_tweet";
+        private static RECOTW_COUNT_URL = "http://api.recotw.black/1/tweet/count_tweet";
         private static POLLING_INTERVAL = 20000;
 
         private static entries: RecoTwEntryCollection = null;
@@ -537,9 +531,7 @@ module RecoTwExplorer {
          * @param error A callback function which would be invoked when the registration fails.
          */
         public static postEntriesFromInputs(inputs: string[], success: (response: RecoTwRecordResponse) => void, error: (message: string) => void): void {
-            var ids: string[] = [];
-            Enumerable.from(inputs).forEach(x => ids[ids.length] = Model.validateURLorID(x));
-
+            var ids = inputs.map(x => Model.validateURLorID(x));
             $.ajax({
                 url: this.RECOTW_POST_URL,
                 type: "POST",
@@ -787,11 +779,11 @@ module RecoTwExplorer {
             }
             entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
                 View.createTwitterCB(() => {
-                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then($.proxy((widgetID: number, entry: RecoTwEntry, element: Element) => {
+                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then(((widgetID: number, entry: RecoTwEntry, element: Element) => {
                         if (!element) {
                             View.showStatusLoadFailedMessage(widgetID, entry);
                         }
-                    }, null, ++View.widgetID, entry));
+                    }).bind(this, ++View.widgetID, entry));
                 });
             });
             View.current += View.TWEETS_COUNT;
@@ -836,7 +828,7 @@ module RecoTwExplorer {
 
         private static renderStatisticsTable(username: string, statistics: RecoTwStatistics): void {
             // Counts colored slices in the chart.
-            var colored = Enumerable.from(statistics.users).count((x, y) => x.count / statistics.entryLength > View.GRAPH_OPTIONS.sliceVisibilityThreshold);
+            var colored = statistics.users.filter(x => x.count / statistics.entryLength > View.GRAPH_OPTIONS.sliceVisibilityThreshold).length;
             var $table = $("#statistics-table").empty();
             var html = "";
             username = username !== void 0 ? username.toLowerCase() : void 0;
@@ -873,7 +865,7 @@ module RecoTwExplorer {
         public static postEntries(): void {
             var inputs: string[] = $("#new-record-modal input[type='text']").map(function () { return $(this).val(); }).get();
             try {
-                Model.postEntriesFromInputs(Enumerable.from(inputs).where(x => x.length > 0).toArray(), View.showPostSuccessMessage, View.showPostFailedMessage);
+                Model.postEntriesFromInputs(inputs.filter(x => x.length > 0), View.showPostSuccessMessage, View.showPostFailedMessage);
                 $("#new-record-modal").modal("hide");
             } catch (e) {
                 $("#inputPostStatus").val("").focus();

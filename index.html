@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
     <head>
         <title>RecoTw Explorer</title>
@@ -7,9 +7,11 @@
         <meta name="description" content="Twitter の黒歴史を共有する Web サービス、RecoTw に登録されたツイートを閲覧・検索したり、新しく登録したりするための Web アプリケーションです。">
         <meta name="keywords" content="RecoTw,Twitter,黒歴史,Viewer,Explorer">
         <meta content="#6e587e" name="theme-color">
+        <!-- build:css css/style.min.css -->
         <link rel="stylesheet" href="./lib/css/font-awesome.min.css">
         <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
-        <link rel="stylesheet" href="./dest/css/style.css">
+        <link rel="stylesheet" href="./dev/css/style.css">
+        <!-- endbuild -->
         <link rel="shortcut icon" href="./favicon.ico" />
         <!-- Currently working on responsive design -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -170,7 +172,7 @@
             </div>
         </main>
         <footer class="text-center">
-            &copy; Chitoku 2014. Powered by <a href="http://recotw.tk/" target="_blank">RecoTw</a> (<a href="https://twitter.com/G2U" target="_blank">@G2U</a>)
+            &copy; Chitoku 2014. Powered by <a href="http://recotw.black/" target="_blank">RecoTw</a> (<a href="https://twitter.com/G2U" target="_blank">@G2U</a>)
         </footer>
         <div class="modal fade" id="new-record-modal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
@@ -179,8 +181,7 @@
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                         <h4 class="modal-title">ツイート登録</h4>
                     </div>
-                    <form id="new-record-form" action="http://recotw.tk/api/tweet/record_tweet" method="POST"
-                          class="form-horizontal" role="form">
+                    <form id="new-record-form" action="http://api.recotw.black/1/tweet/record_tweet" method="POST" class="form-horizontal" role="form">
                         <div class="modal-body">
                             <div class="form-group url-input-area has-feedback">
                                 <label class="col-sm-2 control-label">ツイート</label>
@@ -213,8 +214,7 @@
                             <h2 style="margin-top: 0;"><img src="./images/icon.png" width="48" height="48" alt="">&nbsp;&nbsp;RecoTw
                                 Explorer <span id="app-version"></span></h2>
                             <p>
-                                RecoTw Explorer は、<a href="https://twitter.com/G2U" target="_blank">@G2U</a> 氏作成の黒歴史ツイート記録サービス
-                                <a href="http://recotw.tk/" target="_blank">RecoTw</a> の閲覧/登録用の Web アプリケーションです。
+                                RecoTw Explorer は、<a href="https://twitter.com/G2U" target="_blank">@G2U</a> 氏作成の黒歴史ツイート記録サービス <a href="http://recotw.black/" target="_blank">RecoTw</a> の閲覧/登録用の Web アプリケーションです。
                                 RecoTw に登録されているすべての情報について作者（ちとく − <a href="https://twitter.com/java_shit" target="_blank">@java_shit</a>）は一切関知しません。詳しくはサービスの運営元へお問い合わせください。
                                 また、このアプリケーションを使用することによって発生した損害に対して作者は一切の責任を負いかねます。
                             </p>
@@ -266,14 +266,18 @@
                 return t;
             }(document, "script", "twitter-wjs"));
         </script>
-        <script src="./lib/js/jquery-1.11.1.min.js"></script>
+        <!-- build:js js/vendor.js -->
+        <script src="./lib/js/jquery-2.1.3.min.js"></script>
         <script src="./lib/js/jquery.bottom-1.0.js"></script>
         <script src="./lib/js/bootstrap.min.js"></script>
         <script src="./lib/js/linq.js"></script>
         <script src="./lib/js/linq.jquery.js"></script>
         <script src="./lib/js/libstring.js"></script>
+        <!-- endbuild -->
         <script src="http://chitoku.jp/lunalys/analyzer/tracker.js"></script>
         <script src="https://www.google.com/jsapi"></script>
-        <script src="./dest/js/recotw.min.js"></script>
+        <!-- build:js js/recotw.min.js -->
+        <script src="./dev/js/recotw.js"></script>
+        <!-- endbuild -->
     </body>
 </html>
