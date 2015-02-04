@@ -19,4 +19,4 @@ after_success:
   - cd dest
   - git add -A
   - git commit -m "update $TRAVIS_COMMIT"
-  - '[ "$TRAVIS_BRANCH" == "master" ] && [ $GH_TOKEN ] && git push --quiet https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git gh-pages 2> /dev/null'
+  - '[ "$TRAVIS_BRANCH" == "master" ] && [ $GH_TOKEN ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && git push --quiet https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git gh-pages 2> /dev/null'
