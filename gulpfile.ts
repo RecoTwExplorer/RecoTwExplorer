@@ -89,12 +89,11 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
-            server: ["."]
+            server: ["."],
+            files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
-        gulp.watch(["index.html"], browserSync.reload);
-        gulp.watch(["./src/**/*.scss"], <any>["styles", browserSync.reload]);
-        gulp.watch(["./src/ts/*.ts"], <any>["build", browserSync.reload]);
-        gulp.watch(["./images/**/*"], browserSync.reload);
+        gulp.watch(["./src/**/*.scss"], ["styles"]);
+        gulp.watch(["./src/ts/*.ts"], ["build"]);
     }
 
     private serve_dest(): void {
