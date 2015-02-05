@@ -37,6 +37,7 @@ $ gulp
 - [jQuery](http://jquery.com/)
 - [linq.js](http://linqjs.codeplex.com/)
 - [Bootstrap](http://getbootstrap.com/)
+- [Font Awesome](http://fortawesome.github.io/Font-Awesome/)
 - [Google Charts](https://developers.google.com/chart/)
 
 ==================================
