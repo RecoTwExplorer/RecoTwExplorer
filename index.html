@@ -6,9 +6,6 @@
         <meta name="author" content="Chitoku">
         <meta name="description" content="Twitter の黒歴史を共有する Web サービス、RecoTw に登録されたツイートを閲覧・検索したり、新しく登録したりするための Web アプリケーションです。">
         <meta name="keywords" content="RecoTw,Twitter,黒歴史,Viewer,Explorer">
-        <meta content="#6e587e" name="theme-color">
-        <link rel="icon" sizes="192x192" href="./images/icon-192.png">
-        <meta name="mobile-web-app-capable" content="yes">
         <!-- build:css css/style.min.css -->
         <link rel="stylesheet" href="./lib/css/font-awesome.min.css">
         <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
@@ -24,127 +21,133 @@
                 <img src="http://chitoku.jp/lunalys/analyzer/write.php?guid=ON&amp;act=img" width="0" height="0" alt="">
             </noscript>
         </div>
-        <header class="navbar navbar-violet navbar-fixed-top navbar-static-top" id="top" role="banner">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand navbar-brand-icon" href="#home-tab" role="tab" data-toggle="tab">
-                        <img src="./images/icon_inverse.png" width="32" height="32" alt="">
-                    </a>
-                    <a class="navbar-brand navbar-brand-text">RecoTw Explorer</a>
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
+        <nav class="navbar navbar-violet navbar-fixed-top" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand navbar-label-icon">
+                    <img src="./images/icon_inverse.png" width="32" height="32" alt="">
+                </a>
+                <a class="navbar-brand navbar-label-text">RecoTw Explorer</a>
+                <ul class="nav navbar-nav">
+                    <li role="presentation" class="active">
+                        <a href="#home-tab" role="tab" data-toggle="tab">
+                            <span class="navbar-label-icon glyphicon glyphicon-home"></span>
+                            <span class="navbar-label-text">ホーム</span>
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#statistics-tab" role="tab" data-toggle="tab">
+                            <span class="navbar-label-icon fa fa-pie-chart"></span>
+                            <span class="navbar-label-text">統計情報</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#new-record-modal">
+                            <span class="navbar-label-icon glyphicon glyphicon-plus"></span>
+                            <span class="navbar-label-text">ツイート登録</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#help-modal">
+                            <span class="navbar-label-icon glyphicon glyphicon-question-sign"></span>
+                            <span class="navbar-label-text">ヘルプ</span>
+                        </a>
+                    </li>
+                    <li class="visible-xs-inline-block">
+                        <a href="javascript:void(0);" id="search-form-toggle-button">
+                            <span class="navbar-label-icon glyphicon glyphicon-search"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <form id="search-form" class="navbar-form navbar-right hidden-xs" role="search">
+                <div class="input-group">
+                    <input type="text" id="search-box" name="body" class="form-control">
+                    <span class="input-group-btn">
+                        <button class="btn" type="submit">検索</button>
+                        <button class="btn btn-warning" type="button" id="clear-search-filter">解除</button>
+                    </span>
                 </div>
-                <div id="collapse" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li role="presentation" class="active"><a href="#home-tab" role="tab" data-toggle="tab">ホーム</a></li>
-                        <li role="presentation"><a href="#statistics-tab" role="tab" data-toggle="tab">統計情報</a></li>
-                        <li><a href="#" data-toggle="modal" data-target="#new-record-modal">ツイート登録</a></li>
-                        <li><a href="#" data-toggle="modal" data-target="#help-modal">ヘルプ</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a type="button" data-toggle="dropdown" aria-expanded="false">
-                                並び替え <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order">
-                                <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
-                            </li>
-                                <li>
-                                <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" checked>
-                                <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
-                            </li>
-                                <li>
-                                <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order">
-                                <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
-                            </li>
-                                <li>
-                                <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order">
-                                <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
-                            </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <form id="search-form" class="navbar-form" role="search">
-                                <div class="form-group">
-                                    <input type="text" id="search-box" name="body" class="form-control">
-                                </div>
-                                <button class="btn" type="submit">検索</button>
-                                <button class="btn btn-warning" type="button" id="clear-search-filter">解除</button>
-                            </form>
-                        </li>
-                    </ul>
+            </form>
+            <div class="btn-group navbar-right">
+                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="navbar-label-icon glyphicon glyphicon-sort"></span>
+                    <span class="navbar-label-text">並び替え</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order">
+                        <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
+                    </li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" checked>
+                        <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
+                    </li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order">
+                        <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
+                    </li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order">
+                        <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div id="page-main">
+            <div id="alerts">
+                <div id="post-result" class="alert alert-success">
+                    <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
+                    <div id="post-success" class="alert-body">
+                        <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
+                    </div>
+                    <div id="post-failed" class="alert-body">
+                        <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
+                    </div>
+                </div>
+                <div id="polling-result" class="alert alert-info">
+                    <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
+                    <div class="alert-body">
+                        <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
+                        <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
+                    </div>
                 </div>
             </div>
-        </header>
-        <div id="page-main">
-            <div class="container">
-                <div id="alerts" class="row">
-                    <div id="post-result" class="alert alert-success">
-                        <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span>
-                        </button>
-                        <div id="post-success" class="alert-body">
-                            <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
-                        </div>
-                        <div id="post-failed" class="alert-body">
-                            <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
-                        </div>
+            <div id="loading-panel-container">
+                <div id="loading-panel" class="text-center">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-violet active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
                     </div>
-                    <div id="polling-result" class="alert alert-info">
-                        <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span>
-                        </button>
-                        <div class="alert-body">
-                            <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
-                            <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
-                        </div>
-                    </div>
-                </div>
-                <div id="loading-panel-container">
-                    <div id="loading-panel" class="text-center">
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-violet active" role="progressbar"
-                                 aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
-                        </div>
-                        <span id="loading-recotw" style="display: none;">RecoTw からツイートを読み込んでいます。<br></span>
-                        しばらくお待ちください...
-                    </div>
+                    <span id="loading-recotw" style="display: none;">RecoTw からツイートを読み込んでいます。<br></span>
+                    しばらくお待ちください...
                 </div>
                 <div id="loading-error-panel">
-                    <div id="loading-error-icon" class="text-center">
-                        <i class="fa fa-exclamation-triangle fa-lg"></i>
+                    <div id="loading-error-icon" class="col-sm-2 text-right">
+                        <span class="glyphicon glyphicon-file"></span>
                     </div>
-                    <div class="text-center">
+                    <div class="col-sm-10">
                         RecoTw からツイートを読み込むことができません。<br>
                         しばらく経ってからアクセスしなおしてください。
                     </div>
                 </div>
-                <div class="tab-content row">
-                    <div id="no-result-container" class="text-center">ツイートが見つかりませんでした。</div>
-                    <div role="tabpanel" class="tab-pane fade in active" id="home-tab">
-                        <div id="main-area" class="container"></div>
-                    </div>
-                    <div role="tabpanel" class="col-md-12 tab-pane fade" id="statistics-tab">
-                        <div class="row" id="statistics-area">
-                            <div class="col-sm-7">
-                                <h1 id="statistics-title">
-                                    RecoTw 統計情報&nbsp;&nbsp;
-                                    <small id="statistics-count"></small>
-                                    <br>
-                                    <small id="statistics-filter"></small>
-                                </h1>
-                                <div id="statistics-chart"></div>
-                            </div>
-                            <div id="statistics-table-container" class="col-sm-5">
-                                <input type="text" id="statistics-filter-textbox" class="form-control"
-                                       placeholder="フィルター検索... (前方一致)">
-
-                                <div id="statistics-table"></div>
-                            </div>
+            </div>
+            <div class="tab-content">
+                <div id="no-result-container" class="text-center">ツイートが見つかりませんでした。</div>
+                <div role="tabpanel" class="tab-pane fade in active" id="home-tab">
+                    <div id="main-area" class="container"></div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="statistics-tab">
+                    <div class="row" id="statistics-area">
+                        <div class="col-sm-6">
+                            <h1 id="statistics-title">
+                                RecoTw 統計情報&nbsp;&nbsp;<small id="statistics-count"></small><br>
+                                <small id="statistics-filter"></small>
+                            </h1>
+                            <div id="statistics-chart"></div>
+                        </div>
+                        <div id="statistics-table-container" class="col-sm-6">
+                            <input type="text" id="statistics-filter-textbox" class="form-control" placeholder="フィルター検索... (前方一致)">
+                            <div id="statistics-table"></div>
                         </div>
                     </div>
                 </div>
@@ -162,8 +165,7 @@
                             <div class="form-group url-input-area has-feedback">
                                 <label class="col-sm-2 control-label">ツイート</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="url-box form-control" name="id"
-                                           placeholder="1145141919&nbsp;&nbsp;or&nbsp;&nbsp;https://twitter.com/user/status/1145141919"
+                                    <input type="text" class="url-box form-control" name="id" placeholder="1145141919&nbsp;&nbsp;or&nbsp;&nbsp;https://twitter.com/user/status/1145141919"
                                            onkeyup="RecoTwExplorer.Controller.onNewRecordFormTextBoxValueChanged()"
                                            onchange="RecoTwExplorer.Controller.onNewRecordFormTextBoxValueChanged()">
                                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
@@ -184,11 +186,9 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                                class="sr-only">Close</span></button>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                         <div>
-                            <h2 style="margin-top: 0;"><img src="./images/icon.png" width="48" height="48" alt="">&nbsp;&nbsp;RecoTw
-                                Explorer <span id="app-version"></span></h2>
+                            <h2 style="margin-top: 0;"><img src="./images/icon.png" width="48" height="48" alt="">&nbsp;&nbsp;RecoTw Explorer <span id="app-version"></span></h2>
                             <p>
                                 RecoTw Explorer は、<a href="https://twitter.com/G2U" target="_blank">@G2U</a> 氏作成の黒歴史ツイート記録サービス <a href="http://recotw.black/" target="_blank">RecoTw</a> の閲覧/登録用の Web アプリケーションです。
                                 RecoTw に登録されているすべての情報について作者（ちとく − <a href="https://twitter.com/java_shit" target="_blank">@java_shit</a>）は一切関知しません。詳しくはサービスの運営元へお問い合わせください。
@@ -204,8 +204,7 @@
                             </p>
                             <p>
                                 このアプリケーションは Twitter のユーザーアイコン表示のために次の Web サービスを使用しています：<br>
-                                <a href="http://140note.hitonobetsu.com/apipage/profileimage" target="_blank">Profile Image API
-                                    For Twitter■140note</a>
+                                <a href="http://140note.hitonobetsu.com/apipage/profileimage" target="_blank">Profile Image API For Twitter■140note</a>
                             </p>
                             <p style="margin-bottom: 0;">
                                 このアプリケーションは次のライブラリを使用しています：
