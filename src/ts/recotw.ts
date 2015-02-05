@@ -782,6 +782,8 @@ module RecoTwExplorer {
                     twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then(((widgetID: number, entry: RecoTwEntry, element: Element) => {
                         if (!element) {
                             View.showStatusLoadFailedMessage(widgetID, entry);
+                        } else {
+                            $(element).contents().find(".standalone-tweet").css({ borderRadius: 0 });
                         }
                     }).bind(this, ++View.widgetID, entry));
                 });
@@ -991,6 +993,17 @@ module RecoTwExplorer {
             $("#search-form").submit($event => {
                 $event.preventDefault();
                 Controller.setOptions(Options.fromKeywords($("#search-box").val(), Controller.getOrder(), Controller.getOrderBy()), false, true, false);
+            });
+            $("#search-form-toggle-button").click(function () {
+                var $this = $(this);
+                var $elm = $("#search-form");
+                if ($this.hasClass("active")) {
+                    $this.removeClass("active");
+                    $elm.css({ display: "" });
+                } else {
+                    $this.addClass("active");
+                    $elm.css({ cssText: "display: block !important" });
+                }
             });
             $(window).on("popstate",() => {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);

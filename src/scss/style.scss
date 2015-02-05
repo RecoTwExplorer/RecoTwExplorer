@@ -19,12 +19,6 @@ a:focus {
 a, a:focus, button {
     outline: none !important;
 }
-.container {
-    margin-top: -20px;
-}
-.white, .white a {
-    color: #fff;
-}
 .form-control {
     border-color: #977eaf;
     box-shadow: none;
@@ -63,7 +57,7 @@ a, a:focus, button {
 input::-moz-focus-inner, button::-moz-focus-inner {
     border: 0;
 }
-.icon-bar{
+.icon-bar {
     background-color: white;
 }
 #nav-container {
@@ -77,21 +71,19 @@ nav.navbar {
     margin-bottom: 0;
     border: none;
     border-radius: 0;
+    padding-right: 28px;
 }
-.navbar-collapse {
-    padding: 0;
-}
-nav.navbar-violet, footer, header {
+nav.navbar-violet {
     background: #6e587e;
 }
 ul.nav>li>a {
     padding: 20px 30px;
 }
-.navbar-brand-icon {
+.navbar-label-icon {
     display: none;
     margin-top: -7px;
 }
-.navbar-nav>li>a, .dropdown-menu>li>a {
+.navbar-nav > li >a, .dropdown-menu > li > a {
     transition: background-color .3s;
 }
 .navbar-violet .navbar-brand {
@@ -158,6 +150,12 @@ ul.nav>li>a {
     margin-bottom: 0;
     cursor: pointer;
 }
+.navbar-toggle {
+    margin-right: 0;
+}
+.navbar-collapse {
+    padding-right: 15px;
+}
 .order-radio-box {
     display: none;
 }
@@ -175,25 +173,25 @@ ul.nav>li>a {
     margin-top: 110px;
 }
 #alerts {
-    max-width: 640px;
     margin: -20px auto 42px;
 }
 #loading-panel-container, #no-result-container {
     /* Force smartphones to enable its hardware acceleration */
     -webkit-transform: translateZ(0px);
-    position: relative;
-    margin-right: 15px;
-    margin-left: 15px;
+    position: absolute;
+    top: 45%;
+    width: 100%;
 }
 #loading-error-panel, #no-result-container, #clear-search-filter, #tracker {
     display: none;
 }
 #loading-panel, #loading-error-panel {
-    max-width: 400px;
+    width: 400px;
     margin: 0 auto;
     line-height: 1.7;
 }
 #loading-error-panel {
+    width: 600px;
     font-size: 16px;
 }
 #loading-error-icon {
@@ -246,17 +244,10 @@ blockquote p {
     margin-top: 5px;
     word-break: break-all;
 }
-nav {
-    padding-right: 8px;
-}
-.navbar-toggle {
-    margin-right: 0;
-}
-#navbar-collapse {
-    padding-right: 15px;
-}
 #search-form {
-    margin: 12px -8px 0;
+    margin-left: -8px;
+    margin-bottom: 0;
+    padding-right: 0px;
 }
 #search-form .btn {
     border-radius: 0;
@@ -285,12 +276,14 @@ nav {
     border: 1px solid #3f2751;
 }
 #search-box, #search-form .popover {
+    min-width: 250px;
     border-radius: 0;
 }
 #search-target-dropdown {
     right: auto;
 }
 #post-result, #polling-result {
+    width: 640px;
     padding: 15px 15px 15px 20px;
     margin: -1px auto 0;
     display: none;
@@ -298,27 +291,14 @@ nav {
 #main-area {
     margin: -40px auto 14px;
 }
-footer {
-    position: fixed;
-    color: white;
-    width: 100%;
-    padding: 4px 10px;
-    bottom: 0;
-}
-footer a {
-    color: lightgray;
-}
-footer a:hover {
-    color: gray;
-}
 #statistics-area {
     /* Force smartphones to enable its hardware acceleration */
     -webkit-transform: translateZ(0px);
-    margin: -36px auto 0px;
+    width: 860px;
+    margin: 20px auto 0px;
     background: white;
     padding: 0 12px 0 18px;
     border: 1px solid #dfdfdf;
-    max-width: 970px;
 }
 #statistics-title {
     margin: 32px auto 16px;
@@ -328,6 +308,7 @@ footer a:hover {
     vertical-align: 6px;
 }
 #statistics-table-container {
+    padding-left: 80px;
     margin: 30px auto 26px;
 }
 #statistics-filter-textbox {
@@ -394,12 +375,126 @@ footer a:hover {
     ul.nav > li > a {
         padding: 20px;
     }
-}
-@media (max-width: 1024px) {
-    .navbar-brand-icon {
-        display: block;
+    .navbar-label-icon {
+        display: inline-block;
     }
-    .navbar-brand-text {
+    .navbar-label-text {
         display: none;
+    }
+}
+@media (max-width: 768px) {
+    body {
+        margin-bottom: 12px;
+    }
+    nav.navbar {
+        min-height: 44px;
+        height: 44px;
+        padding-right: 0;
+    }
+    .navbar-nav {
+        margin: 0;
+    }
+    ul.nav > li > a {
+        padding: 12px 18px;
+    }
+    .navbar-label-icon.fa {
+        margin-top: -6px;
+        margin-bottom: -1px;
+    }
+    .navbar-right {
+        float: right;
+        margin-top: -44px;
+    }
+    .navbar-right.btn-group {
+        .btn {
+            margin: 0;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            transition: background-color .3s;
+        }
+        & .btn:hover, &.open .btn {
+            background: #563d69;
+        }
+    }
+    .navbar-right .dropdown-menu {
+        margin-top: 0;
+        border: 0;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        left: auto;
+        right: 0;
+    }
+    .nav > li {
+        display: inline-block;
+        float: left;
+    }
+    #search-form {
+        position: absolute;
+        background: #563d69;
+        border: none;
+        margin: 0;
+        padding: 2px 6px 1px;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+    }
+    #search-box {
+        min-width: 0;
+    }
+    #search-form-toggle-button.active {
+        background: #563d69;
+    }
+    #main-area {
+        margin-top: -76px;
+        padding: 10px;
+    }
+    blockquote, .twitter-tweet-rendered {
+        margin: 12px auto !important;
+    }
+    .navbar-violet .navbar-brand {
+        padding: 20px 16px 20px 18px;
+        margin-top: -14px;
+    }
+    blockquote {
+        font-size: 12px;
+        p {
+            font-size: 16px;
+        }
+        span a {
+            font-size: 12px;
+        }
+    }
+    #statistics-tab {
+        padding: 0 12px;
+    }
+    #statistics-area {
+        margin: -52px 0 12px;
+        padding: 0 18px;
+        max-width: 100%;
+    }
+    #statistics-area div:first-child {
+        padding: 0;
+    }
+    #statistics-chart div {
+        margin: 0 auto;
+    }
+    #statistics-title {
+        margin: 16px 0;
+        font-size: 28px;
+    }
+    #statistics-table-container {
+        padding: 0;
+        width: 100%;
+    }
+    #statistics-table {
+        height: auto;
+    }
+}
+@media (max-width: 382px) {
+    ul.nav > li > a {
+        padding: 12px 13px;
+    }
+    #statistics-title {
+        font-size: 22px;
     }
 }
