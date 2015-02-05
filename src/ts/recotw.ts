@@ -965,6 +965,9 @@ module RecoTwExplorer {
         public static main(): void {
             View.setTitle(Resources.PAGE_TITLE_NORMAL);
             $("#app-version").text(APP_VERSION);
+            if (navigator.standalone) {
+                $(document.body).addClass("standalone");
+            }
 
             Model.init();
             google.load("visualization", "1.0", { "packages": ["corechart"] });

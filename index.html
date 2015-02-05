@@ -6,12 +6,18 @@
         <meta name="author" content="Chitoku">
         <meta name="description" content="Twitter の黒歴史を共有する Web サービス、RecoTw に登録されたツイートを閲覧・検索したり、新しく登録したりするための Web アプリケーションです。">
         <meta name="keywords" content="RecoTw,Twitter,黒歴史,Viewer,Explorer">
+        <meta content="#6e587e" name="theme-color">
+        <meta name="apple-mobile-web-app-title" content="RecoTw">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <!-- build:css css/style.min.css -->
         <link rel="stylesheet" href="./lib/css/font-awesome.min.css">
         <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
         <link rel="stylesheet" href="./dev/css/style.css">
         <!-- endbuild -->
+        <link rel="apple-touch-icon-precomposed" href="./images/apple-touch-icon.png">
         <link rel="shortcut icon" href="./favicon.ico" />
+        <link rel="icon" sizes="192x192" href="./images/icon-192.png">
         <!-- Currently working on responsive design -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
@@ -22,6 +28,7 @@
             </noscript>
         </div>
         <nav class="navbar navbar-violet navbar-fixed-top" role="navigation">
+            <div id="statusbar"></div>
             <div class="navbar-header">
                 <a class="navbar-brand navbar-label-icon">
                     <img src="./images/icon_inverse.png" width="32" height="32" alt="">

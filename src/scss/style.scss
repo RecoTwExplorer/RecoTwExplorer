@@ -57,12 +57,11 @@ a, a:focus, button {
 input::-moz-focus-inner, button::-moz-focus-inner {
     border: 0;
 }
-.icon-bar {
-    background-color: white;
+body.standalone #statusbar {
+    height: 20px;
 }
 #nav-container {
     margin-bottom: 24px;
-    background: #44607b;
     width: 100%;
     top: 0;
     z-index: 5;
@@ -186,12 +185,12 @@ ul.nav>li>a {
     display: none;
 }
 #loading-panel, #loading-error-panel {
-    width: 400px;
+    max-width: 400px;
     margin: 0 auto;
     line-height: 1.7;
 }
 #loading-error-panel {
-    width: 600px;
+    max-width: 600px;
     font-size: 16px;
 }
 #loading-error-icon {
@@ -390,6 +389,9 @@ blockquote p {
         min-height: 44px;
         height: 44px;
         padding-right: 0;
+        body.standalone & {
+            min-height: 44 + 20px;
+        }
     }
     .navbar-nav {
         margin: 0;
@@ -444,9 +446,22 @@ blockquote p {
     #search-form-toggle-button.active {
         background: #563d69;
     }
+    #loading-panel {
+        padding: 0 20px;
+    }
+    #loading-error-panel {
+        font-size: 12px;
+        text-align: center;
+    }
+    #loading-error-icon {
+        text-align: center;
+    }
     #main-area {
         margin-top: -76px;
         padding: 10px;
+        body.standalone & {
+            margin-top: -76px + 20px;
+        }
     }
     blockquote, .twitter-tweet-rendered {
         margin: 12px auto !important;
@@ -471,6 +486,9 @@ blockquote p {
         margin: -52px 0 12px;
         padding: 0 18px;
         max-width: 100%;
+        body.standalone & {
+            margin-top: -32px;
+        }
     }
     #statistics-area div:first-child {
         padding: 0;
