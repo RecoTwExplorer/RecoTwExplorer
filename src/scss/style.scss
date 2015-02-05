@@ -19,6 +19,9 @@ a:focus {
 a, a:focus, button {
     outline: none !important;
 }
+.white, .white a {
+    color: #fff;
+}
 .form-control {
     border-color: #977eaf;
     box-shadow: none;
@@ -83,7 +86,7 @@ ul.nav>li>a {
 }
 .navbar-brand-icon {
     display: none;
-    margin-top: -5px;
+    margin-top: -7px;
 }
 .navbar-nav>li>a, .dropdown-menu>li>a {
     transition: background-color .3s;
@@ -178,12 +181,21 @@ ul.nav>li>a {
     top: 45%;
     width: 100%;
 }
-#no-result-container, #clear-search-filter, #statistics, #tracker {
+#loading-error-panel, #no-result-container, #clear-search-filter, #tracker {
     display: none;
 }
-#loading-panel {
+#loading-panel, #loading-error-panel {
     width: 400px;
     margin: 0 auto;
+    line-height: 1.7;
+}
+#loading-error-panel {
+    width: 600px;
+    font-size: 16px;
+}
+#loading-error-icon {
+    font-size: 48px;
+    margin: -8px -4px 0 0;
 }
 #search-result-panel {
     margin: 4px 10px 10px 10px;
@@ -200,7 +212,6 @@ blockquote, .twitter-tweet-rendered {
 blockquote, .twitter-tweet-rendered {
     display: block;
     background: white;
-    margin: 20px auto;
     border: 1px solid #dfdfdf !important;
     border-radius: 0 !important;
     box-shadow: none !important;
