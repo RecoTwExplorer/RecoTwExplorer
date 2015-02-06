@@ -370,9 +370,20 @@ blockquote p {
     line-height: 1.8;
 }
 
-@media (max-width: 1152px) {
+@media (max-width: 1152px - 1) {
     ul.nav > li > a {
         padding: 20px;
+    }
+    .navbar-brand.navbar-label-icon {
+        display: inline-block;
+    }
+    .navbar-brand.navbar-label-text {
+        display: none;
+    }
+}
+@media (max-width: 1024px - 1) {
+    ul.nav > li > a {
+        padding: 20px 24px;
     }
     .navbar-label-icon {
         display: inline-block;
@@ -381,7 +392,7 @@ blockquote p {
         display: none;
     }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px - 1) {
     body {
         margin-bottom: 12px;
     }
