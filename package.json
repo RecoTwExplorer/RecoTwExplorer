@@ -1,6 +1,6 @@
 {
   "name": "RecoTwExplorer",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "A web application to view Tweets recorded in RecoTw.",
   "main": "recotw.js",
   "dependencies": {

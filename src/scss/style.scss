@@ -19,9 +19,6 @@ a:focus {
 a, a:focus, button {
     outline: none !important;
 }
-.white, .white a {
-    color: #fff;
-}
 .form-control {
     border-color: #977eaf;
     box-shadow: none;
@@ -60,12 +57,11 @@ a, a:focus, button {
 input::-moz-focus-inner, button::-moz-focus-inner {
     border: 0;
 }
-.icon-bar{
-    background-color: white;
+body.standalone #statusbar {
+    height: 20px;
 }
 #nav-container {
     margin-bottom: 24px;
-    background: #44607b;
     width: 100%;
     top: 0;
     z-index: 5;
@@ -74,9 +70,7 @@ nav.navbar {
     margin-bottom: 0;
     border: none;
     border-radius: 0;
-}
-.navbar-collapse {
-    padding: 0;
+    padding-right: 28px;
 }
 nav.navbar-violet {
     background: #6e587e;
@@ -84,11 +78,11 @@ nav.navbar-violet {
 ul.nav>li>a {
     padding: 20px 30px;
 }
-.navbar-brand-icon {
+.navbar-label-icon {
     display: none;
     margin-top: -7px;
 }
-.navbar-nav>li>a, .dropdown-menu>li>a {
+.navbar-nav > li >a, .dropdown-menu > li > a {
     transition: background-color .3s;
 }
 .navbar-violet .navbar-brand {
@@ -155,6 +149,12 @@ ul.nav>li>a {
     margin-bottom: 0;
     cursor: pointer;
 }
+.navbar-toggle {
+    margin-right: 0;
+}
+.navbar-collapse {
+    padding-right: 15px;
+}
 .order-radio-box {
     display: none;
 }
@@ -185,12 +185,12 @@ ul.nav>li>a {
     display: none;
 }
 #loading-panel, #loading-error-panel {
-    width: 400px;
+    max-width: 400px;
     margin: 0 auto;
     line-height: 1.7;
 }
 #loading-error-panel {
-    width: 600px;
+    max-width: 600px;
     font-size: 16px;
 }
 #loading-error-icon {
@@ -242,15 +242,6 @@ blockquote p {
     font-size: 18px;
     margin-top: 5px;
     word-break: break-all;
-}
-nav {
-    padding-right: 8px;
-}
-.navbar-toggle {
-    margin-right: 0;
-}
-#navbar-collapse {
-    padding-right: 15px;
 }
 #search-form {
     margin-left: -8px;
@@ -383,12 +374,145 @@ nav {
     ul.nav > li > a {
         padding: 20px;
     }
-}
-@media (max-width: 1024px) {
-    .navbar-brand-icon {
-        display: block;
+    .navbar-label-icon {
+        display: inline-block;
     }
-    .navbar-brand-text {
+    .navbar-label-text {
         display: none;
+    }
+}
+@media (max-width: 768px) {
+    body {
+        margin-bottom: 12px;
+    }
+    nav.navbar {
+        min-height: 44px;
+        height: 44px;
+        padding-right: 0;
+        body.standalone & {
+            min-height: 44 + 20px;
+        }
+    }
+    .navbar-nav {
+        margin: 0;
+    }
+    ul.nav > li > a {
+        padding: 12px 18px;
+    }
+    .navbar-label-icon.fa {
+        margin-top: -6px;
+        margin-bottom: -1px;
+    }
+    .navbar-right {
+        float: right;
+        margin-top: -44px;
+    }
+    .navbar-right.btn-group {
+        .btn {
+            margin: 0;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            transition: background-color .3s;
+        }
+        & .btn:hover, &.open .btn {
+            background: #563d69;
+        }
+    }
+    .navbar-right .dropdown-menu {
+        margin-top: 0;
+        border: 0;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        left: auto;
+        right: 0;
+    }
+    .nav > li {
+        display: inline-block;
+        float: left;
+    }
+    #search-form {
+        position: absolute;
+        background: #563d69;
+        border: none;
+        margin: 0;
+        padding: 2px 6px 1px;
+        box-shadow: none;
+        -webkit-box-shadow: none;
+    }
+    #search-box {
+        min-width: 0;
+    }
+    #search-form-toggle-button.active {
+        background: #563d69;
+    }
+    #loading-panel {
+        padding: 0 20px;
+    }
+    #loading-error-panel {
+        font-size: 12px;
+        text-align: center;
+    }
+    #loading-error-icon {
+        text-align: center;
+    }
+    #main-area {
+        margin-top: -76px;
+        padding: 10px;
+        body.standalone & {
+            margin-top: -76px + 20px;
+        }
+    }
+    blockquote, .twitter-tweet-rendered {
+        margin: 12px auto !important;
+    }
+    .navbar-violet .navbar-brand {
+        padding: 20px 16px 20px 18px;
+        margin-top: -14px;
+    }
+    blockquote {
+        font-size: 12px;
+        p {
+            font-size: 16px;
+        }
+        span a {
+            font-size: 12px;
+        }
+    }
+    #statistics-tab {
+        padding: 0 12px;
+    }
+    #statistics-area {
+        margin: -52px 0 12px;
+        padding: 0 18px;
+        max-width: 100%;
+        body.standalone & {
+            margin-top: -32px;
+        }
+    }
+    #statistics-area div:first-child {
+        padding: 0;
+    }
+    #statistics-chart div {
+        margin: 0 auto;
+    }
+    #statistics-title {
+        margin: 16px 0;
+        font-size: 28px;
+    }
+    #statistics-table-container {
+        padding: 0;
+        width: 100%;
+    }
+    #statistics-table {
+        height: auto;
+    }
+}
+@media (max-width: 382px) {
+    ul.nav > li > a {
+        padding: 12px 13px;
+    }
+    #statistics-title {
+        font-size: 22px;
     }
 }
