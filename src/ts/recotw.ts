@@ -719,9 +719,7 @@ module RecoTwExplorer {
             },
             is3D: true,
             legend: "none",
-            sliceVisibilityThreshold: 0.0099,
-            width: 400,
-            height: 400,
+            sliceVisibilityThreshold: 0.0099
         };
         private static chart: google.visualization.PieChart = null;
         private static current = 0;
@@ -1093,6 +1091,10 @@ module RecoTwExplorer {
             $("#polling-result").fadeIn();
         }
 
+        public static isMobile(): boolean {
+            return /iPhone|iPod|Android.*Mobile|Windows.*Phone/.test(navigator.userAgent);
+        }
+
         public static onTabSwitched(previous: Tab, current: Tab): void {
             switch (current) {
                 case Tab.Home:
@@ -1102,8 +1104,10 @@ module RecoTwExplorer {
                     }
                     break;
                 case Tab.Statistics:
-                    $("#statistics-filter-textbox").focus();
-                    window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
+                    if (!Controller.isMobile()) {
+                        $("#statistics-filter-textbox").focus();
+                        window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
+                    }
                     if (!Controller.statisticsRendered) {
                         View.renderStatistics();
                         Controller.statisticsRendered = true;
