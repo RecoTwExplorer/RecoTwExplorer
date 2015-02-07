@@ -87,16 +87,16 @@ class Tasks {
 
     private lint(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
-        .pipe($.tslint())
-        .pipe($.tslint.report('verbose'));
+                   .pipe($.tslint())
+                   .pipe($.tslint.report("verbose"));
     }
 
     private lint_noemit(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
-        .pipe($.tslint())
-        .pipe($.tslint.report('verbose'),{
-                emitError:false
-            });
+                   .pipe($.tslint())
+                   .pipe($.tslint.report("verbose"), {
+                       emitError: false
+                   });
     }
 
     private serve(): void {
@@ -107,7 +107,7 @@ class Tasks {
             files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
-        gulp.watch(["./src/ts/*.ts"], ["build","lint:noemit"]);
+        gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
     }
 
     private serve_dest(): void {
