@@ -278,14 +278,31 @@ module RecoTwExplorer {
      * Information which aggregates users.
      */
     class RecoTwStatistics {
+        public users: RecoTwUser[];
+        public entryLength: number;
+        public dataTable: google.visualization.DataTable;
+
         /**
          * Initializes a new instance of RecoTwStatistics class with parameters.
          *
-         * @param users All users in the database.
-         * @param entryLength A number of the entries.
-         * @param dataTable A data table for Google Chart.
+         * @param enumrable An object to enumerate the entries.
          */
-        public constructor(public users: RecoTwUser[], public entryLength: number, public dataTable: google.visualization.DataTable) { }
+        public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
+            this.users = enumerable.groupBy(x => x.target_id)
+                                   .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
+                                   .orderByDescending(x => x.count)
+                                   .thenBy(x => x.target_sn.toLowerCase())
+                                   .toArray();
+
+            this.entryLength = enumerable.count();
+            this.dataTable = new google.visualization.DataTable({
+                cols: [
+                    { type: "string", label: Resources.USERNAME },
+                    { type: "number", label: Resources.TWEETS_COUNT }
+                ],
+                rows: this.users.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
+            })
+        }
     }
 
     /**
@@ -347,19 +364,7 @@ module RecoTwExplorer {
          * Creates a statistics information by current entries.
          */
         public createStatistics(): RecoTwStatistics {
-            var data: RecoTwUser[] = this.enumerable.groupBy(x => x.target_id)
-                                                    .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
-                                                    .orderByDescending(x => x.count)
-                                                    .thenBy(x => x.target_sn.toLowerCase())
-                                                    .toArray();
-
-            return new RecoTwStatistics(data, this.enumerable.count(), new google.visualization.DataTable({
-                cols: [
-                    { type: "string", label: Resources.USERNAME },
-                    { type: "number", label: Resources.TWEETS_COUNT }
-                ],
-                rows: data.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
-            }));
+            return new RecoTwStatistics(this.enumerable);
         }
 
         /**
