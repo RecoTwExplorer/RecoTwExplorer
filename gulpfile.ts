@@ -70,7 +70,9 @@ class Tasks {
     }
 
     private fonts(): NodeJS.ReadWriteStream {
-        return gulp.src(["./lib/fonts/*"])
+        return gulp.src(["./bower_components/**/fonts/**"])
+                   .pipe($.flatten())
+                   .pipe(gulp.dest("./dev/fonts/"))
                    .pipe(gulp.dest("./dest/fonts/"))
                    .pipe($.size({ title: "fonts" }));
    }
