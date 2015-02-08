@@ -1,0 +1,24 @@
+{
+  "name": "RecoTwExplorer",
+  "version": "2.3.0",
+  "homepage": "https://github.com/RecoTwExplorer/RecoTwExplorer",
+  "authors": [
+    "Chitoku",
+    "Hinaloe",
+    "snvx"
+  ],
+  "description": "A web application to view Tweets recorded in RecoTw.",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-sass": "~3.3.3",
+    "fontawesome": "~4.3.0"
+  }
+}
