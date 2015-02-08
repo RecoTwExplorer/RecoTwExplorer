@@ -101,6 +101,10 @@ class Tasks {
                    });
     }
 
+    private bower(): NodeJS.ReadWriteStream {
+        return $.bower({cmd:'update'})
+    }
+
     private serve(): void {
         browserSync({
             notify: false,
@@ -123,6 +127,7 @@ class Tasks {
     public static register(): void {
         gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], "minify", cb));
         gulp.task("assets", ["copy", "images", "fonts"]);
+        gulp.task("full", ["bower"],cb => runSequence("default",cb));
 
         var instance = new Tasks();
         for (var task in instance) {

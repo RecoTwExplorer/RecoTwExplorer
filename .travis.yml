@@ -9,13 +9,12 @@ env:
     - GIT_AUTHOR_EMAIL=noreply@github.com
     - secure: "iLUUc/LmjRCozVzudYdTk2nkhonLZ5BL2acguMjGV5ds2Wh6rcy+qvqOE456MpU+sggXtJHwPD5A8cJZyo++iWLUSvOB9GBdi3tfXCsW6/VofhMU8sOzpmGNbJdnTUn6XF0CY06Dw9xVLIaasHl/Zc3Y5g/csJbB+ab+pv1Naaw="
 before_script:
-  - npm install -g gulp bower
-  - bower install
+  - npm install -g gulp
   - git clone --quiet -b gh-pages https://github.com/RecoTwExplorer/RecoTwExplorer dest
   - pushd dest
   - git checkout gh-pages
   - popd
-script: gulp
+script: gulp full
 after_success:
   - cd dest
   - git add -A
