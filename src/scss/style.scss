@@ -286,6 +286,9 @@ blockquote p {
     padding: 15px 15px 15px 20px;
     margin: -1px auto 0;
     display: none;
+    @media (max-width:767px) {
+        width:100%;
+    }
 }
 #main-area {
     margin: -40px auto 14px;
