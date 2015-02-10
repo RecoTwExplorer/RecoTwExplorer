@@ -85,6 +85,20 @@ class Tasks {
                    .pipe($.size());
     }
 
+    private lint(): NodeJS.ReadWriteStream {
+        return gulp.src("./src/ts/*.ts")
+                   .pipe($.tslint())
+                   .pipe($.tslint.report("verbose"));
+    }
+
+    private lint_noemit(): NodeJS.ReadWriteStream {
+        return gulp.src("./src/ts/*.ts")
+                   .pipe($.tslint())
+                   .pipe($.tslint.report("verbose"), {
+                       emitError: false
+                   });
+    }
+
     private serve(): void {
         browserSync({
             notify: false,
@@ -93,7 +107,7 @@ class Tasks {
             files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
-        gulp.watch(["./src/ts/*.ts"], ["build"]);
+        gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
     }
 
     private serve_dest(): void {
@@ -105,7 +119,7 @@ class Tasks {
     }
 
     public static register(): void {
-        gulp.task("default", ["clean"], cb => runSequence("styles", "build", ["html", "assets"], "minify", cb));
+        gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], "minify", cb));
         gulp.task("assets", ["copy", "images", "fonts"]);
 
         var instance = new Tasks();
