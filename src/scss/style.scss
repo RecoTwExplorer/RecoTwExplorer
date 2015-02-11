@@ -117,6 +117,10 @@ ul.nav>li>a {
     border-top: none;
     border-radius: 0;
 }
+.navbar-violet .dropdown-menu .divider {
+    margin: 4px 0 4px 34px;
+    background-color: #876e9f;
+}
 .navbar-violet .dropdown-menu>li>a {
     padding: 0;
 }

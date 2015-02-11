@@ -56,7 +56,11 @@ module RecoTwExplorer {
         /**
          * Entries are sorted in descending order.
          */
-        Descending
+        Descending,
+        /**
+         * Entries are shuffled.
+         */
+        Shuffle
     }
 
     /**
@@ -392,6 +396,8 @@ module RecoTwExplorer {
                 } else if (orderBy === OrderBy.CreatedDate) {
                     result.enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
                 }
+            } else if (order === Order.Shuffle) {
+                result.enumerable = result.enumerable.shuffle();
             }
             return result;
         }
@@ -988,9 +994,13 @@ module RecoTwExplorer {
             $("#clear-search-filter").click(() => {
                 Controller.setOptions(new Options(), false, true, true);
             });
-            $(".order-radio-box").change(() => {
+            $("[id^='order-by-']").change(() => {
                 Controller.options.order = Controller.getOrder();
                 Controller.options.orderBy = Controller.getOrderBy();
+                Controller.setOptions(Controller.options, true, false, false);
+            });
+            $("#order-shuffle").click(() => {
+                Controller.options.order = Controller.getOrder();
                 Controller.setOptions(Controller.options, true, false, false);
             });
             $("#search-form").submit($event => {
@@ -1048,11 +1058,11 @@ module RecoTwExplorer {
         }
 
         public static getOrder(): Order {
-            return $(".order-radio-box:checked").index(".order-radio-box") % 2 + 1;
+            return $(".order-radio-box:checked").data("order");
         }
 
         public static getOrderBy(): OrderBy {
-            return (($(".order-radio-box:checked").index(".order-radio-box") / 2) ^ 0) + 1;
+            return $(".order-radio-box:checked").data("order-by");
         }
 
         public static reload(): void {
