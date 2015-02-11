@@ -79,20 +79,25 @@
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li>
-                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order">
+                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order" data-order="1" data-order-by="1">
                         <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
                     </li>
                     <li>
-                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" checked>
+                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" data-order="2" data-order-by="1" checked>
                         <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
                     </li>
                     <li>
-                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order">
+                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order" data-order="1" data-order-by="2">
                         <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
                     </li>
                     <li>
-                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order">
+                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order" data-order="2" data-order-by="2">
                         <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
+                    </li>
+                    <li role="presentation" class="divider"></li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-shuffle" name="order" data-order="3" data-order-by="0">
+                        <a href="javascript:void(0);"><label for="order-shuffle"><span class="glyphicon glyphicon-ok"></span> シャッフル</label></a>
                     </li>
                 </ul>
             </div>
