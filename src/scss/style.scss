@@ -177,6 +177,8 @@ ul.nav>li>a {
 }
 #alerts {
     margin: auto;
+    z-index: 100;
+    position: fixed;
 }
 #loading-panel-container, #no-result-container {
     /* Force smartphones to enable its hardware acceleration */
