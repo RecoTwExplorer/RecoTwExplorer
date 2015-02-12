@@ -551,7 +551,8 @@ module RecoTwExplorer {
                 sinceID = +Enumerable.from(entries).lastOrDefault().id + 1;
             }
 
-            return $.ajax({
+            var deferred = $.Deferred<RecoTwEntry[]>();
+            $.ajax({
                 url: Model.RECOTW_GET_ALL_URL,
                 dataType: "json",
                 data: { since_id: sinceID }
@@ -562,8 +563,11 @@ module RecoTwExplorer {
                 if (data.length > 0) {
                     Model.entries.addRange(Enumerable.from(data));
                 }
-                return $.Deferred<RecoTwEntry[]>().resolve(data);
+                deferred.resolve(data);
+            }).fail((xhr: JQueryXHR, status: string, e: Error) => {
+                deferred.reject(xhr);
             });
+            return deferred.promise();
         }
 
         /**
@@ -574,7 +578,7 @@ module RecoTwExplorer {
         public static postEntriesFromInputs(inputs: string[]): JQueryPromise<RecoTwRecordResponse> {
             var deferred = $.Deferred<RecoTwRecordResponse>();
             var ids = inputs.map(x => Model.validateURLorID(x));
-            return $.ajax({
+            $.ajax({
                 url: this.RECOTW_POST_URL,
                 type: "POST",
                 data: {
@@ -586,15 +590,16 @@ module RecoTwExplorer {
                 },
                 dataType: "json"
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
-                return deferred.resolve(data);
+                deferred.resolve(data);
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
                 var response = <RecoTwErrorResponse>xhr.responseJSON;
                 if (!response || !response.errors) {
-                    return deferred.reject(Resources.POST_ERRORS.UNKNOWN_ERROR);
+                    deferred.reject(Resources.POST_ERRORS.UNKNOWN_ERROR);
                 } else {
-                    return deferred.reject(Resources.POST_ERRORS[response.errors[0].code] || response.errors[0].message);
+                    deferred.reject(Resources.POST_ERRORS[response.errors[0].code] || response.errors[0].message);
                 }
             });
+            return deferred.promise();
         }
 
         /**
