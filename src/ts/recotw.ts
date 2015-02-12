@@ -23,7 +23,7 @@
 
 module RecoTwExplorer {
     var APP_NAME = "RecoTw Explorer";
-    var APP_VERSION = "2.31";
+    var APP_VERSION = "2.32";
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
@@ -56,7 +56,11 @@ module RecoTwExplorer {
         /**
          * Entries are sorted in descending order.
          */
-        Descending
+        Descending,
+        /**
+         * Entries are shuffled.
+         */
+        Shuffle
     }
 
     /**
@@ -278,14 +282,31 @@ module RecoTwExplorer {
      * Information which aggregates users.
      */
     class RecoTwStatistics {
+        public users: RecoTwUser[];
+        public entryLength: number;
+        public dataTable: google.visualization.DataTable;
+
         /**
          * Initializes a new instance of RecoTwStatistics class with parameters.
          *
-         * @param users All users in the database.
-         * @param entryLength A number of the entries.
-         * @param dataTable A data table for Google Chart.
+         * @param enumrable An object to enumerate the entries.
          */
-        public constructor(public users: RecoTwUser[], public entryLength: number, public dataTable: google.visualization.DataTable) { }
+        public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
+            this.users = enumerable.groupBy(x => x.target_id)
+                                   .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
+                                   .orderByDescending(x => x.count)
+                                   .thenBy(x => x.target_sn.toLowerCase())
+                                   .toArray();
+
+            this.entryLength = enumerable.count();
+            this.dataTable = new google.visualization.DataTable({
+                cols: [
+                    { type: "string", label: Resources.USERNAME },
+                    { type: "number", label: Resources.TWEETS_COUNT }
+                ],
+                rows: this.users.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
+            })
+        }
     }
 
     /**
@@ -347,19 +368,7 @@ module RecoTwExplorer {
          * Creates a statistics information by current entries.
          */
         public createStatistics(): RecoTwStatistics {
-            var data: RecoTwUser[] = this.enumerable.groupBy(x => x.target_id)
-                                                    .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
-                                                    .orderByDescending(x => x.count)
-                                                    .thenBy(x => x.target_sn.toLowerCase())
-                                                    .toArray();
-
-            return new RecoTwStatistics(data, this.enumerable.count(), new google.visualization.DataTable({
-                cols: [
-                    { type: "string", label: Resources.USERNAME },
-                    { type: "number", label: Resources.TWEETS_COUNT }
-                ],
-                rows: data.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
-            }));
+            return new RecoTwStatistics(this.enumerable);
         }
 
         /**
@@ -387,6 +396,8 @@ module RecoTwExplorer {
                 } else if (orderBy === OrderBy.CreatedDate) {
                     result.enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
                 }
+            } else if (order === Order.Shuffle) {
+                result.enumerable = result.enumerable.shuffle();
             }
             return result;
         }
@@ -983,9 +994,13 @@ module RecoTwExplorer {
             $("#clear-search-filter").click(() => {
                 Controller.setOptions(new Options(), false, true, true);
             });
-            $(".order-radio-box").change(() => {
+            $("[id^='order-by-']").change(() => {
                 Controller.options.order = Controller.getOrder();
                 Controller.options.orderBy = Controller.getOrderBy();
+                Controller.setOptions(Controller.options, true, false, false);
+            });
+            $("#order-shuffle").click(() => {
+                Controller.options.order = Controller.getOrder();
                 Controller.setOptions(Controller.options, true, false, false);
             });
             $("#search-form").submit($event => {
@@ -1043,11 +1058,11 @@ module RecoTwExplorer {
         }
 
         public static getOrder(): Order {
-            return $(".order-radio-box:checked").index(".order-radio-box") % 2 + 1;
+            return $(".order-radio-box:checked").data("order");
         }
 
         public static getOrderBy(): OrderBy {
-            return (($(".order-radio-box:checked").index(".order-radio-box") / 2) ^ 0) + 1;
+            return $(".order-radio-box:checked").data("order-by");
         }
 
         public static reload(): void {
