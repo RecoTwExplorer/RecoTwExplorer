@@ -15,7 +15,7 @@ class Tasks {
     }
 
     private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
-        del(["./dest/**/*", "./dev/**/*", "!./dest/git"], { dot: true }, callback);
+        del(["./dest/**/*", "./dev/**/*", "!./dest/.git"], { dot: true }, callback);
     }
 
     private build(): NodeJS.ReadWriteStream {
