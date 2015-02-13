@@ -590,6 +590,11 @@ module RecoTwExplorer {
                 },
                 dataType: "json"
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
+                if (+data.id - 1 === +Model.entries.reset().getEnumerable().lastOrDefault().id) {
+                    delete data.result;
+                    Model.entries.addRange(Enumerable.make(data));
+                    Controller.onNewEntries();
+                }
                 deferred.resolve(data);
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
                 var response = <RecoTwErrorResponse>xhr.responseJSON;
@@ -1042,7 +1047,7 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
             });
             $("#reload-entries-link").click(() => {
-                $("#polling-result").fadeOut();
+                $("#polling-result, #post-result").fadeOut();
                 Controller.showNewStatuses();
             });
             $("#new-record-form").submit($event => {
