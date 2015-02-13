@@ -10,13 +10,16 @@ var runSequence = require("run-sequence");
 class Tasks {
     [id: string]: gulp.ITaskCallback;
 
-    private build(): void {
-        this.compile();
+    private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
+        return runSequence("styles", "lint", "build", ["html", "assets"], "minify", callback);
     }
 
-    private clean(): void {
-        del("./dest/**/*", void 0);
-        del("./dev/**/*", void 0);
+    private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
+        del(["./dest/*", "./dev/*", "!./dest/.git"], { dot: true }, callback);
+    }
+
+    private build(): NodeJS.ReadWriteStream {
+        return this.compile();
     }
 
     private compile(): NodeJS.ReadWriteStream {
@@ -119,13 +122,12 @@ class Tasks {
     }
 
     public static register(): void {
-        gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], "minify", cb));
-        gulp.task("assets", ["copy", "images", "fonts"]);
-
         var instance = new Tasks();
         for (var task in instance) {
             gulp.task((<string>task).replace("_", ":"), instance[task].bind(instance));
         }
+        gulp.task("default", ["clean"], instance.default.bind(instance));
+        gulp.task("assets", ["copy", "images", "fonts"]);
     }
 }
 
