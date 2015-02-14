@@ -992,7 +992,7 @@ module RecoTwExplorer {
                 Controller.onTabSwitched(getTab(<HTMLAnchorElement>$event.relatedTarget), getTab(<HTMLAnchorElement>$event.target));
             });
             $("#clear-search-filter").click(() => {
-                Controller.setOptions(new Options(), false, true, true);
+                Controller.setOptions(Options.fromKeywords("", Controller.getOrder(), Controller.getOrderBy()), false, true, true);
             });
             $("[id^='order-by-']").change(() => {
                 Controller.options.order = Controller.getOrder();
