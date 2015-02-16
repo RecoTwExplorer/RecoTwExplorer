@@ -180,6 +180,10 @@ ul.nav>li>a {
     z-index: 100;
     position: fixed;
     width: 100%;
+    >.container {
+        padding-left:10px;
+        padding-right:10px;
+    }
 }
 #loading-panel-container, #no-result-container {
     /* Force smartphones to enable its hardware acceleration */
