@@ -95,7 +95,8 @@ class Tasks {
     private lint(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
-                   .pipe($.tslint.report("verbose"));
+                   .pipe($.tslint.report("verbose"))
+                   .on("error", ErrorNotifier.getErrorListener("TypeScript Lint Error"));
     }
 
     private lint_noemit(): NodeJS.ReadWriteStream {

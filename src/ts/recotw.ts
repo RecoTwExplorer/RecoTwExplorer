@@ -22,6 +22,7 @@
  */
 
 module RecoTwExplorer {
+    "use strict";
     var APP_NAME = "RecoTw Explorer";
     var APP_VERSION = "2.33";
 
@@ -30,7 +31,6 @@ module RecoTwExplorer {
      * http://www.bootply.com/60873
      */
     $.fn.shake = function (shakes: number, distance: number, duration: number): JQuery {
-        "use strict";
         return (<JQuery>this).each(function () {
             var $this = $(this);
             for (var i = 0; i < shakes; i++) {
@@ -140,7 +140,6 @@ module RecoTwExplorer {
     class Options {
         /**
          * Initializes a new instance of a Options class with parameters.
-         *
          * @param usernames A username to filter entries by their target_sn values.
          * @param body A string to filter entries by their content values.
          * @param id The ID to filter entries by their target_id values.
@@ -218,7 +217,6 @@ module RecoTwExplorer {
 
         /**
          * Creates a new instance of a Options class with a query string.
-         *
          * @param queryString A query string.
          * @param order A value that specifies how to sort entries.
          * @param orderBy A key value by which to sort entries.
@@ -249,7 +247,6 @@ module RecoTwExplorer {
 
         /**
          * Creates a new instance of a Options class with a keywords string.
-         *
          * @param keywords A keywords string.
          * @param order A value that specifies how to sort entries.
          * @param orderBy A key value by which to sort entries.
@@ -288,7 +285,6 @@ module RecoTwExplorer {
 
         /**
          * Initializes a new instance of RecoTwStatistics class with parameters.
-         *
          * @param enumrable An object to enumerate the entries.
          */
         public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
@@ -305,7 +301,7 @@ module RecoTwExplorer {
                     { type: "number", label: Resources.TWEETS_COUNT }
                 ],
                 rows: this.users.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
-            })
+            });
         }
     }
 
@@ -315,7 +311,6 @@ module RecoTwExplorer {
     class RecoTwEntryCollection {
         /**
          * Initializes a new instance of RecoTwEntryCollection class with parameters.
-         *
          * @param elements All the entries.
          * @param userIDs A unique hash set of screen_names and user IDs.
          * @param enumerable An object to enumerate the entries.
@@ -329,7 +324,6 @@ module RecoTwExplorer {
 
         /**
          * Adds items to the entries.
-         *
          * @param items The items to add.
          */
         public addRange(items: linqjs.IEnumerable<RecoTwEntry>): void {
@@ -373,7 +367,6 @@ module RecoTwExplorer {
 
         /**
          * Returns a new instance which has the entries sorted when they are enumerated.
-         *
          * @param options Configurations to sort entries.
          */
         public sort(options: Options): RecoTwEntryCollection {
@@ -404,7 +397,6 @@ module RecoTwExplorer {
 
         /**
          * Returns a new instance which has the entries filtered when they are enumerated.
-         *
          * @param options Configurations to filter entries.
          */
         public filter(options: Options): RecoTwEntryCollection {
@@ -474,7 +466,6 @@ module RecoTwExplorer {
 
         /**
          * Gets an entry by Tweet ID.
-         *
          * @param id The ID of the Tweet.
          */
         public static getEntry(id: string): RecoTwEntry {
@@ -498,7 +489,6 @@ module RecoTwExplorer {
 
         /**
          * Gets a statistics information by current options. The data is cached if possible.
-         *
          * @param username A username to filter.
          */
         public static getStatistics(): RecoTwStatistics {
@@ -511,7 +501,6 @@ module RecoTwExplorer {
 
         /**
          * Sets options to determine how to enumerate entries.
-         *
          * @param options Configurations to enumerate entries.
          */
         public static setOptions(options: Options): void {
@@ -524,7 +513,6 @@ module RecoTwExplorer {
 
         /**
          * Validates an input as Tweet URL/ID or throws an error.
-         *
          * @param input A string to validate.
          */
         public static validateURLorID(input: string): string {
@@ -540,7 +528,6 @@ module RecoTwExplorer {
 
         /**
          * Retrieves new entries from the remote.
-         *
          * @param entries The entries to initialize with.
          */
         public static getLatestEntries(entries?: RecoTwEntry[]): JQueryPromise<RecoTwEntry[]> {
@@ -572,7 +559,6 @@ module RecoTwExplorer {
 
         /**
          * Registers a Tweet to RecoTw as an entry.
-         *
          * @param input A URL or ID of a Tweet to register.
          */
         public static postEntriesFromInputs(inputs: string[]): JQueryPromise<RecoTwRecordResponse> {
@@ -582,11 +568,11 @@ module RecoTwExplorer {
                 url: this.RECOTW_POST_URL,
                 type: "POST",
                 data: {
-                    id: ids[0],
+                    id: ids[0]
                     /**
                      * [FUTURE] The following code is to send comma-separated ids for multiple entries registration.
                      */
-                    //ids: ids.join(",")
+                    // ids: ids.join(",")
                 },
                 dataType: "json"
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
@@ -609,19 +595,16 @@ module RecoTwExplorer {
 
         /**
          * Creates a Twitter status URL by the ID.
-         *
          * @param id The ID of the Tweet.
          */
         public static createStatusURL(id: string): string;
         /**
          * Creates a Twitter status URL from an entry.
-         *
          * @param entry An entry from which the URL to be created.
          */
         public static createStatusURL(entry: RecoTwEntry): string;
         /**
          * Creates a Twitter status URL.
-         *
          * @param item An object that contains the ID of the Tweet or itself.
          */
         public static createStatusURL(item: string | RecoTwEntry): string {
@@ -638,19 +621,16 @@ module RecoTwExplorer {
 
         /**
          * Creates a Twitter user URL by the screen_name.
-         *
          * @param screenName The screen_name of the user.
          */
         public static createUserURL(screenName: string): string;
         /**
          * Creates a Twitter user URL from an entry.
-         *
          * @param entry An entry from which the URL to be created.
          */
         public static createUserURL(entry: RecoTwEntry): string;
         /**
          * Creates a Twitter user URL.
-         *
          * @param item An object that contains the screen_name of the user, or itself.
          */
         public static createUserURL(item: string | RecoTwEntry): string {
@@ -667,19 +647,16 @@ module RecoTwExplorer {
 
         /**
          * Creates a profile image URL by the ID.
-         *
          * @param id The ID of the user.
          */
         public static createProfileImageURL(id: string): string;
         /**
          * Creates a profile image URL from an entry.
-         *
          * @param entry An entry from which the URL to be created.
          */
         public static createProfileImageURL(entry: RecoTwEntry): string;
         /**
          * Creates a profile image URL.
-         *
          * @param item An object that contains the screen_name of the user or itself.
          */
         public static createProfileImageURL(item: string | RecoTwEntry): string {
@@ -698,7 +675,6 @@ module RecoTwExplorer {
 
         /**
          * Sets a search query string from options.
-         *
          * @param options Options to create a search query.
          */
         public static setSearchQueryString(options: Options): void {
@@ -777,7 +753,7 @@ module RecoTwExplorer {
                 case Tab.Home:
                     return $("a[href='#home-tab']").tab("show");
                 case Tab.Statistics:
-                    return $("a[href='#statistics-tab]").tab("show");
+                    return $("a[href='#statistics-tab']").tab("show");
                 default:
                     return null;
             }
@@ -809,7 +785,7 @@ module RecoTwExplorer {
                 $("#no-result-container").fadeIn();
                 return;
             }
-            
+
             View.createTwitterCB(() => {
                 entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
                     twttr.widgets.createTweet(entry.tweet_id, element, option).then(View.setTweetWidgetStyle.bind(this, ++View.widgetID, entry));
@@ -1012,7 +988,7 @@ module RecoTwExplorer {
 
             $(window).unload(Model.save);
             $(window).bottom({ proximity: 0.05 });
-            $(window).on("bottom",() => {
+            $(window).on("bottom", () => {
                 if (View.getCurrentTab() === Tab.Home) {
                     Controller.onPageBottom();
                 }
@@ -1048,7 +1024,7 @@ module RecoTwExplorer {
                     $elm.css({ cssText: "display: block !important" });
                 }
             });
-            $(window).on("popstate",() => {
+            $(window).on("popstate", () => {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
             });
             $("#reload-entries-link").click(() => {
@@ -1059,10 +1035,10 @@ module RecoTwExplorer {
                 $event.preventDefault();
                 View.postEntries();
             });
-            $("#new-record-modal").on("shown.bs.modal",() => {
+            $("#new-record-modal").on("shown.bs.modal", () => {
                 $("#new-record-form .url-box").focus();
             });
-            $("#new-record-modal").on("hidden.bs.modal",() => {
+            $("#new-record-modal").on("hidden.bs.modal", () => {
                 $("#new-record-form .modal-body").empty().html(Resources.URL_INPUT_AREA);
             });
             $("#post-result-close").click(() => {
@@ -1196,12 +1172,12 @@ module RecoTwExplorer {
             /**
              * [FUTURE] The following code is to increase text boxes for multiple entries registration.
              */
-            //if (inputs[inputs.length - 1] !== "") {
-            //    $("#new-record-form .modal-body").append(Resources.URL_INPUT_AREA);
-            //} else if (inputs.length >= 2 && inputs[inputs.length - 2] === "") {
-            //    $("#new-record-form .url-input-area").eq(inputs.length - 1).remove();
-            //    $(".url-box").last().focus();
-            //}
+            // if (inputs[inputs.length - 1] !== "") {
+            //     $("#new-record-form .modal-body").append(Resources.URL_INPUT_AREA);
+            // } else if (inputs.length >= 2 && inputs[inputs.length - 2] === "") {
+            //     $("#new-record-form .url-input-area").eq(inputs.length - 1).remove();
+            //     $(".url-box").last().focus();
+            // }
         }
 
         public static setSearchFilterByUsername(username: string) {
