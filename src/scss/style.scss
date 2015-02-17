@@ -1,4 +1,11 @@
-﻿body {
+﻿$icon-font-path:"../fonts/";
+
+
+@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "../../bower_components/fontawesome/scss/font-awesome";
+
+
+body {
     margin-top: 70px;
     margin-bottom: 55px;
     background: #efefef;
