@@ -19,13 +19,16 @@ class ErrorNotifier {
 class Tasks {
     [id: string]: gulp.ITaskCallback;
 
-    private build(): void {
-        this.compile();
+    private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
+        return runSequence("styles", "lint", "build", ["html", "assets"], "minify", callback);
     }
 
-    private clean(): void {
-        del("./dest/**/*", void 0);
-        del("./dev/**/*", void 0);
+    private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
+        del(["./dest/*", "./dev/*", "!./dest/.git"], { dot: true }, callback);
+    }
+
+    private build(): NodeJS.ReadWriteStream {
+        return this.compile();
     }
 
     private compile(): NodeJS.ReadWriteStream {
@@ -80,7 +83,9 @@ class Tasks {
     }
 
     private fonts(): NodeJS.ReadWriteStream {
-        return gulp.src(["./lib/fonts/*"])
+        return gulp.src(["./bower_components/**/fonts/**"])
+                   .pipe($.flatten())
+                   .pipe(gulp.dest("./dev/fonts/"))
                    .pipe(gulp.dest("./dest/fonts/"))
                    .pipe($.size({ title: "fonts" }));
    }
@@ -95,6 +100,24 @@ class Tasks {
                    .pipe($.size());
     }
 
+    private lint(): NodeJS.ReadWriteStream {
+        return gulp.src("./src/ts/*.ts")
+                   .pipe($.tslint())
+                   .pipe($.tslint.report("verbose"));
+    }
+
+    private lint_noemit(): NodeJS.ReadWriteStream {
+        return gulp.src("./src/ts/*.ts")
+                   .pipe($.tslint())
+                   .pipe($.tslint.report("verbose"), {
+                       emitError: false
+                   });
+    }
+
+    private bower(): NodeJS.ReadWriteStream {
+        return $.bower({cmd:'update'})
+    }
+
     private serve(): void {
         browserSync({
             notify: false,
@@ -103,7 +126,7 @@ class Tasks {
             files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
-        gulp.watch(["./src/ts/*.ts"], ["build"]);
+        gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
     }
 
     private serve_dest(): void {
@@ -115,8 +138,9 @@ class Tasks {
     }
 
     public static register(): void {
-        gulp.task("default", ["clean"], cb => runSequence("styles", "build", ["html", "assets"], "minify", cb));
+        gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], "minify", cb));
         gulp.task("assets", ["copy", "images", "fonts"]);
+        gulp.task("full", ["bower"], cb => runSequence("default", cb));
 
         var instance = new Tasks();
         for (var task in instance) {

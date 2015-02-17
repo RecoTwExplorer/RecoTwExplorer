@@ -102,3 +102,7 @@ interface JQuery {
 interface JQueryBottomOptions {
     proximity?: number;
 }
+
+interface Navigator {
+    standalone: boolean;
+}
