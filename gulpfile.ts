@@ -131,13 +131,13 @@ class Tasks {
 
     public static register(): void {
         var instance = new Tasks();
-        gulp.task("default", ["clean"], instance.default);
-        gulp.task("assets", ["copy", "images", "fonts"]);
-        gulp.task("full", ["bower"], instance.default);
-
         for (var task in instance) {
             gulp.task((<string>task).replace("_", ":"), instance[task].bind(instance));
         }
+
+        gulp.task("default", ["clean"], instance.default);
+        gulp.task("assets", ["copy", "images", "fonts"]);
+        gulp.task("full", ["bower"], instance.default);
     }
 }
 
