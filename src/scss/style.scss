@@ -13,6 +13,9 @@ body {
     -webkit-text-size-adjust: 100%;
     /* Turns off the new scrollbars behavior since IE 10 */
     -ms-overflow-style: scrollbar;
+    &.standalone {
+        margin-top:90px;
+    }
 }
 a {
     color: #9662a4;
@@ -498,13 +501,14 @@ blockquote p {
     #main-area {
         margin-top: -18px;
         padding: 10px;
-        body.standalone & {
-            margin-top: -76px + 20px;
+        &.main-search-active {
+            margin-top: 80px;
         }
     }
     #alerts .container {
         margin-top: -18px;
     }
+
     blockquote, .twitter-tweet-rendered {
         margin: 12px auto !important;
     }

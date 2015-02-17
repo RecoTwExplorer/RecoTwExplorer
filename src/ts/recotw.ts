@@ -1016,11 +1016,14 @@ module RecoTwExplorer {
             $("#search-form-toggle-button").click(function () {
                 var $this = $(this);
                 var $elm = $("#search-form");
+                var $main = $("#main-area");
                 if ($this.hasClass("active")) {
                     $this.removeClass("active");
+                    $main.removeClass("main-search-active");
                     $elm.css({ display: "" });
                 } else {
                     $this.addClass("active");
+                    $main.addClass("main-search-active");
                     $elm.css({ cssText: "display: block !important" });
                 }
             });
