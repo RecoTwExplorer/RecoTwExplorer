@@ -107,7 +107,7 @@ class Tasks {
     }
 
     private bower(): NodeJS.ReadWriteStream {
-        return $.bower({cmd:'update'})
+        return $.bower({ cmd: "update" });
     }
 
     private serve(): void {
@@ -130,11 +130,11 @@ class Tasks {
     }
 
     public static register(): void {
-        gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], cb));
-        gulp.task("assets", ["copy", "images", "fonts"]);
-        gulp.task("full", ["bower"], cb => runSequence("default", cb));
-
         var instance = new Tasks();
+        gulp.task("default", ["clean"], instance.default);
+        gulp.task("assets", ["copy", "images", "fonts"]);
+        gulp.task("full", ["bower"], instance.default);
+
         for (var task in instance) {
             gulp.task((<string>task).replace("_", ":"), instance[task].bind(instance));
         }
