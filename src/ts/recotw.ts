@@ -802,23 +802,28 @@ module RecoTwExplorer {
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
 
+            var element = $("#main-area")[0];
+            var option = { lang: "ja" };
             var entries = Model.getEntries();
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
                 return;
             }
-            entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
-                View.createTwitterCB(() => {
-                    twttr.widgets.createTweet(entry.tweet_id, $("#main-area")[0], { lang: "ja" }).then(((widgetID: number, entry: RecoTwEntry, element: Element) => {
-                        if (!element) {
-                            View.showStatusLoadFailedMessage(widgetID, entry);
-                        } else {
-                            $(element).contents().find(".standalone-tweet").css({ borderRadius: 0 });
-                        }
-                    }).bind(this, ++View.widgetID, entry));
+            
+            View.createTwitterCB(() => {
+                entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
+                    twttr.widgets.createTweet(entry.tweet_id, element, option).then(View.setTweetWidgetStyle.bind(this, ++View.widgetID, entry));
                 });
+                View.current += View.TWEETS_COUNT;
             });
-            View.current += View.TWEETS_COUNT;
+        }
+
+        private static setTweetWidgetStyle(widgetID: number, entry: RecoTwEntry, element: Element) {
+            if (!element) {
+                View.showStatusLoadFailedMessage(widgetID, entry);
+            } else {
+                $(element).contents().find(".standalone-tweet, .multi-photo .crop-media-box").css({ borderRadius: 0 });
+            }
         }
 
         public static renderStatistics(username?: string): void {
