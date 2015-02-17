@@ -127,7 +127,7 @@ class Tasks {
     public static register(): void {
         gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], "minify", cb));
         gulp.task("assets", ["copy", "images", "fonts"]);
-        gulp.task("full", ["bower"],cb => runSequence("default",cb));
+        gulp.task("full", ["bower"], cb => runSequence("default", cb));
 
         var instance = new Tasks();
         for (var task in instance) {
