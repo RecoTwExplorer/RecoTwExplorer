@@ -454,18 +454,22 @@ module RecoTwExplorer {
         private static pollingID: number = null;
 
         /**
-         * Initializes the model, starts to download the entries.
+         * Initializes the model, loads the entries from localStorage, and starts to download new entries.
          */
         public static init(): void {
-            $.ajax({
-                url: Model.RECOTW_GET_ALL_URL,
-                dataType: "json"
-            }).done((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
-                Model.entries = new RecoTwEntryCollection(data);
-                Controller.onEntriesLoaded();
-            }).fail((xhr: JQueryXHR, status: string, e: Error) => {
-                Controller.onEntriesLoadFailed();
-            });
+            var entries: RecoTwEntry[] = [];
+            var item = localStorage.getItem("entries");
+            if (item) {
+                entries = JSON.parse(item);
+            }
+            Model.getLatestEntries(entries).then(Controller.onEntriesLoaded, Controller.onEntriesLoadFailed);
+        }
+
+        /**
+         * Save all the entries to localStorage.
+         */
+        public static save(): void {
+            localStorage.setItem("entries", JSON.stringify(Model.entries.reset().getEnumerable().toArray()));
         }
 
         /**
@@ -535,13 +539,44 @@ module RecoTwExplorer {
         }
 
         /**
+         * Retrieves new entries from the remote.
+         *
+         * @param entries The entries to initialize with.
+         */
+        public static getLatestEntries(entries?: RecoTwEntry[]): JQueryPromise<RecoTwEntry[]> {
+            var sinceID: number;
+            if (Model.entries !== null) {
+                sinceID = +Model.entries.reset().getEnumerable().lastOrDefault().id + 1;
+            } else if (entries && entries.length > 0) {
+                sinceID = +Enumerable.from(entries).lastOrDefault().id + 1;
+            }
+
+            var deferred = $.Deferred<RecoTwEntry[]>();
+            $.ajax({
+                url: Model.RECOTW_GET_ALL_URL,
+                dataType: "json",
+                data: { since_id: sinceID }
+            }).done((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
+                if (Model.entries === null) {
+                    Model.entries = new RecoTwEntryCollection(entries);
+                }
+                if (data.length > 0) {
+                    Model.entries.addRange(Enumerable.from(data));
+                }
+                deferred.resolve(data);
+            }).fail((xhr: JQueryXHR, status: string, e: Error) => {
+                deferred.reject(xhr);
+            });
+            return deferred.promise();
+        }
+
+        /**
          * Registers a Tweet to RecoTw as an entry.
          *
          * @param input A URL or ID of a Tweet to register.
-         * @param success A callback function which would be invoked when the registration successes.
-         * @param error A callback function which would be invoked when the registration fails.
          */
-        public static postEntriesFromInputs(inputs: string[], success: (response: RecoTwRecordResponse) => void, error: (message: string) => void): void {
+        public static postEntriesFromInputs(inputs: string[]): JQueryPromise<RecoTwRecordResponse> {
+            var deferred = $.Deferred<RecoTwRecordResponse>();
             var ids = inputs.map(x => Model.validateURLorID(x));
             $.ajax({
                 url: this.RECOTW_POST_URL,
@@ -555,15 +590,21 @@ module RecoTwExplorer {
                 },
                 dataType: "json"
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
-                success(data);
+                if (+data.id - 1 === +Model.entries.reset().getEnumerable().lastOrDefault().id) {
+                    delete data.result;
+                    Model.entries.addRange(Enumerable.make(data));
+                    Controller.onNewEntries();
+                }
+                deferred.resolve(data);
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
                 var response = <RecoTwErrorResponse>xhr.responseJSON;
                 if (!response || !response.errors) {
-                    error(Resources.POST_ERRORS.UNKNOWN_ERROR);
+                    deferred.reject(Resources.POST_ERRORS.UNKNOWN_ERROR);
                 } else {
-                    error(Resources.POST_ERRORS[response.errors[0].code] || response.errors[0].message);
+                    deferred.reject(Resources.POST_ERRORS[response.errors[0].code] || response.errors[0].message);
                 }
             });
+            return deferred.promise();
         }
 
         /**
@@ -675,17 +716,11 @@ module RecoTwExplorer {
             if (Model.pollingID !== null) {
                 return;
             }
-            Model.pollingID = window.setInterval(() => {
-                $.ajax({
-                    url: Model.RECOTW_COUNT_URL,
-                    type: "GET",
-                    dataType: "jsonp"
-                }).done((data: RecoTwCountResponse, status: string, xhr: JQueryXHR) => {
-                    if (data.count > Model.entries.getAllLength()) {
-                        Model.downloadLatestEntries().then(() => Controller.onNewEntries());
-                    }
-                });
-            }, Model.POLLING_INTERVAL);
+            Model.pollingID = window.setInterval(() => Model.getLatestEntries().then(data => {
+                if (data.length > 0) {
+                    Controller.onNewEntries();
+                }
+            }), Model.POLLING_INTERVAL);
         }
 
         /**
@@ -694,17 +729,6 @@ module RecoTwExplorer {
         public static stopPolling(): void {
             window.clearInterval(Model.pollingID);
             Model.pollingID = null;
-        }
-
-        private static downloadLatestEntries(): JQueryPromise<void> {
-            return $.ajax({
-                url: Model.RECOTW_GET_ALL_URL,
-                dataType: "jsonp"
-            }).done((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
-                var dfd = $.Deferred<void>();
-                dfd.resolve(Model.entries.addRange(Enumerable.from(data).skip(Model.entries.getAllLength())));
-                return dfd;
-            });
         }
     }
 
@@ -873,7 +897,7 @@ module RecoTwExplorer {
         public static postEntries(): void {
             var inputs: string[] = $("#new-record-modal input[type='text']").map(function () { return $(this).val(); }).get();
             try {
-                Model.postEntriesFromInputs(inputs.filter(x => x.length > 0), View.showPostSuccessMessage, View.showPostFailedMessage);
+                Model.postEntriesFromInputs(inputs.filter(x => x.length > 0)).then(View.showPostSuccessMessage, View.showPostFailedMessage);
                 $("#new-record-modal").modal("hide");
             } catch (e) {
                 $("#inputPostStatus").val("").focus();
@@ -981,6 +1005,7 @@ module RecoTwExplorer {
 
             Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
 
+            $(window).unload(Model.save);
             $(window).bottom({ proximity: 0.05 });
             $(window).on("bottom",() => {
                 if (View.getCurrentTab() === Tab.Home) {
@@ -1022,7 +1047,7 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
             });
             $("#reload-entries-link").click(() => {
-                $("#polling-result").fadeOut();
+                $("#polling-result, #post-result").fadeOut();
                 Controller.showNewStatuses();
             });
             $("#new-record-form").submit($event => {
