@@ -108,20 +108,22 @@
         </nav>
         <div id="page-main">
             <div id="alerts">
-                <div id="post-result" class="alert alert-success">
-                    <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                    <div id="post-success" class="alert-body">
-                        <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
+                <div class="container">
+                    <div id="post-result" class="alert alert-success">
+                        <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
+                        <div id="post-success" class="alert-body">
+                            <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
+                        </div>
+                        <div id="post-failed" class="alert-body">
+                            <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
+                        </div>
                     </div>
-                    <div id="post-failed" class="alert-body">
-                        <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
-                    </div>
-                </div>
-                <div id="polling-result" class="alert alert-info">
-                    <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                    <div class="alert-body">
-                        <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
-                        <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
+                    <div id="polling-result" class="alert alert-info">
+                        <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
+                        <div class="alert-body">
+                            <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
+                            <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
+                        </div>
                     </div>
                 </div>
             </div>
