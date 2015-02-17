@@ -180,9 +180,14 @@ ul.nav>li>a {
     z-index: 100;
     position: fixed;
     width: 100%;
+    top: 90px;
+    @media (max-width:767px) {
+        top: 73px;
+    }
     >.container {
         padding-left:10px;
         padding-right:10px;
+        max-width:99%;
     }
 }
 #loading-panel-container, #no-result-container {
@@ -299,6 +304,7 @@ blockquote p {
     display: none;
     @media (max-width:767px) {
         width:100%;
+        max-width:640px;
     }
 }
 #main-area {
