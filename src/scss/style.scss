@@ -124,6 +124,10 @@ ul.nav>li>a {
     border-top: none;
     border-radius: 0;
 }
+.navbar-violet .dropdown-menu .divider {
+    margin: 4px 0 4px 34px;
+    background-color: #876e9f;
+}
 .navbar-violet .dropdown-menu>li>a {
     padding: 0;
 }
@@ -333,6 +337,8 @@ blockquote p {
 }
 #statistics-chart {
     margin-top: 10px;
+    width: 400px;
+    height: 400px;
 }
 #statistics-chart svg>g {
     /* Change cursors of slices in the Google Pie Chart */
@@ -511,8 +517,12 @@ blockquote p {
     #statistics-area div:first-child {
         padding: 0;
     }
-    #statistics-chart div {
-        margin: 0 auto;
+    #statistics-chart {
+        width: 100%;
+        height: auto;
+        & > div {
+            margin: 0 auto;
+        }
     }
     #statistics-title {
         margin: 16px 0;
@@ -521,6 +531,7 @@ blockquote p {
     #statistics-table-container {
         padding: 0;
         width: 100%;
+        margin-bottom: 18px;
     }
     #statistics-table {
         height: auto;

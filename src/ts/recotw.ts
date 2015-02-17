@@ -23,7 +23,7 @@
 
 module RecoTwExplorer {
     var APP_NAME = "RecoTw Explorer";
-    var APP_VERSION = "2.30";
+    var APP_VERSION = "2.32";
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
@@ -56,7 +56,11 @@ module RecoTwExplorer {
         /**
          * Entries are sorted in descending order.
          */
-        Descending
+        Descending,
+        /**
+         * Entries are shuffled.
+         */
+        Shuffle
     }
 
     /**
@@ -278,14 +282,31 @@ module RecoTwExplorer {
      * Information which aggregates users.
      */
     class RecoTwStatistics {
+        public users: RecoTwUser[];
+        public entryLength: number;
+        public dataTable: google.visualization.DataTable;
+
         /**
          * Initializes a new instance of RecoTwStatistics class with parameters.
          *
-         * @param users All users in the database.
-         * @param entryLength A number of the entries.
-         * @param dataTable A data table for Google Chart.
+         * @param enumrable An object to enumerate the entries.
          */
-        public constructor(public users: RecoTwUser[], public entryLength: number, public dataTable: google.visualization.DataTable) { }
+        public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
+            this.users = enumerable.groupBy(x => x.target_id)
+                                   .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
+                                   .orderByDescending(x => x.count)
+                                   .thenBy(x => x.target_sn.toLowerCase())
+                                   .toArray();
+
+            this.entryLength = enumerable.count();
+            this.dataTable = new google.visualization.DataTable({
+                cols: [
+                    { type: "string", label: Resources.USERNAME },
+                    { type: "number", label: Resources.TWEETS_COUNT }
+                ],
+                rows: this.users.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
+            })
+        }
     }
 
     /**
@@ -347,19 +368,7 @@ module RecoTwExplorer {
          * Creates a statistics information by current entries.
          */
         public createStatistics(): RecoTwStatistics {
-            var data: RecoTwUser[] = this.enumerable.groupBy(x => x.target_id)
-                                                    .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
-                                                    .orderByDescending(x => x.count)
-                                                    .thenBy(x => x.target_sn.toLowerCase())
-                                                    .toArray();
-
-            return new RecoTwStatistics(data, this.enumerable.count(), new google.visualization.DataTable({
-                cols: [
-                    { type: "string", label: Resources.USERNAME },
-                    { type: "number", label: Resources.TWEETS_COUNT }
-                ],
-                rows: data.map(x => ({ c: [{ v: x.target_sn }, { v: x.count }] }))
-            }));
+            return new RecoTwStatistics(this.enumerable);
         }
 
         /**
@@ -387,6 +396,8 @@ module RecoTwExplorer {
                 } else if (orderBy === OrderBy.CreatedDate) {
                     result.enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
                 }
+            } else if (order === Order.Shuffle) {
+                result.enumerable = result.enumerable.shuffle();
             }
             return result;
         }
@@ -572,13 +583,12 @@ module RecoTwExplorer {
          *
          * @param item An object that contains the ID of the Tweet or itself.
          */
-        public static createStatusURL(item: any): string {
+        public static createStatusURL(item: string | RecoTwEntry): string {
             if (typeof item === "string") {
                 return String.format(Model.TWITTER_STATUS_URL, item);
             } else {
-                var entry: RecoTwEntry = item;
-                if (entry.target_sn !== void 0 && entry.tweet_id !== void 0) {
-                    return String.format(Model.TWITTER_STATUS_URL.replace(/show/, entry.target_sn), entry.tweet_id);
+                if (item.target_sn !== void 0 && item.tweet_id !== void 0) {
+                    return String.format(Model.TWITTER_STATUS_URL.replace(/show/, item.target_sn), item.tweet_id);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_STATUS_URL);
                 }
@@ -602,13 +612,12 @@ module RecoTwExplorer {
          *
          * @param item An object that contains the screen_name of the user, or itself.
          */
-        public static createUserURL(item: any): string {
+        public static createUserURL(item: string | RecoTwEntry): string {
             if (typeof item === "string") {
                 return String.format(Model.TWITTER_USER_URL, item);
             } else {
-                var entry: RecoTwEntry = item;
-                if (entry.target_sn !== void 0) {
-                    return String.format(Model.TWITTER_USER_URL, entry.target_sn);
+                if (item.target_sn !== void 0) {
+                    return String.format(Model.TWITTER_USER_URL, item.target_sn);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_USER_URL);
                 }
@@ -632,15 +641,14 @@ module RecoTwExplorer {
          *
          * @param item An object that contains the screen_name of the user or itself.
          */
-        public static createProfileImageURL(item: any): string {
+        public static createProfileImageURL(item: string | RecoTwEntry): string {
             if (item === null) {
                 return Model.ALTERNATIVE_ICON_URL;
             } else if (typeof item === "string") {
                 return String.format(Model.TWITTER_PROFILE_IMAGE_URL, item);
             } else {
-                var entry: RecoTwEntry = item;
-                if (entry.target_sn !== void 0) {
-                    return String.format(Model.TWITTER_PROFILE_IMAGE_URL, entry.target_sn);
+                if (item.target_sn !== void 0) {
+                    return String.format(Model.TWITTER_PROFILE_IMAGE_URL, item.target_sn);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_PROFILE_IMAGE_URL);
                 }
@@ -719,9 +727,7 @@ module RecoTwExplorer {
             },
             is3D: true,
             legend: "none",
-            sliceVisibilityThreshold: 0.0099,
-            width: 400,
-            height: 400,
+            sliceVisibilityThreshold: 0.0099
         };
         private static chart: google.visualization.PieChart = null;
         private static current = 0;
@@ -988,9 +994,13 @@ module RecoTwExplorer {
             $("#clear-search-filter").click(() => {
                 Controller.setOptions(new Options(), false, true, true);
             });
-            $(".order-radio-box").change(() => {
+            $("[id^='order-by-']").change(() => {
                 Controller.options.order = Controller.getOrder();
                 Controller.options.orderBy = Controller.getOrderBy();
+                Controller.setOptions(Controller.options, true, false, false);
+            });
+            $("#order-shuffle").click(() => {
+                Controller.options.order = Controller.getOrder();
                 Controller.setOptions(Controller.options, true, false, false);
             });
             $("#search-form").submit($event => {
@@ -1048,11 +1058,11 @@ module RecoTwExplorer {
         }
 
         public static getOrder(): Order {
-            return $(".order-radio-box:checked").index(".order-radio-box") % 2 + 1;
+            return $(".order-radio-box:checked").data("order");
         }
 
         public static getOrderBy(): OrderBy {
-            return (($(".order-radio-box:checked").index(".order-radio-box") / 2) ^ 0) + 1;
+            return $(".order-radio-box:checked").data("order-by");
         }
 
         public static reload(): void {
@@ -1093,6 +1103,10 @@ module RecoTwExplorer {
             $("#polling-result").fadeIn();
         }
 
+        public static isMobile(): boolean {
+            return /iPhone|iPod|Android.*Mobile|Windows.*Phone/.test(navigator.userAgent);
+        }
+
         public static onTabSwitched(previous: Tab, current: Tab): void {
             switch (current) {
                 case Tab.Home:
@@ -1102,8 +1116,10 @@ module RecoTwExplorer {
                     }
                     break;
                 case Tab.Statistics:
-                    $("#statistics-filter-textbox").focus();
-                    window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
+                    if (!Controller.isMobile()) {
+                        $("#statistics-filter-textbox").focus();
+                        window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
+                    }
                     if (!Controller.statisticsRendered) {
                         View.renderStatistics();
                         Controller.statisticsRendered = true;

@@ -10,13 +10,16 @@ var runSequence = require("run-sequence");
 class Tasks {
     [id: string]: gulp.ITaskCallback;
 
-    private build(): void {
-        this.compile();
+    private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
+        return runSequence("styles", "lint", "build", ["html", "assets"], "minify", callback);
     }
 
-    private clean(): void {
-        del("./dest/**/*", void 0);
-        del("./dev/**/*", void 0);
+    private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
+        del(["./dest/*", "./dev/*", "!./dest/.git"], { dot: true }, callback);
+    }
+
+    private build(): NodeJS.ReadWriteStream {
+        return this.compile();
     }
 
     private compile(): NodeJS.ReadWriteStream {
