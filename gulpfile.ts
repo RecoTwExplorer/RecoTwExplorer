@@ -20,7 +20,7 @@ class Tasks {
     [id: string]: gulp.ITaskCallback;
 
     private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
-        return runSequence("styles", "lint", "build", ["html", "assets"], "minify", callback);
+        return runSequence("styles", "lint", "build", ["html", "assets"], callback);
     }
 
     private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
@@ -46,19 +46,11 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private minify(): NodeJS.ReadWriteStream {
-        return gulp.src(["./dev/js/*.js", "!./dev/js/*.min.js"])
-                   .pipe($.uglify({ preserveComments: "some" }))
-                   .pipe($.rename({ extname: ".min.js" }))
-                   .pipe(gulp.dest("./dest/js/"))
-                   .pipe($.size());
-    }
-
     private html(): NodeJS.ReadWriteStream {
         var assets = $.useref.assets();
         return gulp.src(["./index.html"])
                    .pipe(assets)
-                   .pipe($.if("*.js", $.uglify()))
+                   .pipe($.if("*.js", $.uglify({ preserveComments: "some" })))
                    .pipe($.if("*.css", $.csso()))
                    .pipe(assets.restore())
                    .pipe($.useref())
@@ -138,7 +130,7 @@ class Tasks {
     }
 
     public static register(): void {
-        gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], "minify", cb));
+        gulp.task("default", ["clean"], cb => runSequence("styles", "lint", "build", ["html", "assets"], cb));
         gulp.task("assets", ["copy", "images", "fonts"]);
         gulp.task("full", ["bower"], cb => runSequence("default", cb));
 
