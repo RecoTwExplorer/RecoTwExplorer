@@ -115,6 +115,11 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
+            ghostMode: {
+                clicks: true,
+                forms: false,
+                scroll: true
+            },
             server: ["."],
             files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
@@ -126,7 +131,12 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
-            server: "dest"
+            server: "dest",
+            ghostMode: {
+                clicks: true,
+                forms: false,
+                scroll: true
+            }
         });
     }
 
