@@ -501,12 +501,15 @@ blockquote p {
     #main-area {
         margin-top: -18px;
         padding: 10px;
-        &.main-search-active {
+        .main-search-active & {
             margin-top: 80px;
         }
     }
     #alerts .container {
         margin-top: -18px;
+        .main-search-active & {
+             margin-top: 31px;
+        }
     }
 
     blockquote, .twitter-tweet-rendered {

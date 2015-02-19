@@ -1016,7 +1016,7 @@ module RecoTwExplorer {
             $("#search-form-toggle-button").click(function () {
                 var $this = $(this);
                 var $elm = $("#search-form");
-                var $main = $("#main-area");
+                var $main = $("#page-main");
                 if ($this.hasClass("active")) {
                     $this.removeClass("active");
                     $main.removeClass("main-search-active");
