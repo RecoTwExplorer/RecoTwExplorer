@@ -8,11 +8,11 @@
     "gulp-typescript": "^2.4.2"
   },
   "devDependencies": {
-    "browser-sync": "^2.1.1",
+    "browser-sync": "^2.2.0",
     "del": "^1.1.1",
     "gulp-notify": "^2.2.0",
     "gulp-bower": "0.0.10",
-    "gulp-cache": "^0.2.4",
+    "gulp-cache": "^0.2.6",
     "gulp-csso": "^1.0.0",
     "gulp-flatten": "0.0.4",
     "gulp-if": "^1.2.5",
