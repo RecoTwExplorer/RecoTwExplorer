@@ -797,8 +797,6 @@ module RecoTwExplorer {
         private static setTweetWidgetStyle(widgetID: number, entry: RecoTwEntry, element: Element) {
             if (!element) {
                 View.showStatusLoadFailedMessage(widgetID, entry);
-            } else {
-                $(element).contents().find(".standalone-tweet, .multi-photo .crop-media-box").css({ borderRadius: 0 });
             }
         }
 
