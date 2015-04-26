@@ -20,7 +20,7 @@
   "dependencies": {
     "bootstrap-sass": "~3.3.3",
     "fontawesome": "~4.3.0",
-    "linqjs": "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=linqjs&DownloadId=461390&FileTime=130161449164930000&Build=20959",
+    "linqjs": "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=linqjs&DownloadId=461390&FileTime=130161449164930000&Build=20988",
     "jquery_bottom": "https://github.com/jimyi/jquery_bottom.git#master"
   }
 }
