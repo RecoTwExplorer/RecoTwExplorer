@@ -1113,7 +1113,7 @@ module RecoTwExplorer {
         }
 
         public static isMobile(): boolean {
-            return /iPhone|iPod|Android.*Mobile|Windows.*Phone/.test(navigator.userAgent);
+            return /iPhone|iP[ao]d|Android|Windows.*Phone/.test(navigator.userAgent);
         }
 
         public static onTabSwitched(previous: Tab, current: Tab): void {
