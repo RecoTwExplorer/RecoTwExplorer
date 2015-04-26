@@ -798,7 +798,8 @@ module RecoTwExplorer {
             if (!element) {
                 View.showStatusLoadFailedMessage(widgetID, entry);
             } else {
-                $(element).contents().find(".standalone-tweet, .multi-photo .crop-media-box").css({ borderRadius: 0 });
+                $(element).contents().find(".EmbeddedTweet, .mediacard-borderoverlay, .ImageGrid-image").css({ borderRadius: 0 });
+                $(element).contents().find(".Tweet-followButton").hide();
             }
         }
 
