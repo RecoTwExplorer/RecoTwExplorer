@@ -320,7 +320,7 @@ blockquote p {
 #statistics-area {
     /* Force smartphones to enable its hardware acceleration */
     -webkit-transform: translateZ(0px);
-    width: 860px;
+    max-width: 860px;
     margin: 20px auto 0px;
     background: white;
     padding: 0 12px 0 18px;
@@ -372,6 +372,9 @@ blockquote p {
 }
 .statistics-table-header a:hover {
     color: #666;
+}
+#statistics-tab {
+  padding: 0 12px;
 }
 #new-record-form .url-input-area label {
     color: #333;
