@@ -24,7 +24,7 @@
 module RecoTwExplorer {
     "use strict";
     var APP_NAME = "RecoTw Explorer";
-    var APP_VERSION = "2.33";
+    var APP_VERSION = "2.34";
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
