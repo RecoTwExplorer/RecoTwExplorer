@@ -33,7 +33,7 @@ a, a:focus, button {
     border-color: #977eaf;
     box-shadow: none;
     -webkit-box-shadow: none;
-    border-radius: 0;
+    border-radius: 4px;
 }
 .form-control:focus {
     border-color: #73618A;
@@ -41,7 +41,7 @@ a, a:focus, button {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(159, 136, 188, 0.60);
 }
 .btn {
-    border-radius: 0;
+    border-radius: 4px;
 }
 .btn-violet {
     color: #fff;
@@ -59,7 +59,7 @@ a, a:focus, button {
     border-color: #603f68;
 }
 .alert {
-    border-radius: 0;
+    border-radius: 4px;
 }
 .progress-bar-violet {
     background-color: #603f68;
@@ -172,6 +172,9 @@ ul.nav>li>a {
 .order-radio-box {
     display: none;
 }
+.order-radio-box .glyphicon {
+    width: 22px;
+}
 .order-radio-box + a .glyphicon {
     visibility: hidden;
     padding-right: 8px;
@@ -180,7 +183,7 @@ ul.nav>li>a {
     visibility: visible;
 }
 .modal-content {
-    border-radius: 0;
+    border-radius: 4px;
 }
 #page-main {
 //    margin-top: 110px;
@@ -229,20 +232,17 @@ ul.nav>li>a {
     background: #fefefe;
 }
 blockquote, .twitter-tweet-rendered {
-    visibility: visible !important;
-    position: static !important;
     margin: 20px auto !important;
     width: 640px !important;
     min-height: 80px !important;
-    display: block;
-    background: white;
-    border: 1px solid #dfdfdf !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    min-height: 0;
     max-width: 100% !important;
-    font-size: 14px;
-    padding: 15px;
+}
+blockquote {
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    font: normal normal 14px/1.2 Helvetica, Roboto, "Segoe UI", Calibri, sans-serif;
+    padding: 15px 20px 18px;
     text-align: center;
 }
 blockquote hr {
@@ -253,8 +253,7 @@ blockquote div {
 }
 blockquote span a {
     /* Applies default style of Twitter embedded tweets */
-    color: #707070;
-    font: normal normal normal 14px/18px "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;
+    color: #697882;
 }
 blockquote img {
     width: 24px;
@@ -263,8 +262,8 @@ blockquote img {
     border-radius: 3px;
 }
 blockquote p {
-    font-size: 18px;
-    margin-top: 5px;
+    font-size: 16px;
+    margin-top: 9px;
     word-break: break-all;
 }
 #search-form {
@@ -321,11 +320,12 @@ blockquote p {
 #statistics-area {
     /* Force smartphones to enable its hardware acceleration */
     -webkit-transform: translateZ(0px);
-    width: 860px;
+    max-width: 860px;
     margin: 20px auto 0px;
     background: white;
     padding: 0 12px 0 18px;
-    border: 1px solid #dfdfdf;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
 }
 #statistics-title {
     margin: 32px auto 16px;
@@ -342,6 +342,7 @@ blockquote p {
     width: 100%;
     margin-bottom: 20px;
     border-color: #ccc;
+    border-radius: 4px;
 }
 #statistics-filter-textbox:focus {
     border-color: #977eaf;
@@ -371,6 +372,9 @@ blockquote p {
 }
 .statistics-table-header a:hover {
     color: #666;
+}
+#statistics-tab {
+  padding: 0 12px;
 }
 #new-record-form .url-input-area label {
     color: #333;
