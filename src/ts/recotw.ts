@@ -881,7 +881,7 @@ module RecoTwExplorer {
             }
         }
 
-        private static showPostSuccessMessage(response: RecoTwRecordResponse): void {
+        public static showPostSuccessMessage(response: RecoTwRecordResponse): void {
             var $elm = $("#post-result");
             $elm.hide();
             $elm[0].className = "alert alert-success";
@@ -890,7 +890,7 @@ module RecoTwExplorer {
             $elm.fadeIn();
         }
 
-        private static showPostFailedMessage(error: string): void {
+        public static showPostFailedMessage(error: string): void {
             var $elm = $("#post-result");
             $elm.hide();
             $elm[0].className = "alert alert-danger";
@@ -1070,7 +1070,7 @@ module RecoTwExplorer {
             var queries = Controller.parseQueryString(location.search);
             Controller.setOptions(Options.fromQueries(queries, Order.Descending, OrderBy.RecordedDate), false, false, true);
             queries.filter(x => x.property === "register").map(x => x.value).forEach(value => {
-                Model.postEntriesFromInputs(value.split(","));
+                Model.postEntriesFromInputs(value.split(",")).then(View.showPostSuccessMessage, View.showPostFailedMessage);
             });
         }
 
