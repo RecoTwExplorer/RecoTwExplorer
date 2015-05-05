@@ -377,20 +377,22 @@ module RecoTwExplorer {
             var order = options.order || Order.Descending;
             var orderBy = options.orderBy || OrderBy.RecordedDate;
             var sortCallback = (x: any, y: any) => x - y;
-            if (order === Order.Ascending) {
-                if (orderBy === OrderBy.RecordedDate) {
+            switch (true) {
+                case order === Order.Ascending && orderBy === OrderBy.RecordedDate:
                     result.enumerable = result.enumerable.orderBy(x => x.record_date);
-                } else if (orderBy === OrderBy.CreatedDate) {
+                    break;
+                case order === Order.Ascending && orderBy === OrderBy.CreatedDate:
                     result.enumerable = result.enumerable.orderBy(x => x.tweet_id, sortCallback);
-                }
-            } else if (order === Order.Descending) {
-                if (orderBy === OrderBy.RecordedDate) {
+                    break;
+                case order === Order.Descending && orderBy === OrderBy.RecordedDate:
                     result.enumerable = result.enumerable.orderByDescending(x => x.record_date);
-                } else if (orderBy === OrderBy.CreatedDate) {
+                    break;
+                case order === Order.Descending && orderBy === OrderBy.CreatedDate:
                     result.enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
-                }
-            } else if (order === Order.Shuffle) {
-                result.enumerable = result.enumerable.shuffle();
+                    break;
+                case order === Order.Shuffle:
+                    result.enumerable = result.enumerable.shuffle();
+                    break;
             }
             return result;
         }
