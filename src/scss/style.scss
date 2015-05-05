@@ -171,16 +171,14 @@ ul.nav>li>a {
 }
 .order-radio-box {
     display: none;
-}
-.order-radio-box .glyphicon {
-    width: 22px;
-}
-.order-radio-box + a .glyphicon {
-    visibility: hidden;
-    padding-right: 8px;
-}
-.order-radio-box:checked + a .glyphicon {
-    visibility: visible;
+    & + a .glyphicon {
+        width: 22px;
+        visibility: hidden;
+        padding-right: 8px;
+    }
+    &:checked + a .glyphicon {
+        visibility: visible;
+    }
 }
 .modal-content {
     border-radius: 4px;
@@ -232,15 +230,17 @@ ul.nav>li>a {
     background: #fefefe;
 }
 blockquote, .twitter-tweet-rendered {
+    position: static !important;
+    display: block !important;
     margin: 20px auto !important;
     width: 640px !important;
     min-height: 80px !important;
     max-width: 100% !important;
-}
-blockquote {
     background: white;
     border: 1px solid #e1e8ed;
     border-radius: 4px;
+}
+blockquote {
     font: normal normal 14px/1.2 Helvetica, Roboto, "Segoe UI", Calibri, sans-serif;
     padding: 15px 20px 18px;
     text-align: center;
