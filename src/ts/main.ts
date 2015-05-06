@@ -1000,7 +1000,7 @@ module RecoTwExplorer {
                 var getTab = (tab: HTMLAnchorElement) => View.getTabFromID(tab.href.substring(tab.href.lastIndexOf("#") + 1));
                 Controller.onTabSwitched(getTab(<HTMLAnchorElement>$event.relatedTarget), getTab(<HTMLAnchorElement>$event.target));
             });
-            $("#clear-search-filter").click(() => {
+            $(".navbar-label-icon img, #clear-search-filter").click(() => {
                 Controller.setOptions(Options.fromKeywords("", Controller.getOrder(), Controller.getOrderBy()), false, true, true);
             });
             $("[id^='order-by-']").change(() => {
