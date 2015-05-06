@@ -1,4 +1,5 @@
-﻿/// <reference path="./recotw.d.ts"/>
+﻿/// <reference path="./main.d.ts"/>
+/// <reference path="./recotw.d.ts"/>
 /// <reference path="../../lib/js/typings/bootstrap/bootstrap.d.ts"/>
 /// <reference path="../../lib/js/typings/google.visualization/google.visualization.d.ts"/>
 /// <reference path="../../lib/js/typings/jquery/jquery.d.ts"/>
