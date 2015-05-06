@@ -216,13 +216,20 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a new instance of a Options class with queries.
-         * @param queries The queries.
+         * Creates a new instance of a Options class with a query string.
+         * @param queryString A query string.
          * @param order A value that specifies how to sort entries.
          * @param orderBy A key value by which to sort entries.
          */
-        public static fromQueries(queries: { property: string; value: string; }[], order: Order, orderBy: OrderBy): Options {
+        public static fromQueryString(queryString: string, order: Order, orderBy: OrderBy): Options {
             var options = new Options([], "", null, false, order, orderBy);
+            if (queryString.length === 0 || queryString === "?") {
+                return options;
+            }
+            var queries = queryString.substring(1).split("&").map(x => x.split("="))
+                                                             .filter(x => x.length === 2)
+                                                             .map(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
+
             queries.filter(x => x.property === "body").forEach(x => {
                 var match: RegExpMatchArray;
                 if ((match = x.value.match(/^\/(.*)\/$/)) !== null) {
@@ -881,7 +888,7 @@ module RecoTwExplorer {
             }
         }
 
-        public static showPostSuccessMessage(response: RecoTwRecordResponse): void {
+        private static showPostSuccessMessage(response: RecoTwRecordResponse): void {
             var $elm = $("#post-result");
             $elm.hide();
             $elm[0].className = "alert alert-success";
@@ -890,7 +897,7 @@ module RecoTwExplorer {
             $elm.fadeIn();
         }
 
-        public static showPostFailedMessage(error: string): void {
+        private static showPostFailedMessage(error: string): void {
             var $elm = $("#post-result");
             $elm.hide();
             $elm[0].className = "alert alert-danger";
@@ -964,16 +971,7 @@ module RecoTwExplorer {
             }
         }
 
-        private static parseQueryString(queryString: string): { property: string; value: string; }[] {
-            if (queryString.length === 0 || queryString === "?") {
-                return [];
-            }
-            return queryString.substring(1).split("&").map(x => x.split("="))
-                                                      .filter(x => x.length === 2)
-                                                      .map(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
-        }
-
-        public static setLoadingState(state: boolean): void {
+        public static setLoadingState(state: boolean) {
             Controller.loading = state;
         }
 
@@ -987,6 +985,8 @@ module RecoTwExplorer {
             Model.init();
             google.load("visualization", "1.0", { "packages": ["corechart"] });
             $("#loading-recotw").show();
+
+            Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
 
             $(window).unload(Model.save);
             $(window).bottom({ proximity: 0.05 });
@@ -1030,7 +1030,7 @@ module RecoTwExplorer {
                 }
             });
             $(window).on("popstate", () => {
-                Controller.setOptions(Options.fromQueries(Controller.parseQueryString(location.search), Controller.getOrder(), Controller.getOrderBy()), false, false, true);
+                Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
             });
             $("#reload-entries-link").click(() => {
                 $("#polling-result, #post-result").fadeOut();
@@ -1065,12 +1065,6 @@ module RecoTwExplorer {
                 if ($event.keyCode === 13 || $event.keyCode === 27) {
                     $(this).popover("hide");
                 }
-            });
-
-            var queries = Controller.parseQueryString(location.search);
-            Controller.setOptions(Options.fromQueries(queries, Order.Descending, OrderBy.RecordedDate), false, false, true);
-            queries.filter(x => x.property === "register").map(x => x.value).forEach(value => {
-                Model.postEntriesFromInputs(value.split(",")).then(View.showPostSuccessMessage, View.showPostFailedMessage);
             });
         }
 
