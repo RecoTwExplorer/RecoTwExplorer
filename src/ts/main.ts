@@ -801,7 +801,7 @@ module RecoTwExplorer {
             if (!element) {
                 View.showStatusLoadFailedMessage(widgetID, entry);
             } else {
-                $(element).contents().find(".Tweet-followButton").hide();
+                $(element).contents().find(".FollowButton").hide();
             }
         }
 
