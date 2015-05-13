@@ -15,7 +15,7 @@ before_script:
   - pushd dest
   - git checkout gh-pages
   - popd
-script: gulp
+script: gulp full
 after_success:
   - cd dest
   - git add -A

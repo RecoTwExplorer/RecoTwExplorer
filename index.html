@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
     <head>
         <title>RecoTw Explorer</title>
@@ -6,14 +6,20 @@
         <meta name="author" content="Chitoku">
         <meta name="description" content="Twitter の黒歴史を共有する Web サービス、RecoTw に登録されたツイートを閲覧・検索したり、新しく登録したりするための Web アプリケーションです。">
         <meta name="keywords" content="RecoTw,Twitter,黒歴史,Viewer,Explorer">
+        <meta content="#6e587e" name="theme-color">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="RecoTw">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <!-- build:css css/style.min.css -->
-        <link rel="stylesheet" href="./lib/css/font-awesome.min.css">
-        <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
         <link rel="stylesheet" href="./dev/css/style.css">
         <!-- endbuild -->
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="./images/apple-icon-120.png">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="./images/apple-icon-152.png">
+        <link rel="icon" sizes="144x144" href="./images/icon-144.png">
+        <link rel="icon" sizes="192x192" href="./images/icon-192.png">
         <link rel="shortcut icon" href="./favicon.ico" />
-        <!-- Currently working on responsive design -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
     <body>
         <div id="tracker">
@@ -22,111 +28,102 @@
             </noscript>
         </div>
         <nav class="navbar navbar-violet navbar-fixed-top" role="navigation">
+            <div id="statusbar"></div>
             <div class="navbar-header">
-                <a class="navbar-brand navbar-brand-icon" href="#home-tab" role="tab" data-toggle="tab">
+                <a class="navbar-brand navbar-label-icon">
                     <img src="./images/icon_inverse.png" width="32" height="32" alt="">
                 </a>
-                <a class="navbar-brand navbar-brand-text">RecoTw Explorer</a>
-                <!--
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                -->
-                <button type="button" class="navbar-toggle" data-toggle="modal" data-target="#help-modal">
-                    <span class="glyphicon glyphicon-question-sign white"></span>
-                </button>
-                <div>
-                    <button type="button" class="navbar-toggle dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                        <span class="glyphicon glyphicon-sort white"></span><span class="caret white"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order">
-                            <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
-                        </li>
-                        <li>
-                            <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" checked>
-                            <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
-                        </li>
-                        <li>
-                            <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order">
-                            <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
-                        </li>
-                        <li>
-                            <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order">
-                            <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
-                        </li>
-                    </ul>
-                </div>
-                <button type="button" class="navbar-toggle" href="#statistics-tab" role="tab" data-toggle="tab">
-                    <i class="fa fa-pie-chart fa-lg white"></i>
-                </button>
-                <button type="button" class="navbar-toggle" data-toggle="modal" data-target="#new-record-modal">
-                    <span class="glyphicon glyphicon-plus white"></span>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <a class="navbar-brand navbar-label-text">RecoTw Explorer</a>
                 <ul class="nav navbar-nav">
-                    <li role="presentation" class="active"><a href="#home-tab" role="tab" data-toggle="tab">ホーム</a></li>
-                    <li role="presentation"><a href="#statistics-tab" role="tab" data-toggle="tab">統計情報</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#new-record-modal">ツイート登録</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#help-modal">ヘルプ</a></li>
+                    <li role="presentation" class="active">
+                        <a href="#home-tab" role="tab" data-toggle="tab">
+                            <span class="navbar-label-icon glyphicon glyphicon-home"></span>
+                            <span class="navbar-label-text">ホーム</span>
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#statistics-tab" role="tab" data-toggle="tab">
+                            <span class="navbar-label-icon fa fa-pie-chart"></span>
+                            <span class="navbar-label-text">統計情報</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#new-record-modal">
+                            <span class="navbar-label-icon glyphicon glyphicon-plus"></span>
+                            <span class="navbar-label-text">ツイート登録</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#help-modal">
+                            <span class="navbar-label-icon glyphicon glyphicon-question-sign"></span>
+                            <span class="navbar-label-text">ヘルプ</span>
+                        </a>
+                    </li>
+                    <li class="visible-xs-inline-block">
+                        <a href="javascript:void(0);" id="search-form-toggle-button">
+                            <span class="navbar-label-icon glyphicon glyphicon-search"></span>
+                        </a>
+                    </li>
                 </ul>
-                <form id="search-form" class="navbar-form navbar-right" role="search">
-                    <div class="input-group">
-                        <input type="text" id="search-box" name="body" class="form-control">
-                        <span class="input-group-btn">
-                            <button class="btn" type="submit">検索</button>
-                        </span>
-                    </div>
-                    <button class="btn btn-warning" type="button" id="clear-search-filter">解除</button>
-                </form>
-                <div class="btn-group navbar-right">
-                    <form>
-                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                            並び替え <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order">
-                                <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
-                            </li>
-                            <li>
-                                <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" checked>
-                                <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
-                            </li>
-                            <li>
-                                <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order">
-                                <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
-                            </li>
-                            <li>
-                                <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order">
-                                <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
-                            </li>
-                        </ul>
-                    </form>
+            </div>
+            <form id="search-form" class="navbar-form navbar-right hidden-xs" role="search">
+                <div class="input-group">
+                    <input type="text" id="search-box" name="body" class="form-control">
+                    <span class="input-group-btn">
+                        <button class="btn" type="submit">検索</button>
+                        <button class="btn btn-warning" type="button" id="clear-search-filter">解除</button>
+                    </span>
                 </div>
+            </form>
+            <div class="btn-group navbar-right">
+                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="navbar-label-icon glyphicon glyphicon-sort"></span>
+                    <span class="navbar-label-text">並び替え</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order" data-order="1" data-order-by="1">
+                        <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
+                    </li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" data-order="2" data-order-by="1" checked>
+                        <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
+                    </li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order" data-order="1" data-order-by="2">
+                        <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
+                    </li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order" data-order="2" data-order-by="2">
+                        <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
+                    </li>
+                    <li role="presentation" class="divider"></li>
+                    <li>
+                        <input type="radio" class="order-radio-box" id="order-shuffle" name="order" data-order="3" data-order-by="0">
+                        <a href="javascript:void(0);"><label for="order-shuffle"><span class="glyphicon glyphicon-ok"></span> シャッフル</label></a>
+                    </li>
+                </ul>
             </div>
         </nav>
         <div id="page-main">
             <div id="alerts">
-                <div id="post-result" class="alert alert-success">
-                    <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                    <div id="post-success" class="alert-body">
-                        <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
+                <div class="container">
+                    <div id="post-result" class="alert alert-success">
+                        <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
+                        <div id="post-success" class="alert-body">
+                            <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
+                        </div>
+                        <div id="post-failed" class="alert-body">
+                            <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
+                        </div>
                     </div>
-                    <div id="post-failed" class="alert-body">
-                        <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
-                    </div>
-                </div>
-                <div id="polling-result" class="alert alert-info">
-                    <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                    <div class="alert-body">
-                        <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
-                        <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
+                    <div id="polling-result" class="alert alert-info">
+                        <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
+                        <div class="alert-body">
+                            <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
+                            <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -216,7 +213,7 @@
                             </p>
                             <p>
                                 このアプリケーションは MIT ライセンスのもとに GitHub 上で公開されています：<br>
-                                <a href="https://github.com/RecoTwExplorer/RecoTwExplorer" target="_blank">https://github.com/RecoTwExplorer/RecoTwExplorer</a><br>
+                                <a href="https://github.com/RecoTwExplorer/RecoTwExplorer" target="_blank">https://&#x200b;github.com&#x200b;/&#x200b;RecoTwExplorer&#x200b;/&#x200b;RecoTwExplorer</a><br>
                                 バグ報告ないしプルリクエスト等はこのレポジトリにお願いいたします。
                             </p>
                             <p>
@@ -230,6 +227,7 @@
                                 <li><a href="http://jquery.com/" target="_blank">jQuery</a></li>
                                 <li><a href="http://linqjs.codeplex.com/" target="_blank">linq.js</a></li>
                                 <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></li>
+                                <li><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">Font Awesome</a></li>
                                 <li><a href="https://developers.google.com/chart/" target="_blank">Google Charts</a></li>
                             </ul>
                             <p class="text-center" style="margin-bottom: 0;">
@@ -259,17 +257,17 @@
             }(document, "script", "twitter-wjs"));
         </script>
         <!-- build:js js/vendor.js -->
-        <script src="./lib/js/jquery-2.1.3.min.js"></script>
-        <script src="./lib/js/jquery.bottom-1.0.js"></script>
-        <script src="./lib/js/bootstrap.min.js"></script>
-        <script src="./lib/js/linq.js"></script>
-        <script src="./lib/js/linq.jquery.js"></script>
+        <script src="./bower_components/jquery/dist/jquery.js"></script>
+        <script src="./bower_components/jquery_bottom/jquery.bottom-1.0.js"></script>
+        <script src="./bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
+        <script src="./bower_components/linqjs/linq.js"></script>
+        <script src="./bower_components/linqjs/extensions/linq.jquery.js"></script>
         <script src="./lib/js/libstring.js"></script>
         <!-- endbuild -->
         <script src="http://chitoku.jp/lunalys/analyzer/tracker.js"></script>
         <script src="https://www.google.com/jsapi"></script>
         <!-- build:js js/recotw.min.js -->
-        <script src="./dev/js/recotw.js"></script>
+        <script src="./dev/js/main.js"></script>
         <!-- endbuild -->
     </body>
 </html>
