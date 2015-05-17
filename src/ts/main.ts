@@ -714,10 +714,17 @@ module RecoTwExplorer {
             Model.pollingID = null;
         }
 
+        /**
+         * Gets a number of notifications.
+         */
         public static getNotificationCount(): number {
             return Model.notificationCount;
         }
 
+        /**
+         * Creates a notification.
+         * @param A number of notifications to create.
+         */
         public static createNotification(count: number): void {
             if (count < 0) {
                 return;
@@ -725,6 +732,9 @@ module RecoTwExplorer {
             Model.favico.badge(Model.notificationCount += count);
         }
 
+        /**
+         * Clears all of the notifications.
+         */
         public static clearNotification(): void {
             Model.notificationCount = 0;
             Model.favico.reset();
