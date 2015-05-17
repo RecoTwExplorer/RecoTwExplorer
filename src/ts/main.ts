@@ -802,7 +802,9 @@ module RecoTwExplorer {
             if (!element) {
                 View.showStatusLoadFailedMessage(widgetID, entry);
             } else {
-                $(element).contents().find(".FollowButton").hide();
+                var $contents = $(element).contents();
+                $contents.find(".FollowButton").hide();
+                $contents.find(".Tweet-author").css("max-width", "none");
             }
         }
 
