@@ -755,6 +755,7 @@ module RecoTwExplorer {
         private static chart: google.visualization.PieChart = null;
         private static current = 0;
         private static widgetID = -1;
+        private static title = Resources.PAGE_TITLE_NORMAL;
 
         public static getTabFromID(id: string): Tab {
             switch (id) {
@@ -782,9 +783,14 @@ module RecoTwExplorer {
             }
         }
 
-        public static setTitle(title: string): void {
+        public static setTitle(title: string = View.title): void {
+            View.title = title;
             if (location.hostname === "" || location.hostname === "localhost") {
                 title = "[DEBUG] " + title;
+            }
+            var notifications = Model.getNotificationCount();
+            if (notifications > 0) {
+                title += " (" + notifications + ")";
             }
             document.title = title;
         }
@@ -1152,6 +1158,7 @@ module RecoTwExplorer {
         }
 
         public static onNotificationStatusChanged(): void {
+            View.setTitle();
             var count = Model.getNotificationCount();
             if (count === 0) {
                 $("#unread-tweets").fadeOut();
