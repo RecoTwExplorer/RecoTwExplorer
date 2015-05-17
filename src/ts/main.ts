@@ -845,28 +845,18 @@ module RecoTwExplorer {
         private static renderStatisticsTable(username: string, statistics: RecoTwStatistics): void {
             // Counts colored slices in the chart.
             var colored = statistics.users.filter(x => x.count / statistics.entryLength > View.GRAPH_OPTIONS.sliceVisibilityThreshold).length;
-            var $table = $("#statistics-table").empty();
             var html = "";
             username = username !== void 0 ? username.toLowerCase() : void 0;
-            var isTarget = (x: string) => username === void 0 || x.toLowerCase().startsWith(username);
 
-            for (var i = 0; i < colored; i++) {
-                if (!isTarget(statistics.users[i].target_sn)) {
+            for (var i = 0; i < statistics.users.length; i++) {
+                if (username !== void 0 && !statistics.users[i].target_sn.toLowerCase().startsWith(username)) {
                     continue;
                 }
-                html += String.format(Resources.STATISTICS_TABLE_HTML, View.GRAPH_COLORS[i + 1], statistics.users[i].target_sn, statistics.users[i].count, statistics.users[i].count / statistics.entryLength);
+                var color = i < colored ? View.GRAPH_COLORS[i + 1] : View.GRAPH_COLORS[0];
+                html += String.format(Resources.STATISTICS_TABLE_HTML, color, statistics.users[i].target_sn, statistics.users[i].count, statistics.users[i].count / statistics.entryLength);
             }
-            for (var i = colored; i < statistics.users.length; i++) {
-                if (!isTarget(statistics.users[i].target_sn)) {
-                    continue;
-                }
-                html += String.format(Resources.STATISTICS_TABLE_HTML, View.GRAPH_COLORS[0], statistics.users[i].target_sn, statistics.users[i].count, statistics.users[i].count / statistics.entryLength);
-            }
-            if (html.length === 0) {
-                $table.append(Resources.NO_RESULT);
-            } else {
-                $table.append(html);
-            }
+
+            $("#statistics-table").html(html.length > 0 ? html : Resources.NO_RESULT);
         }
 
         public static clearHome(): void {
