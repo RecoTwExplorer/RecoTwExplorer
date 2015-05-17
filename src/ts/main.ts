@@ -111,6 +111,7 @@ module RecoTwExplorer {
         public static FAILED_TO_GENERATE_PROFILE_IMAGE_URL = "プロフィール画像の URL を生成できません。";
         public static FAILED_TO_LOAD_EMBEDDED_TWEET = "Twitter 埋め込みツイートの読み込みに失敗しました。";
         public static REGISTER_NEW_TWEET = "ツイートの ID または URL:";
+        public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
         public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\" onmousedown=\"RecoTwExplorer.Controller.setSearchFilterByUsername('{1}')\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<a href=\"{0}\" target=\"_blank\">表示</a><hr><div><img src=\"{1}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{2}\" target=\"_blank\">@{3}</a></span><p>{4}</p></div></blockquote>";
@@ -448,6 +449,7 @@ module RecoTwExplorer {
         private static entries: RecoTwEntryCollection = null;
         private static statistics: RecoTwStatistics = null;
         private static pollingID: number = null;
+        private static notificationCount = 0;
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
@@ -583,7 +585,7 @@ module RecoTwExplorer {
                 if (+data.id - 1 === +Model.entries.reset().getEnumerable().lastOrDefault().id) {
                     delete data.result;
                     Model.entries.addRange(Enumerable.make(data));
-                    Controller.onNewEntries();
+                    Controller.onNewEntries(1);
                 }
                 deferred.resolve(data);
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
@@ -698,7 +700,7 @@ module RecoTwExplorer {
             }
             Model.pollingID = window.setInterval(() => Model.getLatestEntries().then(data => {
                 if (data.length > 0) {
-                    Controller.onNewEntries();
+                    Controller.onNewEntries(data.length);
                 }
             }), Model.POLLING_INTERVAL);
         }
@@ -709,6 +711,21 @@ module RecoTwExplorer {
         public static stopPolling(): void {
             window.clearInterval(Model.pollingID);
             Model.pollingID = null;
+        }
+
+        public static getNotificationCount(): number {
+            return Model.notificationCount;
+        }
+
+        public static createNotification(count: number): void {
+            if (count < 0) {
+                return;
+            }
+            Model.notificationCount += count;
+        }
+
+        public static clearNotification(): void {
+            Model.notificationCount = 0;
         }
     }
 
@@ -874,7 +891,7 @@ module RecoTwExplorer {
         public static postEntriesFromModal(): void {
             var inputs: string[] = $("#new-record-modal input[type='text']").map(function () { return $(this).val(); }).get();
             try {
-                Model.postEntriesFromInputs(inputs.filter(x => x.length > 0)).then(View.showPostSuccessMessage, View.showPostFailedMessage);
+                Model.postEntriesFromInputs(inputs.filter(x => x.length > 0)).then(Controller.onRegistrationSucceeded, Controller.onRegistrationFailed);
                 $("#new-record-modal").modal("hide");
             } catch (e) {
                 $("#inputPostStatus").val("").focus();
@@ -884,29 +901,10 @@ module RecoTwExplorer {
 
         public static postEntriesFromDialog(value: string): void {
             try {
-                Model.postEntriesFromInputs([ value ]).then(View.showPostSuccessMessage, View.showPostFailedMessage);
+                Model.postEntriesFromInputs([ value ]).then(Controller.onRegistrationSucceeded, Controller.onRegistrationFailed);
             } catch (e) {
                 window.alert((<Error>e).message);
             }
-        }
-
-        private static showPostSuccessMessage(response: RecoTwRecordResponse): void {
-            var $elm = $("#post-result");
-            $elm.hide();
-            $elm[0].className = "alert alert-success";
-            $("#post-failed").hide();
-            $("#post-success").show();
-            $elm.fadeIn();
-        }
-
-        private static showPostFailedMessage(error: string): void {
-            var $elm = $("#post-result");
-            $elm.hide();
-            $elm[0].className = "alert alert-danger";
-            $("#post-success").hide();
-            $("#post-failed").show();
-            $("#post-failed-reason").text(error);
-            $elm.fadeIn();
         }
 
         private static replaceLinkToURL(target: string) {
@@ -927,6 +925,7 @@ module RecoTwExplorer {
         private static loading = false;
         private static homeRendered = false;
         private static statisticsRendered = false;
+        private static lastRegistrationError: string = null;
 
         public static getOptions(): Options {
             return Controller.options;
@@ -1000,6 +999,13 @@ module RecoTwExplorer {
             $(".navbar-nav a[role='tab']").on("shown.bs.tab", $event => {
                 var getTab = (tab: HTMLAnchorElement) => View.getTabFromID(tab.href.substring(tab.href.lastIndexOf("#") + 1));
                 Controller.onTabSwitched(getTab(<HTMLAnchorElement>$event.relatedTarget), getTab(<HTMLAnchorElement>$event.target));
+            });
+            $("[href='#home-tab']").click(() => {
+                if (View.getCurrentTab() === Tab.Home) {
+                    Model.clearNotification();
+                    Controller.onNotificationStatusChanged();
+                    Controller.showNewStatuses();
+                }
             });
             $(".navbar-label-icon img, #clear-search-filter").click(() => {
                 Controller.setOptions(Options.fromKeywords("", Controller.getOrder(), Controller.getOrderBy()), false, true, true);
@@ -1078,6 +1084,12 @@ module RecoTwExplorer {
                     $(this).popover("hide");
                 }
             });
+            $("#new-record-toggle-button").popover({
+                placement: "bottom",
+                html: true,
+                content: () => Controller.lastRegistrationError,
+                trigger: "manual"
+            });
         }
 
         public static getOrder(): Order {
@@ -1122,8 +1134,27 @@ module RecoTwExplorer {
             $("#loading-panel").fadeOut().promise().done(() => $("#loading-error-panel").fadeIn());
         }
 
-        public static onNewEntries(): void {
-            $("#polling-result").fadeIn();
+        public static onRegistrationSucceeded(response: RecoTwRecordResponse): void {
+        }
+
+        public static onRegistrationFailed(error: string): void {
+            Controller.lastRegistrationError = String.format(Resources.REGISTRATION_FAILED_HTML, error);
+            var $elm = $("#new-record-toggle-button").popover("show");
+            window.setTimeout(() => $elm.popover("hide"), 5000);
+        }
+
+        public static onNewEntries(count: number): void {
+            Model.createNotification(count);
+            Controller.onNotificationStatusChanged();
+        }
+
+        public static onNotificationStatusChanged(): void {
+            var count = Model.getNotificationCount();
+            if (count === 0) {
+                $("#unread-tweets").fadeOut();
+            } else {
+                $("#unread-tweets").text(count).fadeIn().css({ display: "inline-block" });
+            }
         }
 
         public static isMobile(): boolean {

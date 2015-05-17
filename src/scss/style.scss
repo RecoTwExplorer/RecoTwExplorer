@@ -58,9 +58,6 @@ a, a:focus, button {
     background-color: #613d69;
     border-color: #603f68;
 }
-.alert {
-    border-radius: 4px;
-}
 .progress-bar-violet {
     background-color: #603f68;
 }
@@ -183,20 +180,28 @@ ul.nav>li>a {
 .modal-content {
     border-radius: 4px;
 }
-#alerts {
-    margin: auto;
-    z-index: 100;
-    position: fixed;
-    width: 100%;
-    top: 90px;
-    @media (max-width: 767px) {
-        top: 73px;
+#new-record-toggle-button + .popover {
+    min-width: 300px;
+    margin-top: -3px;
+    border-radius: 0;
+    border-color: rgba(235, 204, 209, 0.8);
+    background-color: #f2dede;
+    color: #a94442;
+    text-align: center;
+    & > .arrow {
+        border-bottom-color: rgba(235, 204, 209, 0.8);
     }
-    >.container {
-        padding-left: 10px;
-        padding-right: 10px;
-        max-width: 100%;
+    & > .arrow:after {
+        border-bottom-color: #f2dede;
     }
+}
+#unread-tweets {
+    background: #eb4512;
+    display: inline-block;
+    padding: 0 11px;
+    margin: 0 -14px 0 8px;
+    border-radius: 8px;
+    display: none;
 }
 #loading-panel-container, #no-result-container {
     /* Force smartphones to enable its hardware acceleration */
@@ -241,55 +246,57 @@ blockquote {
     font: normal normal 14px/1.2 Helvetica, Roboto, "Segoe UI", Calibri, sans-serif;
     padding: 15px 20px 18px;
     text-align: center;
-}
-blockquote hr {
-    margin: 10px 0 15px;
-}
-blockquote div {
-    text-align: left;
-}
-blockquote span a {
-    /* Applies default style of Twitter embedded tweets */
-    color: #697882;
-}
-blockquote img {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    border-radius: 3px;
-}
-blockquote p {
-    font-size: 16px;
-    margin-top: 9px;
-    word-break: break-all;
+    hr {
+        margin: 10px 0 15px;
+    }
+    div {
+        text-align: left;
+    }
+    span a {
+        /* Applies default style of Twitter embedded tweets */
+        color: #697882;
+    }
+    img {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+        border-radius: 3px;
+    }
+    p {
+        font-size: 16px;
+        margin-top: 9px;
+        word-break: break-all;
+    }
 }
 #search-form {
     margin-left: -8px;
     margin-bottom: 0;
     padding-right: 0px;
-}
-#search-form .btn {
-    border-radius: 0;
-}
-#search-form .btn-warning {
-    background: #db8512;
-}
-#search-form .input-group {
-    margin: 5px 0;
+    .btn {
+        border-radius: 0;
+    }
+    .btn-warning {
+        background: #db8512;
+    }
+    .input-group {
+        margin: 5px 0;
+    }
+    .popover {
+        dl {
+            margin-top: -6px;
+            margin-bottom: 0;
+        }
+        dt {
+            margin-top: 6px;
+        }
+        dd {
+            margin-left: 1.8em;
+        }
+    }
 }
 #order-form {
     margin-left: 7px;
     margin-bottom: -6px;
-}
-#search-form .popover dl {
-    margin-top: -6px;
-    margin-bottom: 0;
-}
-#search-form .popover dt {
-    margin-top: 6px;
-}
-#search-form .popover dd {
-    margin-left: 1.8em;
 }
 #search-box {
     border: 1px solid #3f2751;
@@ -300,16 +307,6 @@ blockquote p {
 }
 #search-target-dropdown {
     right: auto;
-}
-#post-result, #polling-result {
-    width: 640px;
-    padding: 15px 15px 15px 20px;
-    margin: -1px auto 0;
-    display: none;
-    @media (max-width: 767px) {
-        width: 100%;
-        max-width: 640px;
-    }
 }
 #main-area {
     margin: auto;
@@ -411,6 +408,9 @@ blockquote p {
     .navbar-brand.navbar-label-text {
         display: none;
     }
+    #unread-tweets {
+        margin: 0 -8px 0 6px;
+    }
 }
 @media (max-width: 1024px - 1) {
     ul.nav > li > a {
@@ -420,13 +420,23 @@ blockquote p {
         display: inline-block;
     }
     .navbar-nav .navbar-label-icon {
-        font-size: 16px;
+        font-size: 20px;
+        position: relative;
+        top: 6px;
     }
     .navbar-label-text {
         display: none;
     }
     #statistics-area {
         margin-top: 88px;
+    }
+    #unread-tweets {
+        position: relative;
+        top: -8px;
+        left: -12px;
+        border-radius: 5px;
+        padding: 0 6px;
+        margin: 0 -18px 0 0;
     }
 }
 @media (max-width: 890px - 1) {
@@ -452,6 +462,19 @@ blockquote p {
     }
     ul.nav > li > a {
         padding: 12px 18px;
+    }
+    .navbar-nav .navbar-label-icon {
+        font-size: 16px;
+        top: 3px;
+    }
+    #unread-tweets {
+        color: transparent;
+        width: 12px;
+        height: 12px;
+        font-size: 0;
+        top: -7px;
+        left: -9px;
+        border-radius: 6px;
     }
     .navbar-label-icon.fa {
         margin-top: -6px;
@@ -521,12 +544,6 @@ blockquote p {
         }
         body.standalone .main-search-active & {
             margin-top: 101px;
-        }
-    }
-    #alerts .container {
-        margin-top: -18px;
-        .main-search-active & {
-             margin-top: 31px;
         }
     }
     blockquote, .twitter-tweet-rendered {
