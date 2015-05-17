@@ -1173,7 +1173,7 @@ module RecoTwExplorer {
             if (count === 0) {
                 $("#unread-tweets").fadeOut();
             } else {
-                $("#unread-tweets").text(count).fadeIn().css({ display: "inline-block" });
+                $("#unread-tweets").text(String.format("{0:N0}", count)).fadeIn().css({ display: "inline-block" });
             }
         }
 
