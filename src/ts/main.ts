@@ -450,6 +450,7 @@ module RecoTwExplorer {
         private static statistics: RecoTwStatistics = null;
         private static pollingID: number = null;
         private static notificationCount = 0;
+        private static favico: Favico = new Favico({ animation: "slide" });
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
@@ -721,11 +722,12 @@ module RecoTwExplorer {
             if (count < 0) {
                 return;
             }
-            Model.notificationCount += count;
+            Model.favico.badge(Model.notificationCount += count);
         }
 
         public static clearNotification(): void {
             Model.notificationCount = 0;
+            Model.favico.reset();
         }
     }
 
