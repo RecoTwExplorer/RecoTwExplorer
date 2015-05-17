@@ -110,6 +110,7 @@ module RecoTwExplorer {
         public static FAILED_TO_GENERATE_USER_URL = "ユーザーへの URL を生成できません。";
         public static FAILED_TO_GENERATE_PROFILE_IMAGE_URL = "プロフィール画像の URL を生成できません。";
         public static FAILED_TO_LOAD_EMBEDDED_TWEET = "Twitter 埋め込みツイートの読み込みに失敗しました。";
+        public static REGISTER_NEW_TWEET = "ツイートの ID または URL:";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
         public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\" onmousedown=\"RecoTwExplorer.Controller.setSearchFilterByUsername('{1}')\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<a href=\"{0}\" target=\"_blank\">表示</a><hr><div><img src=\"{1}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{2}\" target=\"_blank\">@{3}</a></span><p>{4}</p></div></blockquote>";
@@ -868,7 +869,7 @@ module RecoTwExplorer {
             $("#search-box").val(options.toKeywords());
         }
 
-        public static postEntries(): void {
+        public static postEntriesFromModal(): void {
             var inputs: string[] = $("#new-record-modal input[type='text']").map(function () { return $(this).val(); }).get();
             try {
                 Model.postEntriesFromInputs(inputs.filter(x => x.length > 0)).then(View.showPostSuccessMessage, View.showPostFailedMessage);
@@ -876,6 +877,14 @@ module RecoTwExplorer {
             } catch (e) {
                 $("#inputPostStatus").val("").focus();
                 $("#new-record-modal .modal-dialog").shake(2, 18, 300);
+            }
+        }
+
+        public static postEntriesFromDialog(value: string): void {
+            try {
+                Model.postEntriesFromInputs([ value ]).then(View.showPostSuccessMessage, View.showPostFailedMessage);
+            } catch (e) {
+                window.alert((<Error>e).message);
             }
         }
 
@@ -1027,9 +1036,19 @@ module RecoTwExplorer {
                 $("#polling-result, #post-result").fadeOut();
                 Controller.showNewStatuses();
             });
+            $("#new-record-toggle-button").click(() => {
+                if (!navigator.standalone) {
+                    $("#new-record-modal").modal("show");
+                } else {
+                    var result = window.prompt(Resources.REGISTER_NEW_TWEET);
+                    if (result !== null) {
+                        View.postEntriesFromDialog(result);
+                    }
+                }
+            });
             $("#new-record-form").submit($event => {
                 $event.preventDefault();
-                View.postEntries();
+                View.postEntriesFromModal();
             });
             $("#new-record-modal").on("shown.bs.modal", () => {
                 $("#new-record-form .url-box").focus();
