@@ -1007,7 +1007,7 @@ module RecoTwExplorer {
                     Controller.showNewStatuses();
                 }
             });
-            $(".navbar-label-icon img, #clear-search-filter").click(() => {
+            $(".navbar-brand, #clear-search-filter").click(() => {
                 Controller.setOptions(Options.fromKeywords("", Controller.getOrder(), Controller.getOrderBy()), false, true, true);
             });
             $("[id^='order-by-']").change(() => {
@@ -1135,6 +1135,7 @@ module RecoTwExplorer {
         }
 
         public static onRegistrationSucceeded(response: RecoTwRecordResponse): void {
+            return;
         }
 
         public static onRegistrationFailed(error: string): void {
