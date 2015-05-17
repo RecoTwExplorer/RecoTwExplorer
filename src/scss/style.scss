@@ -183,9 +183,6 @@ ul.nav>li>a {
 .modal-content {
     border-radius: 4px;
 }
-#page-main {
-//    margin-top: 110px;
-}
 #alerts {
     margin: auto;
     z-index: 100;
@@ -321,14 +318,14 @@ blockquote p {
     /* Force smartphones to enable its hardware acceleration */
     -webkit-transform: translateZ(0px);
     max-width: 860px;
-    margin: 20px auto 0px;
+    margin: 108px auto 0;
     background: white;
     padding: 0 12px 0 18px;
     border: 1px solid #e1e8ed;
     border-radius: 4px;
 }
 #statistics-title {
-    margin: 32px auto 16px;
+    margin: 32px -74px 16px auto;
     font-size: 24pt;
 }
 #statistics-count {
@@ -422,8 +419,19 @@ blockquote p {
     .navbar-label-icon {
         display: inline-block;
     }
+    .navbar-nav .navbar-label-icon {
+        font-size: 16px;
+    }
     .navbar-label-text {
         display: none;
+    }
+    #statistics-area {
+        margin-top: 88px;
+    }
+}
+@media (max-width: 890px - 1) {
+    #statistics-area {
+        margin-top: 72px;
     }
 }
 @media (max-width: 768px - 1) {
@@ -503,10 +511,16 @@ blockquote p {
         text-align: center;
     }
     #main-area {
-        margin-top: -18px;
-        padding: 10px;
+        margin-top: -16px;
+        padding: 10px 12px;
         .main-search-active & {
-            margin-top: 80px;
+            margin-top: 81px;
+        }
+        body.standalone & {
+            margin-top: -36px;
+        }
+        body.standalone .main-search-active & {
+            margin-top: 101px;
         }
     }
     #alerts .container {
@@ -515,7 +529,6 @@ blockquote p {
              margin-top: 31px;
         }
     }
-
     blockquote, .twitter-tweet-rendered {
         margin: 12px auto !important;
     }
@@ -538,8 +551,15 @@ blockquote p {
     #statistics-area {
         padding: 0 18px;
         max-width: 100%;
+        margin-top: 56px;
+        .main-search-active & {
+            margin-top: 103px;
+        }
         body.standalone & {
-            margin-top: -32px;
+            margin-top: -14px;
+        }
+        body.standalone .main-search-active & {
+            margin-top: 123px;
         }
     }
     #statistics-area div:first-child {
