@@ -1173,7 +1173,8 @@ module RecoTwExplorer {
             if (count === 0) {
                 $("#unread-tweets").fadeOut();
             } else {
-                $("#unread-tweets").text(String.format("{0:N0}", count)).fadeIn().css({ display: "inline-block" });
+                var badge = count < 100 ? count : "99+";
+                $("#unread-tweets").text(badge).fadeIn().css({ display: "inline-block" });
             }
         }
 
