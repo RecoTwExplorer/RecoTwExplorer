@@ -798,9 +798,8 @@ module RecoTwExplorer {
             if (location.hostname === "" || location.hostname === "localhost") {
                 title = "[DEBUG] " + title;
             }
-            var notifications = Model.getNotificationCount();
-            if (notifications > 0) {
-                title += " (" + notifications + ")";
+            if (Model.getNotificationCount() > 0) {
+                title = "* " + title;
             }
             document.title = title;
         }
