@@ -115,11 +115,12 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
-/*            ghostMode: {
+            ghostMode: {
                 clicks: true,
                 forms: false,
-                scroll: true
-            },*/
+                scroll: true,
+                get: () => void 0
+            },
             server: ["."],
             files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
@@ -131,12 +132,13 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
-            server: "dest"/*,
+            server: "dest",
             ghostMode: {
                 clicks: true,
                 forms: false,
-                scroll: true
-            }*/
+                scroll: true,
+                get: () => void 0
+            }
         });
     }
 
@@ -148,7 +150,7 @@ class Tasks {
 
         gulp.task("default", ["clean"], instance.default);
         gulp.task("assets", ["copy", "images", "fonts"]);
-        gulp.task("full", ["bower"], instance.default);
+        gulp.task("full", ["bower", "clean"], instance.default);
     }
 }
 
