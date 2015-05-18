@@ -156,6 +156,10 @@ ul.nav>li>a {
     color: white;
     -webkit-box-shadow: none;
 }
+.navbar-violet .fa-caret-down {
+    min-width: 8px;
+    margin-left: 2px;
+}
 .navbar-violet .dropdown-menu label {
     font-weight: normal;
     padding: 10px 40px 10px 12px;
