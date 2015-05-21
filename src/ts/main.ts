@@ -106,6 +106,7 @@ module RecoTwExplorer {
     class Resources {
         public static INCORRECT_REGEX = "指定された正規表現は正しくありません。";
         public static INCORRECT_URL_OR_ID = "指定された URL または ID は正しくありません。";
+        public static BADGE_NOT_SUPPORTED = "通知バッジがサポートされていません。";
         public static FAILED_TO_GENERATE_STATUS_URL = "ツイートの URL を生成できません。";
         public static FAILED_TO_GENERATE_USER_URL = "ユーザーへの URL を生成できません。";
         public static FAILED_TO_GENERATE_PROFILE_IMAGE_URL = "プロフィール画像の URL を生成できません。";
@@ -450,7 +451,7 @@ module RecoTwExplorer {
         private static statistics: RecoTwStatistics = null;
         private static pollingID: number = null;
         private static notificationCount = 0;
-        private static favico: Favico = new Favico({ animation: "slide" });
+        private static favico: Favico = null;
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
@@ -462,6 +463,11 @@ module RecoTwExplorer {
                 entries = JSON.parse(item);
             }
             Model.getLatestEntries(entries).then(Controller.onEntriesLoaded, Controller.onEntriesLoadFailed);
+            try {
+                Model.favico = new Favico({ animation: "slide" });
+            } catch (e) {
+                console.log(Resources.BADGE_NOT_SUPPORTED);
+            }
         }
 
         /**
@@ -729,7 +735,12 @@ module RecoTwExplorer {
             if (count < 0) {
                 return;
             }
-            Model.favico.badge(Model.notificationCount += count);
+            Model.notificationCount += count;
+            try {
+                Model.favico.badge(Model.notificationCount);
+            } catch (e) {
+                console.log(Resources.BADGE_NOT_SUPPORTED);
+            }
         }
 
         /**
@@ -737,7 +748,11 @@ module RecoTwExplorer {
          */
         public static clearNotification(): void {
             Model.notificationCount = 0;
-            Model.favico.reset();
+            try {
+                Model.favico.reset();
+            } catch (e) {
+                console.log(Resources.BADGE_NOT_SUPPORTED);
+            }
         }
     }
 
