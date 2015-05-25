@@ -775,7 +775,7 @@ module RecoTwExplorer {
             },
             is3D: true,
             legend: "none",
-            sliceVisibilityThreshold: 0.0099
+            sliceVisibilityThreshold: 0.0095
         };
         private static chart: google.visualization.PieChart = null;
         private static current = 0;
@@ -833,7 +833,10 @@ module RecoTwExplorer {
 
             var $main = $("#main-area");
             var element = $main[0];
-            var option = { lang: "ja" };
+            var option: TwitterTweetWidgetOptions = {
+                lang: "ja",
+                linkColor: "#774c80"
+            };
             var entries = Model.getEntries();
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
