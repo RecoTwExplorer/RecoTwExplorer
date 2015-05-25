@@ -775,7 +775,7 @@ module RecoTwExplorer {
             },
             is3D: true,
             legend: "none",
-            sliceVisibilityThreshold: 0.0099
+            sliceVisibilityThreshold: 0.0095
         };
         private static chart: google.visualization.PieChart = null;
         private static current = 0;
