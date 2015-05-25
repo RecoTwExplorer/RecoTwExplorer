@@ -832,7 +832,10 @@ module RecoTwExplorer {
             Controller.setLoadingState(false);
 
             var element = $("#main-area")[0];
-            var option = { lang: "ja" };
+            var option: TwitterTweetWidgetOptions = {
+                lang: "ja",
+                linkColor: "#774c80"
+            };
             var entries = Model.getEntries();
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
