@@ -39,6 +39,7 @@
                         <a href="#home-tab" role="tab" data-toggle="tab">
                             <span class="navbar-label-icon glyphicon glyphicon-home"></span>
                             <span class="navbar-label-text">ホーム</span>
+                            <strong id="unread-tweets"></strong>
                         </a>
                     </li>
                     <li role="presentation">
@@ -107,26 +108,6 @@
             </div>
         </nav>
         <div id="page-main">
-            <div id="alerts">
-                <div class="container">
-                    <div id="post-result" class="alert alert-success">
-                        <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                        <div id="post-success" class="alert-body">
-                            <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
-                        </div>
-                        <div id="post-failed" class="alert-body">
-                            <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
-                        </div>
-                    </div>
-                    <div id="polling-result" class="alert alert-info">
-                        <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                        <div class="alert-body">
-                            <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
-                            <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div id="loading-panel-container">
                 <div id="loading-panel" class="text-center">
                     <div class="progress">
@@ -262,6 +243,7 @@
         <script src="./bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
         <script src="./bower_components/linqjs/linq.js"></script>
         <script src="./bower_components/linqjs/extensions/linq.jquery.js"></script>
+        <script src="./bower_components/favico.js/favico.js"></script>
         <script src="./lib/js/libstring.js"></script>
         <!-- endbuild -->
         <script src="http://chitoku.jp/lunalys/analyzer/tracker.js"></script>
