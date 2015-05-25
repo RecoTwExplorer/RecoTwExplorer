@@ -209,6 +209,20 @@ ul.nav>li>a {
     border-radius: 8px;
     display: none;
 }
+#clear-search-filter {
+    font-size: 12px;
+    margin-left: -36px;
+    width: 36px;
+    position: relative;
+    top: 5px;
+    z-index: 2;
+    border: none;
+    background: none;
+    color: #3f2751;
+    &:hover {
+        color: #593e6f;
+    }
+}
 #loading-panel-container, #no-result-container {
     /* Force smartphones to enable its hardware acceleration */
     -webkit-transform: translateZ(0px);
@@ -231,11 +245,6 @@ ul.nav>li>a {
 #loading-error-icon {
     font-size: 48px;
     margin: -8px -4px 0 0;
-}
-#search-result-panel {
-    margin: 4px 10px 10px 10px;
-    padding: 6px 16px;
-    background: #fefefe;
 }
 blockquote, .twitter-tweet-rendered {
     position: static !important;
@@ -306,6 +315,7 @@ blockquote {
 }
 #search-box {
     border: 1px solid #3f2751;
+    padding-right: 28px;
 }
 #search-box, #search-form .popover {
     min-width: 250px;
