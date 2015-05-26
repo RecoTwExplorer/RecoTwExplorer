@@ -123,6 +123,7 @@ module RecoTwExplorer {
         public static NO_RESULT = "<p class=\"text-center\" style=\"margin-top: 200px;\">該当ユーザーなし</p>";
         public static SEARCH_RESULT = "検索結果: {0}";
         public static STATISTICS_COUNT = "({0:N0} 件)";
+        public static STATISTICS_COUNT_FILTERED = "({0:N0} / {1:N0} 件)";
         public static PAGE_TITLE_SEARCH_RESULT = "検索結果: {0} - " + APP_NAME;
         public static PAGE_TITLE_NORMAL = APP_NAME;
         public static POST_ERRORS: {
@@ -492,11 +493,11 @@ module RecoTwExplorer {
         /**
          * Gets an object to enumerate filtered and sorted entries.
          */
-        public static getEntries(): linqjs.IEnumerable<RecoTwEntry> {
+        public static getEntries(): RecoTwEntryCollection {
             if (Model.entries === null) {
                 return null;
             } else {
-                return Model.entries.getEnumerable();
+                return Model.entries;
             }
         }
 
@@ -836,7 +837,7 @@ module RecoTwExplorer {
                 lang: "ja",
                 linkColor: "#774c80"
             };
-            var entries = Model.getEntries();
+            var entries = Model.getEntries().getEnumerable();
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
                 return;
@@ -874,13 +875,13 @@ module RecoTwExplorer {
             }
 
             if (username === void 0) {
-                $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, statistics.entryLength));
-
                 var options = Controller.getOptions();
                 if (options.isFiltered()) {
                     $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
+                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, statistics.entryLength, Model.getEntries().getAllLength()));
                 } else {
                     $("#statistics-filter").text("");
+                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, statistics.entryLength));
                 }
 
                 if (statistics.entryLength === 0) {
