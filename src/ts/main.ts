@@ -1037,7 +1037,7 @@ module RecoTwExplorer {
                 Controller.onTabSwitched(getTab(<HTMLAnchorElement>$event.relatedTarget), getTab(<HTMLAnchorElement>$event.target));
             });
             $("[href='#home-tab']").click(() => {
-                if (View.getCurrentTab() === Tab.Home) {
+                if (View.getCurrentTab() === Tab.Home && Model.getNotificationCount() > 0) {
                     Model.clearNotification();
                     Controller.onNotificationStatusChanged();
                     Controller.showNewStatuses();
