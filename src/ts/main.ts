@@ -828,11 +828,12 @@ module RecoTwExplorer {
             }
         }
 
-        public static renderHome(): void {
+        public static renderHome(count?: number): void {
             $("#no-result-container").hide();
             Controller.setLoadingState(false);
 
-            var element = $("#main-area")[0];
+            var $main = $("#main-area");
+            var element = $main[0];
             var option: TwitterTweetWidgetOptions = {
                 lang: "ja",
                 linkColor: "#774c80"
@@ -843,11 +844,18 @@ module RecoTwExplorer {
                 return;
             }
 
+            if (count) {
+                entries = entries.take(count);
+                element = $("<div></div>").prependTo($main)[0];
+            } else {
+                entries = entries.skip(View.current).take(View.TWEETS_COUNT);
+            }
+
             View.createTwitterCB(() => {
-                entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
+                entries.forEach(entry => {
                     twttr.widgets.createTweet(entry.tweet_id, element, option).then(View.setTweetWidgetStyle.bind(this, ++View.widgetID, entry));
                 });
-                View.current += View.TWEETS_COUNT;
+                View.current += count || View.TWEETS_COUNT;
             });
         }
 
@@ -1038,9 +1046,10 @@ module RecoTwExplorer {
             });
             $("[href='#home-tab']").click(() => {
                 if (View.getCurrentTab() === Tab.Home && Model.getNotificationCount() > 0) {
+                    var count = Model.getNotificationCount();
                     Model.clearNotification();
                     Controller.onNotificationStatusChanged();
-                    Controller.showNewStatuses();
+                    Controller.showNewStatuses(count);
                 }
             });
             $(".navbar-brand, #clear-search-filter").click(() => {
@@ -1076,10 +1085,6 @@ module RecoTwExplorer {
             $(window).on("popstate", () => {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
             });
-            $("#reload-entries-link").click(() => {
-                $("#polling-result, #post-result").fadeOut();
-                Controller.showNewStatuses();
-            });
             $("#new-record-toggle-button").click(() => {
                 if (!navigator.standalone) {
                     $("#new-record-modal").modal("show");
@@ -1099,12 +1104,6 @@ module RecoTwExplorer {
             });
             $("#new-record-modal").on("hidden.bs.modal", () => {
                 $("#new-record-form .modal-body").empty().html(Resources.URL_INPUT_AREA);
-            });
-            $("#post-result-close").click(() => {
-                $("#post-result").fadeOut();
-            });
-            $("#polling-result-close").click(() => {
-                $("#polling-result").fadeOut();
             });
             $("#statistics-filter-textbox").on("keyup change", function () {
                 Controller.setChartFilterByUsername($(this).val());
@@ -1277,10 +1276,13 @@ module RecoTwExplorer {
             View.renderStatistics(username);
         }
 
-        public static showNewStatuses(): void {
+        public static showNewStatuses(count: number): void {
             View.setCurrentTab(Tab.Home);
-            Controller.setOptions(new Options([], "", null, false, Controller.options.order, Controller.options.orderBy), false, true, true);
-            Controller.reload();
+            if (Controller.options.isFiltered() || Controller.options.order !== Order.Descending || Controller.options.orderBy !== OrderBy.RecordedDate) {
+                Controller.setOptions(new Options([], "", null, false, Controller.options.order, Controller.options.orderBy), false, true, true);
+            } else {
+                View.renderHome(count);
+            }
         }
     }
 
