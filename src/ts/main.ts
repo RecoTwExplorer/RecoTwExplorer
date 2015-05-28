@@ -284,24 +284,36 @@ module RecoTwExplorer {
      * Information which aggregates users.
      */
     class RecoTwStatistics {
-        public entryLength: number;
-        public users: RecoTwUser[];
-        public dataTable: google.visualization.DataTable;
+        private _length: number;
+        private _users: RecoTwUser[];
+        private _table: google.visualization.DataTable;
+
+        public get length(): number {
+            return this._length;
+        }
+
+        public get users(): RecoTwUser[] {
+            return this._users;
+        }
+
+        public get table(): google.visualization.DataTable {
+            return this._table;
+        }
 
         /**
          * Initializes a new instance of RecoTwStatistics class with parameters.
          * @param enumrable An object to enumerate the entries.
          */
         public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
-            this.entryLength = enumerable.count();
-            this.users = enumerable.groupBy(x => x.target_id)
-                                   .select(x => ({ entry: x.firstOrDefault(), count: x.count() }))
-                                   .select(x => ({ target_sn: x.entry.target_sn, count: x.count, percentage: x.count / this.entryLength }))
-                                   .orderByDescending(x => x.count)
-                                   .thenBy(x => x.target_sn.toLowerCase())
-                                   .toArray();
+            this._length = enumerable.count();
+            this._users = enumerable.groupBy(x => x.target_id)
+                                    .select(x => ({ entry: x.firstOrDefault(), count: x.count() }))
+                                    .select(x => ({ target_sn: x.entry.target_sn, count: x.count, percentage: x.count / this._length }))
+                                    .orderByDescending(x => x.count)
+                                    .thenBy(x => x.target_sn.toLowerCase())
+                                    .toArray();
 
-            this.dataTable = new google.visualization.DataTable({
+            this._table = new google.visualization.DataTable({
                 cols: [
                     { type: "string", label: Resources.USERNAME },
                     { type: "number", label: Resources.TWEETS_COUNT }
@@ -321,11 +333,25 @@ module RecoTwExplorer {
          * @param userIDs A unique hash set of screen_names and user IDs.
          * @param enumerable An object to enumerate the entries.
          */
-        public constructor(private elements: RecoTwEntry[], private userIDs: linqjs.IDictionary<string, string> = null, private enumerable: linqjs.IEnumerable<RecoTwEntry> = Enumerable.from(elements)) {
-            if (userIDs === null) {
-                this.userIDs = this.enumerable.toDictionary(x => x.target_id, x => x.target_sn);
-                this.enumerable.forEach(x => x.target_sn = this.userIDs.get(x.target_id));
+        public constructor(private _elements: RecoTwEntry[], private _userIDs: linqjs.IDictionary<string, string> = null, private _enumerable: linqjs.IEnumerable<RecoTwEntry> = Enumerable.from(_elements)) {
+            if (_userIDs === null) {
+                this._userIDs = this.enumerable.toDictionary(x => x.target_id, x => x.target_sn);
+                this.enumerable.forEach(x => x.target_sn = this._userIDs.get(x.target_id));
             }
+        }
+
+        /**
+         * Gets a number of all the entries.
+         */
+        public get length(): number {
+            return this._elements.length;
+        }
+
+        /**
+         * Gets an object to enumerate the entries.
+         */
+        public get enumerable(): linqjs.IEnumerable<RecoTwEntry> {
+            return this._enumerable;
         }
 
         /**
@@ -333,35 +359,21 @@ module RecoTwExplorer {
          * @param items The items to add.
          */
         public addRange(items: linqjs.IEnumerable<RecoTwEntry>): void {
-            items.forEach(x => this.elements[this.elements.length] = x);
+            items.forEach(x => this._elements[this._elements.length] = x);
         }
 
         /**
          * Returns a copy of this instance.
          */
         public clone(): RecoTwEntryCollection {
-            return new RecoTwEntryCollection(this.elements, this.userIDs, this.enumerable);
+            return new RecoTwEntryCollection(this._elements, this._userIDs, this.enumerable);
         }
 
         /**
          * Returns a new instance which has the same elements.
          */
         public reset(): RecoTwEntryCollection {
-            return new RecoTwEntryCollection(this.elements, this.userIDs);
-        }
-
-        /**
-         * Gets a number of all the entries.
-         */
-        public getAllLength(): number {
-            return this.elements.length;
-        }
-
-        /**
-         * Gets an object to enumerate the entries.
-         */
-        public getEnumerable(): linqjs.IEnumerable<RecoTwEntry> {
-            return this.enumerable;
+            return new RecoTwEntryCollection(this._elements, this._userIDs);
         }
 
         /**
@@ -385,19 +397,19 @@ module RecoTwExplorer {
             var sortCallback = (x: any, y: any) => x - y;
             switch (true) {
                 case order === Order.Ascending && orderBy === OrderBy.RecordedDate:
-                    result.enumerable = result.enumerable.orderBy(x => x.record_date);
+                    result._enumerable = result.enumerable.orderBy(x => x.record_date);
                     break;
                 case order === Order.Ascending && orderBy === OrderBy.CreatedDate:
-                    result.enumerable = result.enumerable.orderBy(x => x.tweet_id, sortCallback);
+                    result._enumerable = result.enumerable.orderBy(x => x.tweet_id, sortCallback);
                     break;
                 case order === Order.Descending && orderBy === OrderBy.RecordedDate:
-                    result.enumerable = result.enumerable.orderByDescending(x => x.record_date);
+                    result._enumerable = result.enumerable.orderByDescending(x => x.record_date);
                     break;
                 case order === Order.Descending && orderBy === OrderBy.CreatedDate:
-                    result.enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
+                    result._enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
                     break;
                 case order === Order.Shuffle:
-                    result.enumerable = result.enumerable.shuffle();
+                    result._enumerable = result.enumerable.shuffle();
                     break;
             }
             return result;
@@ -420,17 +432,17 @@ module RecoTwExplorer {
                     } catch (e) {
                         throw new Error(Resources.INCORRECT_REGEX);
                     }
-                    result.enumerable = result.enumerable.where(x => re.test(x.content));
+                    result._enumerable = result.enumerable.where(x => re.test(x.content));
                 } else {
                     options.body = options.body.toLowerCase();
-                    result.enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
+                    result._enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
                 }
             }
             if (options.usernames !== void 0 && options.usernames.length > 0) {
-                result.enumerable = result.enumerable.where(x => options.usernames.some(y => x.target_sn.toLowerCase() === y.toLowerCase()));
+                result._enumerable = result.enumerable.where(x => options.usernames.some(y => x.target_sn.toLowerCase() === y.toLowerCase()));
             }
             if (options.id !== null) {
-                result.enumerable = result.enumerable.where(x => x.tweet_id === options.id);
+                result._enumerable = result.enumerable.where(x => x.tweet_id === options.id);
             }
             return result;
         }
@@ -449,11 +461,11 @@ module RecoTwExplorer {
         private static RECOTW_COUNT_URL = "http://api.recotw.black/1/tweet/count_tweet";
         private static POLLING_INTERVAL = 20000;
 
-        private static entries: RecoTwEntryCollection = null;
-        private static statistics: RecoTwStatistics = null;
-        private static pollingID: number = null;
-        private static notificationCount = 0;
-        private static favico: Favico = null;
+        private static _entries: RecoTwEntryCollection = null;
+        private static _statistics: RecoTwStatistics = null;
+        private static _pollingID: number = null;
+        private static _notificationCount = 0;
+        private static _favico: Favico = null;
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
@@ -466,7 +478,7 @@ module RecoTwExplorer {
             }
             Model.getLatestEntries(entries).then(Controller.onEntriesLoaded, Controller.onEntriesLoadFailed);
             try {
-                Model.favico = new Favico({ animation: "slide" });
+                Model._favico = new Favico({ animation: "slide" });
             } catch (e) {
                 console.log(Resources.BADGE_NOT_SUPPORTED);
             }
@@ -476,7 +488,7 @@ module RecoTwExplorer {
          * Save all the entries to localStorage.
          */
         public static save(): void {
-            localStorage.setItem("entries", JSON.stringify(Model.entries.reset().getEnumerable().toArray()));
+            localStorage.setItem("entries", JSON.stringify(Model.entries.reset().enumerable.toArray()));
         }
 
         /**
@@ -487,18 +499,18 @@ module RecoTwExplorer {
             if (Model.entries === null) {
                 return null;
             } else {
-                return Model.entries.getEnumerable().firstOrDefault(x => x.tweet_id === id);
+                return Model.entries.enumerable.firstOrDefault(x => x.tweet_id === id);
             }
         }
 
         /**
          * Gets an object to enumerate filtered and sorted entries.
          */
-        public static getEntries(): RecoTwEntryCollection {
-            if (Model.entries === null) {
+        public static get entries(): RecoTwEntryCollection {
+            if (Model._entries === null) {
                 return null;
             } else {
-                return Model.entries;
+                return Model._entries;
             }
         }
 
@@ -506,11 +518,11 @@ module RecoTwExplorer {
          * Gets a statistics information by current options. The data is cached if possible.
          * @param username A username to filter.
          */
-        public static getStatistics(): RecoTwStatistics {
+        public static get statistics(): RecoTwStatistics {
             if (Model.entries === null) {
                 return null;
             } else {
-                return Model.statistics !== null ? Model.statistics : (Model.statistics = Model.entries.createStatistics());
+                return Model._statistics !== null ? Model._statistics : (Model._statistics = Model.entries.createStatistics());
             }
         }
 
@@ -518,12 +530,12 @@ module RecoTwExplorer {
          * Sets options to determine how to enumerate entries.
          * @param options Configurations to enumerate entries.
          */
-        public static setOptions(options: Options): void {
+        public static set options(options: Options) {
             if (Model.entries === null) {
-                return null;
+                return;
             }
-            Model.entries = Model.entries.reset().sort(options).filter(options);
-            Model.statistics = null;
+            Model._entries = Model.entries.reset().sort(options).filter(options);
+            Model._statistics = null;
         }
 
         /**
@@ -548,7 +560,7 @@ module RecoTwExplorer {
         public static getLatestEntries(entries?: RecoTwEntry[]): JQueryPromise<RecoTwEntry[]> {
             var sinceID: number;
             if (Model.entries !== null) {
-                sinceID = +Model.entries.reset().getEnumerable().lastOrDefault().id + 1;
+                sinceID = +Model.entries.reset().enumerable.lastOrDefault().id + 1;
             } else if (entries && entries.length > 0) {
                 sinceID = +Enumerable.from(entries).lastOrDefault().id + 1;
             }
@@ -560,7 +572,7 @@ module RecoTwExplorer {
                 data: { since_id: sinceID }
             }).done((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
                 if (Model.entries === null) {
-                    Model.entries = new RecoTwEntryCollection(entries);
+                    Model._entries = new RecoTwEntryCollection(entries);
                 }
                 if (data.length > 0) {
                     Model.entries.addRange(Enumerable.from(data));
@@ -591,7 +603,7 @@ module RecoTwExplorer {
                 },
                 dataType: "json"
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
-                if (+data.id - 1 === +Model.entries.reset().getEnumerable().lastOrDefault().id) {
+                if (+data.id - 1 === +Model.entries.reset().enumerable.lastOrDefault().id) {
                     delete data.result;
                     Model.entries.addRange(Enumerable.make(data));
                     Controller.onNewEntries(1);
@@ -704,10 +716,10 @@ module RecoTwExplorer {
          * Starts polling to observe whether new entries would be registered or not.
          */
         public static startPolling(): void {
-            if (Model.pollingID !== null) {
+            if (Model._pollingID !== null) {
                 return;
             }
-            Model.pollingID = window.setInterval(() => Model.getLatestEntries().then(data => {
+            Model._pollingID = window.setInterval(() => Model.getLatestEntries().then(data => {
                 if (data.length > 0) {
                     Controller.onNewEntries(data.length);
                 }
@@ -718,15 +730,15 @@ module RecoTwExplorer {
          * Stops RecoTw polling.
          */
         public static stopPolling(): void {
-            window.clearInterval(Model.pollingID);
-            Model.pollingID = null;
+            window.clearInterval(Model._pollingID);
+            Model._pollingID = null;
         }
 
         /**
          * Gets a number of notifications.
          */
-        public static getNotificationCount(): number {
-            return Model.notificationCount;
+        public static get notificationCount(): number {
+            return Model._notificationCount;
         }
 
         /**
@@ -737,9 +749,9 @@ module RecoTwExplorer {
             if (count < 0) {
                 return;
             }
-            Model.notificationCount += count;
+            Model._notificationCount += count;
             try {
-                Model.favico.badge(Model.notificationCount);
+                Model._favico.badge(Model._notificationCount);
             } catch (e) {
                 console.log(Resources.BADGE_NOT_SUPPORTED);
             }
@@ -749,9 +761,9 @@ module RecoTwExplorer {
          * Clears all of the notifications.
          */
         public static clearNotification(): void {
-            Model.notificationCount = 0;
+            Model._notificationCount = 0;
             try {
-                Model.favico.reset();
+                Model._favico.reset();
             } catch (e) {
                 console.log(Resources.BADGE_NOT_SUPPORTED);
             }
@@ -779,10 +791,10 @@ module RecoTwExplorer {
             legend: "none",
             sliceVisibilityThreshold: 0.0095
         };
-        private static chart: google.visualization.PieChart = null;
-        private static current = 0;
-        private static widgetID = -1;
-        private static title = Resources.PAGE_TITLE_NORMAL;
+        private static _chart: google.visualization.PieChart = null;
+        private static _current = 0;
+        private static _widgetID = -1;
+        private static _title = Resources.PAGE_TITLE_NORMAL;
 
         public static getTabFromID(id: string): Tab {
             switch (id) {
@@ -795,27 +807,27 @@ module RecoTwExplorer {
             }
         }
 
-        public static getCurrentTab(): Tab {
+        public static get currentTab(): Tab {
             return View.getTabFromID($(".tab-pane.active").attr("id"));
         }
 
-        public static setCurrentTab(tab: Tab): JQuery {
+        public static set currentTab(tab: Tab) {
             switch (tab) {
                 case Tab.Home:
-                    return $("a[href='#home-tab']").tab("show");
+                    $("a[href='#home-tab']").tab("show");
+                    return;
                 case Tab.Statistics:
-                    return $("a[href='#statistics-tab']").tab("show");
-                default:
-                    return null;
+                    $("a[href='#statistics-tab']").tab("show");
+                    return;
             }
         }
 
-        public static setTitle(title: string = View.title): void {
-            View.title = title;
+        public static set title(title: string) {
+            View._title = title || View.title;
             if (location.hostname === "" || location.hostname === "localhost") {
                 title = "[DEBUG] " + title;
             }
-            if (Model.getNotificationCount() > 0) {
+            if (Model.notificationCount > 0) {
                 title = "* " + title;
             }
             document.title = title;
@@ -831,7 +843,7 @@ module RecoTwExplorer {
 
         public static renderHome(count?: number): void {
             $("#no-result-container").hide();
-            Controller.setLoadingState(false);
+            Controller.isLoading = false;
 
             var $main = $("#main-area");
             var element = $main[0];
@@ -839,7 +851,7 @@ module RecoTwExplorer {
                 lang: "ja",
                 linkColor: "#774c80"
             };
-            var entries = Model.getEntries().getEnumerable();
+            var entries = Model.entries.enumerable;
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
                 return;
@@ -849,14 +861,14 @@ module RecoTwExplorer {
                 entries = entries.take(count);
                 element = $("<div></div>").prependTo($main)[0];
             } else {
-                entries = entries.skip(View.current).take(View.TWEETS_COUNT);
+                entries = entries.skip(View._current).take(View.TWEETS_COUNT);
             }
 
             View.createTwitterCB(() => {
                 entries.forEach(entry => {
-                    twttr.widgets.createTweet(entry.tweet_id, element, option).then(View.setTweetWidgetStyle.bind(this, ++View.widgetID, entry));
+                    twttr.widgets.createTweet(entry.tweet_id, element, option).then(View.setTweetWidgetStyle.bind(this, ++View._widgetID, entry));
                 });
-                View.current += count || View.TWEETS_COUNT;
+                View._current += count || View.TWEETS_COUNT;
             });
         }
 
@@ -871,29 +883,28 @@ module RecoTwExplorer {
         }
 
         public static renderStatistics(username?: string): void {
-            if (Model.getEntries() === null) {
+            if (Model.entries === null) {
                 return;
             }
 
-            var statistics = Model.getStatistics();
             $("#no-result-container").hide();
 
-            if (View.chart === null) {
-                View.chart = new google.visualization.PieChart($("#statistics-chart")[0]);
-                google.visualization.events.addListener(View.chart, "click", Controller.onChartSliceClick);
+            if (View._chart === null) {
+                View._chart = new google.visualization.PieChart($("#statistics-chart")[0]);
+                google.visualization.events.addListener(View._chart, "click", Controller.onChartSliceClick);
             }
 
             if (username === void 0) {
                 var options = Controller.getOptions();
                 if (options.isFiltered()) {
                     $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
-                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, statistics.entryLength, Model.getEntries().getAllLength()));
+                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, Model.statistics.length, Model.entries.length));
                 } else {
                     $("#statistics-filter").text("");
-                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, statistics.entryLength));
+                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, Model.statistics.length));
                 }
 
-                if (statistics.entryLength === 0) {
+                if (Model.statistics.length === 0) {
                     $("#statistics-chart").hide();
                     $("#no-result-container").fadeIn();
                     return;
@@ -901,11 +912,11 @@ module RecoTwExplorer {
                     $("#statistics-chart").show();
                 }
 
-                View.chart.draw(statistics.dataTable, View.GRAPH_OPTIONS);
+                View._chart.draw(Model.statistics.table, View.GRAPH_OPTIONS);
             }
 
-            var table = statistics.users.map((user, index) => ({ html: View.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
-                                        .filter(x => username === void 0 || x.screenName.startsWith(username));
+            var table = Model.statistics.users.map((user, index) => ({ html: View.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
+                                              .filter(x => username === void 0 || x.screenName.startsWith(username));
 
             $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
         }
@@ -915,7 +926,7 @@ module RecoTwExplorer {
         }
 
         public static clearHome(): void {
-            View.current = 0;
+            View._current = 0;
             $("#main-area").empty();
         }
 
@@ -956,19 +967,19 @@ module RecoTwExplorer {
      * The controller.
      */
     export class Controller {
-        private static options = new Options();
-        private static loading = false;
-        private static homeRendered = false;
-        private static statisticsRendered = false;
-        private static lastRegistrationError: string = null;
+        private static _options = new Options();
+        private static _loading = false;
+        private static _homeRendered = false;
+        private static _statisticsRendered = false;
+        private static _lastRegistrationError: string = null;
 
         public static getOptions(): Options {
-            return Controller.options;
+            return Controller._options;
         }
 
         public static setOptions(options: Options, sortOnly: boolean, setQuery: boolean, setKeywords: boolean): void {
             try {
-                Model.setOptions(Controller.options = options);
+                Model.options = Controller._options = options;
             } catch (e) {
                 console.log(e.message);
                 return;
@@ -983,22 +994,21 @@ module RecoTwExplorer {
 
             if (options.isFiltered()) {
                 $("#clear-search-filter").show();
-                View.setTitle(String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords()));
+                View.title = String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords());
             } else {
                 $("#clear-search-filter").hide();
-                View.setTitle(Resources.PAGE_TITLE_NORMAL);
+                View.title = Resources.PAGE_TITLE_NORMAL;
             }
 
             $("#statistics-filter-textbox").val("");
-            if (Model.getEntries() === null) {
+            if (Model.entries === null) {
                 return;
             }
 
-            var current = View.getCurrentTab();
-            if (current === Tab.Statistics) {
+            if (View.currentTab === Tab.Statistics) {
                 View.clearHome();
                 if (sortOnly) {
-                    Controller.homeRendered = false;
+                    Controller._homeRendered = false;
                 } else {
                     Controller.reload();
                 }
@@ -1007,12 +1017,16 @@ module RecoTwExplorer {
             }
         }
 
-        public static setLoadingState(state: boolean) {
-            Controller.loading = state;
+        public static get isLoading(): boolean {
+            return Controller._loading;
+        }
+
+        public static set isLoading(state: boolean) {
+            Controller._loading = state;
         }
 
         public static main(): void {
-            View.setTitle(Resources.PAGE_TITLE_NORMAL);
+            View.title = Resources.PAGE_TITLE_NORMAL;
             $("#app-version").text(APP_VERSION);
             if (navigator.standalone) {
                 $(document.body).addClass("standalone");
@@ -1027,7 +1041,7 @@ module RecoTwExplorer {
             $(window).unload(Model.save);
             $(window).bottom({ proximity: 0.05 });
             $(window).on("bottom", () => {
-                if (View.getCurrentTab() === Tab.Home) {
+                if (View.currentTab === Tab.Home) {
                     Controller.onPageBottom();
                 }
             });
@@ -1036,28 +1050,28 @@ module RecoTwExplorer {
                 Controller.onTabSwitched(getTab(<HTMLAnchorElement>$event.relatedTarget), getTab(<HTMLAnchorElement>$event.target));
             });
             $("[href='#home-tab']").click(() => {
-                if (View.getCurrentTab() === Tab.Home && Model.getNotificationCount() > 0) {
-                    var count = Model.getNotificationCount();
+                var count = Model.notificationCount;
+                if (View.currentTab === Tab.Home && count > 0) {
                     Model.clearNotification();
                     Controller.onNotificationStatusChanged();
                     Controller.showNewStatuses(count);
                 }
             });
             $(".navbar-brand, #clear-search-filter").click(() => {
-                Controller.setOptions(Options.fromKeywords("", Controller.getOrder(), Controller.getOrderBy()), false, true, true);
+                Controller.setOptions(Options.fromKeywords("", Controller.order, Controller.orderBy), false, true, true);
             });
             $("[id^='order-by-']").change(() => {
-                Controller.options.order = Controller.getOrder();
-                Controller.options.orderBy = Controller.getOrderBy();
-                Controller.setOptions(Controller.options, true, false, false);
+                Controller.getOptions().order = Controller.order;
+                Controller.getOptions().orderBy = Controller.orderBy;
+                Controller.setOptions(Controller.getOptions(), true, false, false);
             });
             $("#order-shuffle").click(() => {
-                Controller.options.order = Controller.getOrder();
-                Controller.setOptions(Controller.options, true, false, false);
+                Controller.getOptions().order = Controller.order;
+                Controller.setOptions(Controller.getOptions(), true, false, false);
             });
             $("#search-form").submit($event => {
                 $event.preventDefault();
-                Controller.setOptions(Options.fromKeywords($("#search-box").val(), Controller.getOrder(), Controller.getOrderBy()), false, true, false);
+                Controller.setOptions(Options.fromKeywords($("#search-box").val(), Controller.order, Controller.orderBy), false, true, false);
             });
             $("#search-form-toggle-button").click(function () {
                 var $this = $(this);
@@ -1074,7 +1088,7 @@ module RecoTwExplorer {
                 }
             });
             $(window).on("popstate", () => {
-                Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
+                Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
             $("#new-record-toggle-button").click(() => {
                 if (!navigator.standalone) {
@@ -1113,35 +1127,35 @@ module RecoTwExplorer {
             $("#new-record-toggle-button").popover({
                 placement: "bottom",
                 html: true,
-                content: () => Controller.lastRegistrationError,
+                content: () => Controller._lastRegistrationError,
                 trigger: "manual"
             });
         }
 
-        public static getOrder(): Order {
+        public static get order(): Order {
             return $(".order-radio-box:checked").data("order");
         }
 
-        public static getOrderBy(): OrderBy {
+        public static get orderBy(): OrderBy {
             return $(".order-radio-box:checked").data("order-by");
         }
 
         public static reload(): void {
-            if (Model.getEntries() === null) {
+            if (Model.entries === null) {
                 return;
             }
-            switch (View.getCurrentTab()) {
+            switch (View.currentTab) {
                 case Tab.Home:
                     View.clearHome();
                     View.renderHome();
                     $("#statistics-filter-textbox").val("");
-                    Controller.homeRendered = true;
-                    Controller.statisticsRendered = false;
+                    Controller._homeRendered = true;
+                    Controller._statisticsRendered = false;
                     break;
                 case Tab.Statistics:
                     View.renderStatistics();
-                    Controller.homeRendered = false;
-                    Controller.statisticsRendered = true;
+                    Controller._homeRendered = false;
+                    Controller._statisticsRendered = true;
                     break;
             }
         }
@@ -1149,11 +1163,11 @@ module RecoTwExplorer {
         public static onEntriesLoaded(): void {
             $("#loading-recotw").fadeOut();
             $("#loading-panel-container").fadeOut();
-            if (Model.getEntries() === null) {
+            if (Model.entries === null) {
                 return;
             }
             Model.startPolling();
-            Controller.setOptions(Controller.options, false, false, true);
+            Controller.setOptions(Controller.getOptions(), false, false, true);
         }
 
         public static onEntriesLoadFailed(): void {
@@ -1165,7 +1179,7 @@ module RecoTwExplorer {
         }
 
         public static onRegistrationFailed(error: string): void {
-            Controller.lastRegistrationError = String.format(Resources.REGISTRATION_FAILED_HTML, error);
+            Controller._lastRegistrationError = String.format(Resources.REGISTRATION_FAILED_HTML, error);
             var $elm = $("#new-record-toggle-button").popover("show");
             window.setTimeout(() => $elm.popover("hide"), 5000);
         }
@@ -1176,8 +1190,8 @@ module RecoTwExplorer {
         }
 
         public static onNotificationStatusChanged(): void {
-            View.setTitle();
-            var count = Model.getNotificationCount();
+            View.title = null;
+            var count = Model.notificationCount;
             if (count === 0) {
                 $("#unread-tweets").fadeOut();
             } else {
@@ -1193,9 +1207,9 @@ module RecoTwExplorer {
         public static onTabSwitched(previous: Tab, current: Tab): void {
             switch (current) {
                 case Tab.Home:
-                    if (!Controller.homeRendered) {
+                    if (!Controller._homeRendered) {
                         View.renderHome();
-                        Controller.homeRendered = true;
+                        Controller._homeRendered = true;
                     }
                     break;
                 case Tab.Statistics:
@@ -1203,19 +1217,19 @@ module RecoTwExplorer {
                         $("#statistics-filter-textbox").focus();
                         window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
                     }
-                    if (!Controller.statisticsRendered) {
+                    if (!Controller._statisticsRendered) {
                         View.renderStatistics();
-                        Controller.statisticsRendered = true;
+                        Controller._statisticsRendered = true;
                     }
                     break;
             }
         }
 
         public static onPageBottom(): void {
-            if (Controller.loading) {
+            if (Controller.isLoading) {
                 return;
             }
-            Controller.loading = true;
+            Controller.isLoading = true;
             View.renderHome();
         }
 
@@ -1228,7 +1242,7 @@ module RecoTwExplorer {
             if (!id.contains("#")) {
                 return;
             }
-            Controller.setSearchFilterByUsername(Model.getStatistics().users[+id.substring(id.indexOf("#") + 1)].target_sn);
+            Controller.setSearchFilterByUsername(Model.statistics.users[+id.substring(id.indexOf("#") + 1)].target_sn);
         }
 
         private static onNewRecordFormTextBoxValueChanged(): void {
@@ -1258,9 +1272,10 @@ module RecoTwExplorer {
         }
 
         public static setSearchFilterByUsername(username: string) {
-            View.setCurrentTab(Tab.Home);
-            Controller.options.usernames = [username];
-            Controller.setOptions(Controller.options, false, true, true);
+            View.currentTab = Tab.Home;
+            var options = Controller.getOptions();
+            options.usernames = [username];
+            Controller.setOptions(options, false, true, true);
         }
 
         private static setChartFilterByUsername(username: string) {
@@ -1268,9 +1283,10 @@ module RecoTwExplorer {
         }
 
         public static showNewStatuses(count: number): void {
-            View.setCurrentTab(Tab.Home);
-            if (Controller.options.isFiltered() || Controller.options.order !== Order.Descending || Controller.options.orderBy !== OrderBy.RecordedDate) {
-                Controller.setOptions(new Options([], "", null, false, Controller.options.order, Controller.options.orderBy), false, true, true);
+            View.currentTab = Tab.Home;
+            var options = Controller.getOptions();
+            if (options.isFiltered() || options.order !== Order.Descending || options.orderBy !== OrderBy.RecordedDate) {
+                Controller.setOptions(new Options([], "", null, false, options.order, options.orderBy), false, true, true);
             } else {
                 View.renderHome(count);
             }
