@@ -284,8 +284,8 @@ module RecoTwExplorer {
      * Information which aggregates users.
      */
     class RecoTwStatistics {
-        public users: RecoTwUser[];
         public entryLength: number;
+        public users: RecoTwUser[];
         public dataTable: google.visualization.DataTable;
 
         /**
@@ -293,13 +293,14 @@ module RecoTwExplorer {
          * @param enumrable An object to enumerate the entries.
          */
         public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
+            this.entryLength = enumerable.count();
             this.users = enumerable.groupBy(x => x.target_id)
-                                   .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
+                                   .select(x => ({ entry: x.firstOrDefault(), count: x.count() }))
+                                   .select(x => ({ target_sn: x.entry.target_sn, count: x.count, percentage: x.count / this.entryLength }))
                                    .orderByDescending(x => x.count)
                                    .thenBy(x => x.target_sn.toLowerCase())
                                    .toArray();
 
-            this.entryLength = enumerable.count();
             this.dataTable = new google.visualization.DataTable({
                 cols: [
                     { type: "string", label: Resources.USERNAME },
@@ -903,24 +904,14 @@ module RecoTwExplorer {
                 View.chart.draw(statistics.dataTable, View.GRAPH_OPTIONS);
             }
 
-            View.renderStatisticsTable(username, statistics);
+            var table = statistics.users.map((user, index) => ({ html: View.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
+                                        .filter(x => username === void 0 || x.screenName.startsWith(username));
+
+            $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
         }
 
-        private static renderStatisticsTable(username: string, statistics: RecoTwStatistics): void {
-            // Counts colored slices in the chart.
-            var colored = statistics.users.filter(x => x.count / statistics.entryLength > View.GRAPH_OPTIONS.sliceVisibilityThreshold).length;
-            var html = "";
-            username = username !== void 0 ? username.toLowerCase() : void 0;
-
-            for (var i = 0; i < statistics.users.length; i++) {
-                if (username !== void 0 && !statistics.users[i].target_sn.toLowerCase().startsWith(username)) {
-                    continue;
-                }
-                var color = i < colored ? View.GRAPH_COLORS[i + 1] : View.GRAPH_COLORS[0];
-                html += String.format(Resources.STATISTICS_TABLE_HTML, color, statistics.users[i].target_sn, statistics.users[i].count, statistics.users[i].count / statistics.entryLength);
-            }
-
-            $("#statistics-table").html(html.length > 0 ? html : Resources.NO_RESULT);
+        private static generateTableRow(user: RecoTwUser, index: number): string {
+            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > View.GRAPH_OPTIONS.sliceVisibilityThreshold ? View.GRAPH_COLORS[index + 1] : View.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage);
         }
 
         public static clearHome(): void {
@@ -1273,7 +1264,7 @@ module RecoTwExplorer {
         }
 
         private static setChartFilterByUsername(username: string) {
-            View.renderStatistics(username);
+            View.renderStatistics(username.toLowerCase());
         }
 
         public static showNewStatuses(count: number): void {

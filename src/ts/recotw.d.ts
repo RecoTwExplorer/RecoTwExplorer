@@ -85,5 +85,9 @@
          * A number of Tweets which RecoTw has registered.
          */
         count: number;
+        /**
+         * A percentage of the users' Tweets.
+         */
+        percentage: number;
     }
 }
