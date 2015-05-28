@@ -401,6 +401,9 @@ blockquote {
 #new-record-form .has-success .glyphicon-ok, #new-record-form .has-error .glyphicon-remove {
     display: block;
 }
+body.standalone #help-modal {
+    margin-top: 20px;
+}
 #help-modal .modal-body div {
     padding: 10px;
 }
@@ -408,8 +411,14 @@ blockquote {
     margin-top: 0;
     font-size: 24px;
 }
+#help-modal h3 {
+    padding: 0 12px;
+    margin: 26px 18px -5px 4px;
+    border: 0 solid #563d69;
+    border-left-width: 1ex;
+}
 #help-modal p {
-    margin-top: 22px;
+    margin-top: 18px;
     padding: 0 4px;
     line-height: 1.8;
 }
@@ -616,6 +625,9 @@ blockquote {
     }
     #statistics-table {
         height: auto;
+    }
+    #help-modal h2 {
+        font-size: 18px;
     }
 }
 @media (max-width: 382px) {

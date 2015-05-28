@@ -39,6 +39,7 @@ $ gulp
 - [Bootstrap](http://getbootstrap.com/)
 - [Font Awesome](http://fortawesome.github.io/Font-Awesome/)
 - [Google Charts](https://developers.google.com/chart/)
+- [favico.js](http://lab.ejci.net/favico.js/)
 
 ==================================
 © Chitoku 2014. Powered by RecoTw.
