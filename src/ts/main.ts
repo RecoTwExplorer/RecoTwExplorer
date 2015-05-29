@@ -892,7 +892,8 @@ module RecoTwExplorer {
                     View.showStatusLoadFailedMessage(widgetID, entry);
                 } else {
                     var $contents = $(widget).contents();
-                    $contents.find(".FollowButton").hide();
+                    $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
+                    $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
                 }
             });
