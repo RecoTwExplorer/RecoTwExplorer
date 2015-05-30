@@ -1013,7 +1013,8 @@ module RecoTwExplorer {
         }
 
         public static showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
-            var date = String.format("<a href=\"{0}\" target=\"_blank\">{1:h:mm tt - d M月 yyyy}</a>", Model.createStatusURL(entry), Model.createDateByTweetID(entry)).replace("午前", "AM").replace("午後", "PM");
+            var _date = Model.createDateByTweetID(entry);
+            var date = String.format("<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:h:mm tt - d M月 yyyy}</time></a>", Model.createStatusURL(entry), _date, _date.toISOString() ).replace("午前", "AM").replace("午後", "PM");
             var html = String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content), date);
             $("#twitter-widget-" + widgetID).after(html).remove();
         }
