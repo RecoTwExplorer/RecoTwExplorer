@@ -641,6 +641,17 @@ body.standalone #help-modal {
         font-size: 18px;
     }
 }
+@media (max-width: 390px) {
+    blockquote {
+        font-size: 11px;
+        p {
+            font-size: 14px;
+            &.tweet-date {
+                font-size: 12.25px;
+            }
+        }
+    }
+}
 @media (max-width: 382px) {
     ul.nav > li > a {
         padding: 12px 13px;
@@ -648,16 +659,4 @@ body.standalone #help-modal {
     #statistics-title {
         font-size: 22px;
     }
-}
-
-@media (max-width: 373px) {
-  blockquote {
-    font-size: 11px;
-    p {
-      font-size: 14px;
-      &.tweet-date  {
-        font-size: 12.25px;
-      }
-    }
-  }
 }
