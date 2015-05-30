@@ -328,14 +328,22 @@ module RecoTwExplorer {
      * The collection of RecoTw Entries.
      */
     class RecoTwEntryCollection {
+        private _elements: RecoTwEntry[];
+        private _userIDs: linqjs.IDictionary<string, string>;
+        private _enumerable: linqjs.IEnumerable<RecoTwEntry>;
+
         /**
          * Initializes a new instance of RecoTwEntryCollection class with parameters.
          * @param elements All the entries.
          * @param userIDs A unique hash set of screen_names and user IDs.
          * @param enumerable An object to enumerate the entries.
          */
-        public constructor(private _elements: RecoTwEntry[], private _userIDs: linqjs.IDictionary<string, string> = null, private _enumerable: linqjs.IEnumerable<RecoTwEntry> = Enumerable.from(_elements)) {
-            if (_userIDs === null) {
+        public constructor(elements: RecoTwEntry[], userIDs?: linqjs.IDictionary<string, string>, enumerable?: linqjs.IEnumerable<RecoTwEntry>) {
+            this._elements = elements;
+            this._userIDs = userIDs || null;
+            this._enumerable = enumerable || Enumerable.from(elements);
+
+            if (userIDs === null) {
                 this._userIDs = this.enumerable.toDictionary(x => x.target_id, x => x.target_sn);
                 this.enumerable.forEach(x => x.target_sn = this._userIDs.get(x.target_id));
             }
