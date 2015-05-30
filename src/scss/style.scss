@@ -289,7 +289,7 @@ blockquote {
             color: #697882;
             text-decoration: none;
             &:hover {
-                color: #927099; 
+                color: #927099;
             }
         }
     }
@@ -647,5 +647,16 @@ body.standalone #help-modal {
     }
     #statistics-title {
         font-size: 22px;
+    }
+}
+@media (max-width: 373px) {
+    blockquote {
+        font-size: 11px;
+        p {
+            font-size: 14px;
+            &.tweet-date {
+                font-size: 12.25px;
+            }
+        }
     }
 }
