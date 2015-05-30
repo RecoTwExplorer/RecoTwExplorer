@@ -1218,9 +1218,7 @@ module RecoTwExplorer {
                 $("#unread-tweets").fadeOut();
             } else {
                 var badge = count < 100 ? count : "99+";
-                $("#unread-tweets").text(badge).fadeIn().promise().done(($event: JQueryEventObject) => {
-                    (<HTMLElement>$event.target).style.display = "inline-block";
-                });
+                $("#unread-tweets").text(badge).css({ display: "inline-block" });
             }
         }
 
