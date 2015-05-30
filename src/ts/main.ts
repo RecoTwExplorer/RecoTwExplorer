@@ -116,6 +116,7 @@ module RecoTwExplorer {
         public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
         public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\" onmousedown=\"RecoTwExplorer.Controller.applySearchFilterByUsername('{1}')\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
+        public static TWEET_TIME_HTML = "<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:h:mm tt - d M月 yyyy}</time></a>";
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
         public static URL_INPUT_AREA = $("#new-record-form .modal-body").html();
@@ -1013,10 +1014,10 @@ module RecoTwExplorer {
         }
 
         public static showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
-            var _date = Model.createDateByTweetID(entry);
-            var date = String.format("<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:h:mm tt - d M月 yyyy}</time></a>", Model.createStatusURL(entry), _date, _date.toISOString() ).replace("午前", "AM").replace("午後", "PM");
-            var html = String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content), date);
-            $("#twitter-widget-" + widgetID).after(html).remove();
+            var tweetDate = Model.createDateByTweetID(entry);
+            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString()).replace("午前", "AM").replace("午後", "PM");
+            var content = String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content), time);
+            $("#twitter-widget-" + widgetID).after(content).remove();
         }
     }
 
