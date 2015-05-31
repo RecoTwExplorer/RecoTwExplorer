@@ -1107,7 +1107,7 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
             $(".navbar-nav a[role='tab']").on("shown.bs.tab", $event => {
-                Controller.onTabSwitched(View.getTabFromID((<HTMLAnchorElement>$event.relatedTarget).href), View.getTabFromID((<HTMLAnchorElement>$event.target).href));
+                Controller.onTabSwitched(View.getTabFromID((<HTMLAnchorElement>$event.target).href));
             });
             $("[href='#home-tab']").click(() => {
                 var count = Model.notificationCount;
@@ -1259,7 +1259,7 @@ module RecoTwExplorer {
             return /iPhone|iP[ao]d|Android|Windows.*Phone/.test(navigator.userAgent);
         }
 
-        public static onTabSwitched(previous: Tab, current: Tab): void {
+        public static onTabSwitched(current: Tab): void {
             switch (current) {
                 case Tab.Home:
                     if (!Controller._homeRendered) {
