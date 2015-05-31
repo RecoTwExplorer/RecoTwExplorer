@@ -107,7 +107,7 @@ module RecoTwExplorer {
                 var remaining = 5;
                 var interval = window.setInterval(() => {
                     $timer.text(--remaining);
-                    if (remaining == 0) {
+                    if (remaining === 0) {
                         window.clearInterval(interval);
                         window.setTimeout(() => {
                             $("#page-done").text("登録完了: ウィンドウを閉じてください。");
