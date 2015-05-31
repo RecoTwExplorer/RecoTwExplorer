@@ -1,4 +1,4 @@
-﻿/*
+/*
  * libstring - Copyright 2014, Chitoku
  * http://chitoku.jp/
  *

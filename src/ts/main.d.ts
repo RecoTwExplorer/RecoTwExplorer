@@ -1,4 +1,4 @@
-﻿interface JQuery {
+interface JQuery {
     /**
      * Shakes the matched elements.
      */

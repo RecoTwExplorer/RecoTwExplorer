@@ -1,4 +1,4 @@
-﻿/// <reference path="./recotw.d.ts"/>
+/// <reference path="./recotw.d.ts"/>
 /// <reference path="../../lib/js/typings/jquery/jquery.d.ts"/>
 /// <reference path="../../lib/js/typings/twitter.d.ts"/>
 
