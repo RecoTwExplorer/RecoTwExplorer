@@ -5,11 +5,11 @@
   "main": "recotw.js",
   "dependencies": {
     "gulp": "^3.8.11",
-    "gulp-typescript": "^2.7.4"
+    "gulp-typescript": "^2.7.5"
   },
   "devDependencies": {
-    "browser-sync": "^2.7.1",
-    "del": "^1.1.1",
+    "browser-sync": "^2.7.6",
+    "del": "^1.2.0",
     "gulp-notify": "^2.2.0",
     "gulp-bower": "0.0.10",
     "gulp-cache": "^0.2.9",
@@ -24,9 +24,9 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-tslint": "^3.0.1-beta",
     "gulp-uglify": "^1.2.0",
-    "gulp-useref": "^1.1.2",
+    "gulp-useref": "^1.2.0",
     "run-sequence": "^1.1.0",
-    "typescript-require": "^0.2.8"
+    "typescript-require": "^0.2.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
