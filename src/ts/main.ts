@@ -120,6 +120,7 @@ module RecoTwExplorer {
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
         public static URL_INPUT_AREA = $("#new-record-form .modal-body").html();
+        public static URL_INPUT_REGEX = new RegExp($(".url-box").attr("pattern"));
         public static USERNAME = "ユーザ名";
         public static TWEETS_COUNT = "ツイート数";
         public static NO_RESULT = "<p class=\"text-center\" style=\"margin-top: 200px;\">該当ユーザーなし</p>";
@@ -571,7 +572,7 @@ module RecoTwExplorer {
             if (input === void 0 || input === null || input.length === 0) {
                 return null;
             } else if (typeof input === "string") {
-                if ((match = input.match(/^(?:(?:https?:\/\/(?:www\.|mobile\.)?)?twitter\.com\/(?:#!\/)?[a-zA-Z0-9_]+\/status(?:es)?\/(\d+)|(\d+))$/)) !== null) {
+                if ((match = input.match(Resources.URL_INPUT_REGEX)) !== null) {
                     return match[1] || match[2];
                 }
             } else if (Array.isArray(input)) {
