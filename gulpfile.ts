@@ -48,7 +48,7 @@ class Tasks {
 
     private html(): NodeJS.ReadWriteStream {
         var assets = $.useref.assets();
-        return gulp.src(["./index.html"])
+        return gulp.src(["./*.html"])
                    .pipe(assets)
                    .pipe($.if("*.js", $.uglify({ preserveComments: "some" })))
                    .pipe($.if("*.css", $.csso()))
@@ -59,7 +59,7 @@ class Tasks {
     }
 
     private styles(): NodeJS.ReadWriteStream {
-        return gulp.src(["./src/scss/style.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
+        return gulp.src(["./src/scss/*.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
                    .pipe($.sass({
                        precision: 10
                    }))
@@ -122,7 +122,7 @@ class Tasks {
                 get: () => void 0
             },
             server: ["."],
-            files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
+            files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
         gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);

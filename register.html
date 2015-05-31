@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <title>ツイートの登録 - RecoTw Explorer</title>
+        <meta charset="UTF-8">
+        <meta name="author" content="Chitoku">
+        <meta name="description" content="RecoTw にツイートを登録します。">
+        <meta name="keywords" content="RecoTw,Twitter,黒歴史,Viewer,Explorer,登録">
+        <link rel="shortcut icon" href="./favicon.ico" />
+        <!-- build:css css/bookmarklet.min.css -->
+        <link rel="stylesheet" href="./dev/css/bookmarklet.css">
+        <!-- endbuild -->
+        <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    </head>
+    <body>
+        <nav role="navigation">
+            <a class="navbar-brand">RecoTw Explorer</a>
+            <ul class="nav navbar-nav">
+                <li role="presentation" class="active">
+                    <a>ツイート登録</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="page-main" class="container">
+            <div id="tweet-widget"></div>
+            <div id="toolbar">
+                <button type="button" id="cancel-button">キャンセル</button>
+                <button type="submit" id="register-button">登録</button>
+            </div>
+            <div id="id-error" class="border-box">
+                ツイートが取得できません。ツイートのページから実行してください。
+            </div>
+            <div id="not-available" class="border-box">
+                このツイートは削除されたか、または非公開に設定されているため登録できません。
+            </div>
+        </div>
+        <div id="page-done" class="container border-box">
+            登録完了: このウィンドウは <span id="close-timer">5</span> 秒後に自動的に閉じます。
+        </div>
+        <div id="page-fail" class="container border-box">
+            登録失敗: <span id="fail-reason">原因不明のエラーです。</span>
+        </div>
+        <script type="text/javascript">
+            window.twttr = (function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0],
+                  t = window.twttr || {};
+                if (d.getElementById(id)) return;
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "https://platform.twitter.com/widgets.js";
+                fjs.parentNode.insertBefore(js, fjs);
+
+                t._e = [];
+                t.ready = function (f) {
+                    t._e.push(f);
+                };
+
+                return t;
+            }(document, "script", "twitter-wjs"));
+        </script>
+        <!-- build:js js/bookmarklet.min.js -->
+        <script src="./bower_components/jquery/dist/jquery.js"></script>
+        <script src="./dev/js/bookmarklet.js"></script>
+        <!-- endbuild -->
+    </body>
+</html>
