@@ -116,7 +116,8 @@ module RecoTwExplorer {
         public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
         public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\" onmousedown=\"RecoTwExplorer.Controller.applySearchFilterByUsername('{1}')\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
-        public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<a href=\"{0}\" target=\"_blank\">表示</a><hr><div><img src=\"{1}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{2}\" target=\"_blank\">@{3}</a></span><p>{4}</p></div></blockquote>";
+        public static TWEET_TIME_HTML = "<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:h:mm tt - d M月 yyyy}</time></a>";
+        public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
         public static URL_INPUT_AREA = $("#new-record-form .modal-body").html();
         public static USERNAME = "ユーザ名";
@@ -469,6 +470,7 @@ module RecoTwExplorer {
         private static RECOTW_POST_URL = "http://api.recotw.black/1/tweet/record_tweet";
         private static RECOTW_COUNT_URL = "http://api.recotw.black/1/tweet/count_tweet";
         private static POLLING_INTERVAL = 20000;
+        private static TWITTER_SNOWFLAKE_EPOCH = 1288834974657;
 
         private static _entries: RecoTwEntryCollection = null;
         private static _statistics: RecoTwStatistics = null;
@@ -649,8 +651,8 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a Twitter status URL by the ID.
-         * @param id The ID of the Tweet.
+         * Creates a Twitter status URL by ID.
+         * @param id The ID of a Tweet.
          */
         public static createStatusURL(id: string): string;
         /**
@@ -675,8 +677,8 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a Twitter user URL by the screen_name.
-         * @param screenName The screen_name of the user.
+         * Creates a Twitter user URL by screen_name.
+         * @param screenName The screen_name of a user.
          */
         public static createUserURL(screenName: string): string;
         /**
@@ -693,7 +695,7 @@ module RecoTwExplorer {
                 return String.format(Model.TWITTER_USER_URL, item);
             } else {
                 if (item.target_sn !== void 0) {
-                    return String.format(Model.TWITTER_USER_URL, item.target_sn);
+                    return Model.createUserURL(item.target_sn);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_USER_URL);
                 }
@@ -701,8 +703,8 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a profile image URL by the ID.
-         * @param id The ID of the user.
+         * Creates a profile image URL by ID.
+         * @param id The ID of a user.
          */
         public static createProfileImageURL(id: string): string;
         /**
@@ -721,9 +723,38 @@ module RecoTwExplorer {
                 return String.format(Model.TWITTER_PROFILE_IMAGE_URL, item);
             } else {
                 if (item.target_sn !== void 0) {
-                    return String.format(Model.TWITTER_PROFILE_IMAGE_URL, item.target_sn);
+                    return Model.createProfileImageURL(item.target_sn);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_PROFILE_IMAGE_URL);
+                }
+            }
+        }
+
+        /**
+         * Creates a Date objcet by ID.
+         * @param id The ID of a Tweet.
+         */
+        public static createDateByTweetID(id: string): Date;
+        /**
+         * Creates a Date object from an entry.
+         * @param entry An entry from which the ID to be created.
+         */
+        public static createDateByTweetID(entry: RecoTwEntry): Date;
+        /**
+         * Creates a Date object.
+         * @param item An object that contains the ID or itself.
+         */
+        public static createDateByTweetID(item: string | RecoTwEntry): Date {
+            if (typeof item === "string") {
+                // Using String conversion because JavaScript converts a Number to a 32-bit integer to perform shift operation; this is mostly same as following code:
+                // new Date(((+item) >> 22) + Model.TWITTER_SNOWFLAKE_EPOCH);
+                var binary = (+item).toString(2);
+                return new Date(parseInt(binary.substr(0, binary.length - 22), 2) + Model.TWITTER_SNOWFLAKE_EPOCH);
+            } else {
+                if (item.tweet_id !== void 0) {
+                    return Model.createDateByTweetID(item.tweet_id);
+                } else {
+                    return null;
                 }
             }
         }
@@ -983,8 +1014,10 @@ module RecoTwExplorer {
         }
 
         public static showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
-            $("#twitter-widget-" + widgetID).after(String.format(Resources.TWEET_REMOVED_HTML, Model.createStatusURL(entry), Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content)))
-                                            .remove();
+            var tweetDate = Model.createDateByTweetID(entry);
+            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString()).replace("午前", "AM").replace("午後", "PM");
+            var content = String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content), time);
+            $("#twitter-widget-" + widgetID).after(content).remove();
         }
     }
 
