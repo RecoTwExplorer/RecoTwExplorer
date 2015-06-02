@@ -22,6 +22,7 @@
     "fontawesome": "~4.3.0",
     "linqjs": "https://github.com/hinaloe/linqjs/archive/v3.zip",
     "jquery_bottom": "https://github.com/jimyi/jquery_bottom.git#master",
-    "favico.js": "~0.3.7"
+    "favico.js": "~0.3.7",
+    "jQuery-ajaxTransport-XDomainRequest": "~1.0.4"
   }
 }

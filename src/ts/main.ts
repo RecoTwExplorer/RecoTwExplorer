@@ -496,7 +496,7 @@ module RecoTwExplorer {
          */
         private static load(): void {
             var entries: RecoTwEntry[] = [];
-            var item = localStorage.getItem("entries");
+            var item = localStorage ? localStorage.getItem("entries") : null;
             if (item) {
                 entries = JSON.parse(item);
             }
@@ -507,7 +507,9 @@ module RecoTwExplorer {
          * Saves all the entries to localStorage.
          */
         public static save(): void {
-            localStorage.setItem("entries", JSON.stringify(Model.entries.reset().enumerable.toArray()));
+            if (localStorage && Model.entries) {
+                localStorage.setItem("entries", JSON.stringify(Model.entries.reset().enumerable.toArray()));
+            }
         }
 
         /**
@@ -521,6 +523,9 @@ module RecoTwExplorer {
             }
         }
 
+        /**
+         * Gets the latest entry on memory or returns null.
+         */
         public static get latestEntry(): RecoTwEntry {
             if (Model.entries === null) {
                 return null;
