@@ -938,7 +938,7 @@ module RecoTwExplorer {
 
         private showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
             var tweetDate = Model.createDateByTweetID(entry);
-            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString()).replace("午前", "AM").replace("午後", "PM");
+            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString());
             var $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
 
             $("#twitter-widget-" + widgetID).after($elm).remove();
