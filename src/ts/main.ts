@@ -84,24 +84,6 @@ module RecoTwExplorer {
     }
 
     /**
-     * Specifies a tab to show.
-     */
-    const enum Tab {
-        /**
-         * The default. No tab is specified.
-         */
-        None,
-        /**
-         * The home tab.
-         */
-        Home,
-        /**
-         * The statistics tab.
-         */
-        Statistics
-    }
-
-    /**
      * The resources for UI.
      */
     class Resources {
@@ -115,7 +97,7 @@ module RecoTwExplorer {
         public static REGISTER_NEW_TWEET = "ツイートの ID または URL:";
         public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
-        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\" onmousedown=\"RecoTwExplorer.Controller.applySearchFilterByUsername('{1}')\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
+        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
         public static TWEET_TIME_HTML = "<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:h:mm tt - d M月 yyyy}</time></a>";
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
@@ -559,6 +541,13 @@ module RecoTwExplorer {
         }
 
         /**
+         * Gets a value that determines if the app is running on a mobile device.
+         */
+        public static isMobile(): boolean {
+            return /iPhone|iP[ao]d|Android|Windows.*Phone/.test(navigator.userAgent);
+        }
+
+        /**
          * Creates IDs from Tweet URL/IDs or throws an error.
          * @param inputs An array of URLs/IDs.
          */
@@ -840,10 +829,133 @@ module RecoTwExplorer {
     }
 
     /**
-     * The view.
+     * A tab.
      */
-    class View {
+    class Tab {
+        private _id: string;
+        private _$element: JQuery;
+
+        public rendered: boolean;
+        public static home: HomeTab;
+        public static statistics: StatisticsTab;
+
+        public constructor(id: string) {
+            this._id = id;
+            this._$element = $("a[href='#" + id + "']").on("shown.bs.tab", () => {
+                window.scrollTo(0, 0);
+                this.render();
+            });
+        }
+
+        public get id(): string {
+            return this._id;
+        }
+
+        public get active(): boolean {
+            return this.id === $(".tab-pane.active").attr("id");
+        }
+
+        public get element(): JQuery {
+            return this._$element;
+        }
+
+        public show(): void {
+            this._$element.tab("show");
+        }
+
+        public render(): void {
+            this.rendered = true;
+        }
+
+        public clear(): void {
+            this.rendered = false;
+        }
+    }
+
+    /**
+     * The home tab.
+     */
+    class HomeTab extends Tab {
         private static TWEETS_COUNT = 25;
+        private static WIDGET_OPTIONS: TwitterTweetWidgetOptions = {
+            lang: "ja",
+            linkColor: "#774c80"
+        };
+
+        private _current = 0;
+        private _widgetID = -1;
+
+        public constructor() {
+            super("home-tab");
+        }
+
+        public render(next?: boolean, count?: number) {
+            if (!next && !count && this.rendered) {
+                return;
+            }
+
+            $("#no-result-container").hide();
+            Controller.loading = false;
+
+            var $main = $("#main-area");
+            var element: HTMLElement;
+            var entries = Model.entries.enumerable;
+            if (entries.isEmpty()) {
+                $("#no-result-container").fadeIn();
+                return;
+            }
+
+            if (count) {
+                entries = entries.take(count);
+                element = $("<div></div>").prependTo($main)[0];
+            } else {
+                entries = entries.skip(this._current).take(HomeTab.TWEETS_COUNT);
+                element = $main[0];
+            }
+
+            twttr.ready(() => entries.forEach(x => this.renderTweet(x, element)));
+            this._current += count || HomeTab.TWEETS_COUNT;
+            super.render();
+        }
+
+        private renderTweet(entry: RecoTwEntry, element: HTMLElement): void {
+            var widgetID = ++this._widgetID;
+            twttr.widgets.createTweet(entry.tweet_id, element, HomeTab.WIDGET_OPTIONS).then((widget: HTMLIFrameElement) => {
+                if (!widget) {
+                    this.showStatusLoadFailedMessage(widgetID, entry);
+                } else {
+                    var $contents = $(widget).contents();
+                    $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
+                    $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
+                    $contents.find(".Tweet-author").css("max-width", "none");
+                }
+            });
+        }
+
+        private replaceLinkToURL(target: string): string {
+            return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
+        }
+
+        private showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
+            var tweetDate = Model.createDateByTweetID(entry);
+            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString()).replace("午前", "AM").replace("午後", "PM");
+            var $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
+
+            $("#twitter-widget-" + widgetID).after($elm).remove();
+            $elm.find("img").on("error", ($event: JQueryEventObject) => (<HTMLImageElement>$event.target).src = Model.createProfileImageURL(null));
+        }
+
+        public clear() {
+            this._current = 0;
+            $("#main-area").empty();
+            super.clear();
+        }
+    }
+
+    /**
+     * The statistics tab.
+     */
+    class StatisticsTab extends Tab {
         private static GRAPH_COLORS = [
             0xcccccc, 0x3366cc, 0xdc3912, 0xff9900, 0x109618, 0x990099, 0x0099c6, 0xdd4477,
             0x66aa00, 0xb82e2e, 0x316395, 0x994499, 0x22aa99, 0xaaaa11, 0x6633cc, 0xe67300,
@@ -860,40 +972,91 @@ module RecoTwExplorer {
             legend: "none",
             sliceVisibilityThreshold: 0.0095
         };
-        private static WIDGET_OPTIONS: TwitterTweetWidgetOptions = {
-            lang: "ja",
-            linkColor: "#774c80"
-        };
-        private static _chart: google.visualization.PieChart = null;
-        private static _current = 0;
-        private static _widgetID = -1;
+
+        private _chart: google.visualization.PieChart = null;
+
+        public constructor() {
+            super("statistics-tab");
+        }
+
+        public get chart(): google.visualization.PieChart {
+            if (this._chart === null) {
+                this._chart = new google.visualization.PieChart($("#statistics-chart")[0]);
+                google.visualization.events.addListener(this._chart, "click", Controller.onChartSliceClick);
+            }
+            return this._chart;
+        }
+
+        public render(username?: string) {
+            if (!Model.isMobile() && username === void 0) {
+                $("#statistics-filter-textbox").focus();
+                $("#statistics-table").delay(100).animate({ scrollTop: 0 }, 400);
+            }
+            if (Model.entries === null || (username === void 0 && Tab.statistics.rendered)) {
+                return;
+            }
+
+            $("#no-result-container").hide();
+            if (username === void 0) {
+                this.renderChart();
+            }
+
+            var table = Model.statistics.users.map((user, index) => ({ html: this.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
+                                              .filter(x => username === void 0 || x.screenName.startsWith(username));
+
+            $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
+            super.render();
+        }
+
+        private renderChart(): void {
+            var options = Controller.getOptions();
+            if (options.isFiltered()) {
+                $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
+                $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, Model.statistics.length, Model.entries.length));
+            } else {
+                $("#statistics-filter").text("");
+                $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, Model.statistics.length));
+            }
+
+            if (Model.statistics.length === 0) {
+                $("#statistics-chart").hide();
+                $("#no-result-container").fadeIn();
+                return;
+            } else {
+                $("#statistics-chart").show();
+            }
+
+            this.chart.draw(Model.statistics.table, StatisticsTab.GRAPH_OPTIONS);
+        }
+
+        private generateTableRow(user: RecoTwUser, index: number): string {
+            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > StatisticsTab.GRAPH_OPTIONS.sliceVisibilityThreshold ? StatisticsTab.GRAPH_COLORS[index + 1] : StatisticsTab.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage);
+        }
+
+        public clear(): void {
+            $("#statistics-table").empty();
+            super.clear();
+        }
+
+        public applySearchFilter(username: string) {
+            var options = Controller.getOptions();
+            options.usernames = [username];
+            Controller.setOptions(options, true, true, true);
+
+            super.clear();
+            Tab.home.show();
+        }
+
+        public applyChartFilter(username: string) {
+            this.render(username.toLowerCase());
+        }
+    }
+
+    /**
+     * The view.
+     */
+    class View {
         private static _title = Resources.PAGE_TITLE_NORMAL;
-
-        public static getTabFromID(id: string): Tab {
-            switch (id.substring(id.lastIndexOf("#") + 1)) {
-                case "home-tab":
-                    return Tab.Home;
-                case "statistics-tab":
-                    return Tab.Statistics;
-                default:
-                    return Tab.None;
-            }
-        }
-
-        public static get currentTab(): Tab {
-            return View.getTabFromID("#" + $(".tab-pane.active").attr("id"));
-        }
-
-        public static set currentTab(tab: Tab) {
-            switch (tab) {
-                case Tab.Home:
-                    $("a[href='#home-tab']").tab("show");
-                    return;
-                case Tab.Statistics:
-                    $("a[href='#statistics-tab']").tab("show");
-                    return;
-            }
-        }
 
         public static set title(title: string) {
             View._title = title = title || View._title;
@@ -904,92 +1067,6 @@ module RecoTwExplorer {
                 title = "* " + title;
             }
             document.title = title;
-        }
-
-        public static renderHome(count?: number): void {
-            $("#no-result-container").hide();
-            Controller.isLoading = false;
-
-            var $main = $("#main-area");
-            var element: HTMLElement;
-            var entries = Model.entries.enumerable;
-            if (entries.isEmpty()) {
-                $("#no-result-container").fadeIn();
-                return;
-            }
-
-            if (count) {
-                entries = entries.take(count);
-                element = $("<div></div>").prependTo($main)[0];
-            } else {
-                entries = entries.skip(View._current).take(View.TWEETS_COUNT);
-                element = $main[0];
-            }
-
-            twttr.ready(() => entries.forEach(x => View.renderTweet(x, element)));
-            View._current += count || View.TWEETS_COUNT;
-        }
-
-        private static renderTweet(entry: RecoTwEntry, element: HTMLElement): void {
-            var widgetID = ++View._widgetID;
-            twttr.widgets.createTweet(entry.tweet_id, element, View.WIDGET_OPTIONS).then((widget: HTMLIFrameElement) => {
-                if (!widget) {
-                    View.showStatusLoadFailedMessage(widgetID, entry);
-                } else {
-                    var $contents = $(widget).contents();
-                    $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
-                    $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
-                    $contents.find(".Tweet-author").css("max-width", "none");
-                }
-            });
-        }
-
-        public static renderStatistics(username?: string): void {
-            if (Model.entries === null) {
-                return;
-            }
-
-            $("#no-result-container").hide();
-
-            if (View._chart === null) {
-                View._chart = new google.visualization.PieChart($("#statistics-chart")[0]);
-                google.visualization.events.addListener(View._chart, "click", Controller.onChartSliceClick);
-            }
-
-            if (username === void 0) {
-                var options = Controller.getOptions();
-                if (options.isFiltered()) {
-                    $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
-                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, Model.statistics.length, Model.entries.length));
-                } else {
-                    $("#statistics-filter").text("");
-                    $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, Model.statistics.length));
-                }
-
-                if (Model.statistics.length === 0) {
-                    $("#statistics-chart").hide();
-                    $("#no-result-container").fadeIn();
-                    return;
-                } else {
-                    $("#statistics-chart").show();
-                }
-
-                View._chart.draw(Model.statistics.table, View.GRAPH_OPTIONS);
-            }
-
-            var table = Model.statistics.users.map((user, index) => ({ html: View.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
-                                              .filter(x => username === void 0 || x.screenName.startsWith(username));
-
-            $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
-        }
-
-        private static generateTableRow(user: RecoTwUser, index: number): string {
-            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > View.GRAPH_OPTIONS.sliceVisibilityThreshold ? View.GRAPH_COLORS[index + 1] : View.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage);
-        }
-
-        public static clearHome(): void {
-            View._current = 0;
-            $("#main-area").empty();
         }
 
         public static setSearchKeywords(options: Options): void {
@@ -1014,27 +1091,14 @@ module RecoTwExplorer {
                 window.alert((<Error>e).message);
             }
         }
-
-        private static replaceLinkToURL(target: string): string {
-            return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
-        }
-
-        public static showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
-            var tweetDate = Model.createDateByTweetID(entry);
-            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString()).replace("午前", "AM").replace("午後", "PM");
-            var content = String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content), time);
-            $("#twitter-widget-" + widgetID).after(content).remove();
-        }
     }
 
     /**
      * The controller.
      */
-    export class Controller {
+    class Controller {
         private static _options = new Options();
-        private static _loading = false;
-        private static _homeRendered = false;
-        private static _statisticsRendered = false;
+        public static loading = false;
 
         public static getOptions(): Options {
             return Controller._options;
@@ -1068,11 +1132,9 @@ module RecoTwExplorer {
                 return;
             }
 
-            if (View.currentTab === Tab.Statistics) {
-                View.clearHome();
-                if (sortOnly) {
-                    Controller._homeRendered = false;
-                } else {
+            if (Tab.statistics.active) {
+                Tab.home.clear();
+                if (!sortOnly) {
                     Controller.reload();
                 }
             } else {
@@ -1080,44 +1142,36 @@ module RecoTwExplorer {
             }
         }
 
-        public static get isLoading(): boolean {
-            return Controller._loading;
-        }
-
-        public static set isLoading(state: boolean) {
-            Controller._loading = state;
-        }
-
         public static main(): void {
             View.title = Resources.PAGE_TITLE_NORMAL;
             $("#app-version").text(APP_VERSION);
-            if (navigator.standalone) {
+
+            if (window.innerHeight >= window.screen.height && navigator.standalone) {
                 $(document.body).addClass("standalone");
             }
 
             Model.init();
+            Tab.home = new HomeTab();
+            Tab.statistics = new StatisticsTab();
+            Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
+
             google.load("visualization", "1.0", { "packages": ["corechart"] });
             $("#loading-recotw").show();
-
-            Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
 
             var $window = $(window);
             $window.unload(Model.save);
             $window.bottom({ proximity: 0.05 });
             $window.on("bottom", () => {
-                if (View.currentTab === Tab.Home) {
+                if (Tab.home.active) {
                     Controller.onPageBottom();
                 }
             });
             $window.on("popstate", () => {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
-            $(".navbar-nav a[role='tab']").on("shown.bs.tab", $event => {
-                Controller.onTabSwitched(View.getTabFromID((<HTMLAnchorElement>$event.target).href));
-            });
-            $("[href='#home-tab']").click(() => {
+            Tab.home.element.click(() => {
                 var count = Model.notificationCount;
-                if (View.currentTab === Tab.Home && count > 0) {
+                if (Tab.home.active && count > 0) {
                     Model.clearNotification();
                     Controller.onNotificationStatusChanged();
                     Controller.showNewStatuses(count);
@@ -1173,8 +1227,14 @@ module RecoTwExplorer {
             $("#new-record-modal").on("hidden.bs.modal", () => {
                 $("#new-record-form .modal-body").empty().html(Resources.URL_INPUT_AREA);
             });
-            $("#statistics-filter-textbox").on("keyup change", ($event: JQueryEventObject) => {
-                Controller.applyChartFilterByUsername((<HTMLInputElement>$event.target).value);
+            $("#new-record-modal").on("keyup change input", ".url-box", () => {
+                Controller.onNewRecordFormTextBoxValueChanged();
+            });
+            $("#statistics-filter-textbox").on("keyup change input", ($event: JQueryEventObject) => {
+                Tab.statistics.applyChartFilter((<HTMLInputElement>$event.target).value);
+            });
+            $("#statistics-table").on("mousedown", ".statistics-table-header a", ($event: JQueryEventObject) => {
+                Tab.statistics.applySearchFilter($event.target.textContent);
             });
             $("#search-box").popover({
                 placement: "bottom",
@@ -1208,19 +1268,15 @@ module RecoTwExplorer {
             if (Model.entries === null) {
                 return;
             }
-            switch (View.currentTab) {
-                case Tab.Home:
-                    View.clearHome();
-                    View.renderHome();
-                    $("#statistics-filter-textbox").val("");
-                    Controller._homeRendered = true;
-                    Controller._statisticsRendered = false;
-                    break;
-                case Tab.Statistics:
-                    View.renderStatistics();
-                    Controller._homeRendered = false;
-                    Controller._statisticsRendered = true;
-                    break;
+            Tab.home.clear();
+            Tab.statistics.clear();
+
+            if (Tab.home.active) {
+                Tab.home.render();
+                $("#statistics-filter-textbox").val("");
+            }
+            if (Tab.statistics.active) {
+                Tab.statistics.render();
             }
         }
 
@@ -1261,41 +1317,12 @@ module RecoTwExplorer {
             }
         }
 
-        public static isMobile(): boolean {
-            return /iPhone|iP[ao]d|Android|Windows.*Phone/.test(navigator.userAgent);
-        }
-
-        public static onTabSwitched(current: Tab): void {
-            switch (current) {
-                case Tab.Home:
-                    if (!Controller._homeRendered) {
-                        View.renderHome();
-                        Controller._homeRendered = true;
-                    }
-                    break;
-                case Tab.Statistics:
-                    if (!Controller.isMobile()) {
-                        $("#statistics-filter-textbox").focus();
-                        $("#statistics-table").delay(100).animate({ scrollTop: 0 }, 400);
-                    }
-                    if (!Controller._statisticsRendered) {
-                        View.renderStatistics();
-                        Controller._statisticsRendered = true;
-                    }
-                    break;
-            }
-        }
-
         public static onPageBottom(): void {
-            if (Controller.isLoading) {
+            if (Controller.loading) {
                 return;
             }
-            Controller.isLoading = true;
-            View.renderHome();
-        }
-
-        public static onImageError(element: HTMLImageElement) {
-            element.src = Model.createProfileImageURL(null);
+            Controller.loading = true;
+            Tab.home.render(true);
         }
 
         public static onChartSliceClick(slice: any): void {
@@ -1307,7 +1334,7 @@ module RecoTwExplorer {
             if (id < 0) {
                 return;
             }
-            Controller.applySearchFilterByUsername(Model.statistics.users[id].target_sn);
+            Tab.statistics.applySearchFilter(Model.statistics.users[id].target_sn);
         }
 
         private static onNewRecordFormTextBoxValueChanged(): void {
@@ -1336,24 +1363,13 @@ module RecoTwExplorer {
             // }
         }
 
-        public static applySearchFilterByUsername(username: string) {
-            View.currentTab = Tab.Home;
-            var options = Controller.getOptions();
-            options.usernames = [username];
-            Controller.setOptions(options, false, true, true);
-        }
-
-        private static applyChartFilterByUsername(username: string) {
-            View.renderStatistics(username.toLowerCase());
-        }
-
         public static showNewStatuses(count: number): void {
-            View.currentTab = Tab.Home;
+            Tab.home.show();
             var options = Controller.getOptions();
             if (options.isFiltered() || options.order !== Order.Descending || options.orderBy !== OrderBy.RecordedDate) {
                 Controller.setOptions(new Options([], "", null, false, options.order, options.orderBy), false, true, true);
             } else {
-                View.renderHome(count);
+                Tab.home.render(false, count);
             }
         }
     }
