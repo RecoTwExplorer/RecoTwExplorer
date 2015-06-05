@@ -348,11 +348,21 @@ module RecoTwExplorer {
         }
 
         /**
+         * Adds an item to the entries.
+         * @param item The item to add.
+         */
+        public add(item: RecoTwEntry): void {
+            if (item && +item.id > +this._elements[this._elements.length - 1].id) {
+                this._elements[this._elements.length] = item;
+            }
+        }
+
+        /**
          * Adds items to the entries.
          * @param items The items to add.
          */
         public addRange(items: linqjs.IEnumerable<RecoTwEntry> | RecoTwEntry[]): void {
-            items.forEach(x => this._elements[this._elements.length] = x);
+            items.forEach(this.add.bind(this));
         }
 
         /**
@@ -630,7 +640,7 @@ module RecoTwExplorer {
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
                 if (+data.id === +Model.latestEntry.id + 1) {
                     delete data.result;
-                    Model.entries.addRange([data]);
+                    Model.entries.add(data);
                     Controller.onNewEntries(1);
                 }
                 deferred.resolve(data);
