@@ -1,4 +1,5 @@
-﻿/// <reference path="./recotw.d.ts"/>
+/// <reference path="./main.d.ts"/>
+/// <reference path="./recotw.d.ts"/>
 /// <reference path="../../lib/js/typings/bootstrap/bootstrap.d.ts"/>
 /// <reference path="../../lib/js/typings/google.visualization/google.visualization.d.ts"/>
 /// <reference path="../../lib/js/typings/jquery/jquery.d.ts"/>
@@ -19,12 +20,13 @@
  * - linq.js
  * - Bootstrap
  * - Google Charts
+ * - favico.js
  */
 
 module RecoTwExplorer {
     "use strict";
     var APP_NAME = "RecoTw Explorer";
-    var APP_VERSION = "2.34";
+    var APP_VERSION = "2.40";
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
@@ -82,43 +84,31 @@ module RecoTwExplorer {
     }
 
     /**
-     * Specifies a tab to show.
-     */
-    const enum Tab {
-        /**
-         * The default. No tab is specified.
-         */
-        None,
-        /**
-         * The home tab.
-         */
-        Home,
-        /**
-         * The statistics tab.
-         */
-        Statistics
-    }
-
-    /**
      * The resources for UI.
      */
     class Resources {
         public static INCORRECT_REGEX = "指定された正規表現は正しくありません。";
         public static INCORRECT_URL_OR_ID = "指定された URL または ID は正しくありません。";
+        public static BADGE_NOT_SUPPORTED = "通知バッジがサポートされていません。";
         public static FAILED_TO_GENERATE_STATUS_URL = "ツイートの URL を生成できません。";
         public static FAILED_TO_GENERATE_USER_URL = "ユーザーへの URL を生成できません。";
         public static FAILED_TO_GENERATE_PROFILE_IMAGE_URL = "プロフィール画像の URL を生成できません。";
         public static FAILED_TO_LOAD_EMBEDDED_TWEET = "Twitter 埋め込みツイートの読み込みに失敗しました。";
+        public static REGISTER_NEW_TWEET = "ツイートの ID または URL:";
+        public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
-        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\" onclick=\"RecoTwExplorer.Controller.setSearchFilterByUsername('{1}')\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
-        public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<a href=\"{0}\" target=\"_blank\">表示</a><hr><div><img src=\"{1}\" onerror=\"RecoTwExplorer.Controller.onImageError(this)\"><span><a href=\"{2}\" target=\"_blank\">@{3}</a></span><p>{4}</p></div></blockquote>";
+        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
+        public static TWEET_TIME_HTML = "<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:yyyy年M月d日 HH:mm}</time></a>";
+        public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
         public static URL_INPUT_AREA = $("#new-record-form .modal-body").html();
+        public static URL_INPUT_REGEX = new RegExp($(".url-box").attr("pattern"));
         public static USERNAME = "ユーザ名";
         public static TWEETS_COUNT = "ツイート数";
         public static NO_RESULT = "<p class=\"text-center\" style=\"margin-top: 200px;\">該当ユーザーなし</p>";
         public static SEARCH_RESULT = "検索結果: {0}";
         public static STATISTICS_COUNT = "({0:N0} 件)";
+        public static STATISTICS_COUNT_FILTERED = "({0:N0} / {1:N0} 件)";
         public static PAGE_TITLE_SEARCH_RESULT = "検索結果: {0} - " + APP_NAME;
         public static PAGE_TITLE_NORMAL = APP_NAME;
         public static POST_ERRORS: {
@@ -279,23 +269,36 @@ module RecoTwExplorer {
      * Information which aggregates users.
      */
     class RecoTwStatistics {
-        public users: RecoTwUser[];
-        public entryLength: number;
-        public dataTable: google.visualization.DataTable;
+        private _length: number;
+        private _users: RecoTwUser[];
+        private _table: google.visualization.DataTable;
+
+        public get length(): number {
+            return this._length;
+        }
+
+        public get users(): RecoTwUser[] {
+            return this._users;
+        }
+
+        public get table(): google.visualization.DataTable {
+            return this._table;
+        }
 
         /**
          * Initializes a new instance of RecoTwStatistics class with parameters.
          * @param enumrable An object to enumerate the entries.
          */
         public constructor(enumerable: linqjs.IEnumerable<RecoTwEntry>) {
-            this.users = enumerable.groupBy(x => x.target_id)
-                                   .select(x => ({ target_sn: x.firstOrDefault().target_sn, count: x.count() }))
-                                   .orderByDescending(x => x.count)
-                                   .thenBy(x => x.target_sn.toLowerCase())
-                                   .toArray();
+            this._length = enumerable.count();
+            this._users = enumerable.groupBy(x => x.target_id)
+                                    .select(x => ({ entry: x.firstOrDefault(), count: x.count() }))
+                                    .select(x => ({ target_sn: x.entry.target_sn, count: x.count, percentage: x.count / this._length }))
+                                    .orderByDescending(x => x.count)
+                                    .thenBy(x => x.target_sn.toLowerCase())
+                                    .toArray();
 
-            this.entryLength = enumerable.count();
-            this.dataTable = new google.visualization.DataTable({
+            this._table = new google.visualization.DataTable({
                 cols: [
                     { type: "string", label: Resources.USERNAME },
                     { type: "number", label: Resources.TWEETS_COUNT }
@@ -309,16 +312,48 @@ module RecoTwExplorer {
      * The collection of RecoTw Entries.
      */
     class RecoTwEntryCollection {
+        private _elements: RecoTwEntry[];
+        private _userIDs: linqjs.IDictionary<string, string>;
+        private _enumerable: linqjs.IEnumerable<RecoTwEntry>;
+
         /**
          * Initializes a new instance of RecoTwEntryCollection class with parameters.
          * @param elements All the entries.
          * @param userIDs A unique hash set of screen_names and user IDs.
          * @param enumerable An object to enumerate the entries.
          */
-        public constructor(private elements: RecoTwEntry[], private userIDs: linqjs.IDictionary<string, string> = null, private enumerable: linqjs.IEnumerable<RecoTwEntry> = Enumerable.from(elements)) {
+        public constructor(elements: RecoTwEntry[], userIDs?: linqjs.IDictionary<string, string>, enumerable?: linqjs.IEnumerable<RecoTwEntry>) {
+            this._elements = elements;
+            this._userIDs = userIDs || null;
+            this._enumerable = enumerable || Enumerable.from(elements);
+
             if (userIDs === null) {
-                this.userIDs = this.enumerable.toDictionary(x => x.target_id, x => x.target_sn);
-                this.enumerable.forEach(x => x.target_sn = this.userIDs.get(x.target_id));
+                this._userIDs = this.enumerable.toDictionary(x => x.target_id, x => x.target_sn);
+                this.enumerable.forEach(x => x.target_sn = this._userIDs.get(x.target_id));
+            }
+        }
+
+        /**
+         * Gets a number of all the entries.
+         */
+        public get length(): number {
+            return this._elements.length;
+        }
+
+        /**
+         * Gets an object to enumerate the entries.
+         */
+        public get enumerable(): linqjs.IEnumerable<RecoTwEntry> {
+            return this._enumerable;
+        }
+
+        /**
+         * Adds an item to the entries.
+         * @param item The item to add.
+         */
+        public add(item: RecoTwEntry): void {
+            if (item && +item.id > +this._elements[this._elements.length - 1].id) {
+                this._elements[this._elements.length] = item;
             }
         }
 
@@ -326,36 +361,22 @@ module RecoTwExplorer {
          * Adds items to the entries.
          * @param items The items to add.
          */
-        public addRange(items: linqjs.IEnumerable<RecoTwEntry>): void {
-            items.forEach(x => this.elements[this.elements.length] = x);
+        public addRange(items: linqjs.IEnumerable<RecoTwEntry> | RecoTwEntry[]): void {
+            items.forEach(this.add.bind(this));
         }
 
         /**
          * Returns a copy of this instance.
          */
         public clone(): RecoTwEntryCollection {
-            return new RecoTwEntryCollection(this.elements, this.userIDs, this.enumerable);
+            return new RecoTwEntryCollection(this._elements, this._userIDs, this.enumerable);
         }
 
         /**
          * Returns a new instance which has the same elements.
          */
         public reset(): RecoTwEntryCollection {
-            return new RecoTwEntryCollection(this.elements, this.userIDs);
-        }
-
-        /**
-         * Gets a number of all the entries.
-         */
-        public getAllLength(): number {
-            return this.elements.length;
-        }
-
-        /**
-         * Gets an object to enumerate the entries.
-         */
-        public getEnumerable(): linqjs.IEnumerable<RecoTwEntry> {
-            return this.enumerable;
+            return new RecoTwEntryCollection(this._elements, this._userIDs);
         }
 
         /**
@@ -377,20 +398,22 @@ module RecoTwExplorer {
             var order = options.order || Order.Descending;
             var orderBy = options.orderBy || OrderBy.RecordedDate;
             var sortCallback = (x: any, y: any) => x - y;
-            if (order === Order.Ascending) {
-                if (orderBy === OrderBy.RecordedDate) {
-                    result.enumerable = result.enumerable.orderBy(x => x.record_date);
-                } else if (orderBy === OrderBy.CreatedDate) {
-                    result.enumerable = result.enumerable.orderBy(x => x.tweet_id, sortCallback);
-                }
-            } else if (order === Order.Descending) {
-                if (orderBy === OrderBy.RecordedDate) {
-                    result.enumerable = result.enumerable.orderByDescending(x => x.record_date);
-                } else if (orderBy === OrderBy.CreatedDate) {
-                    result.enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
-                }
-            } else if (order === Order.Shuffle) {
-                result.enumerable = result.enumerable.shuffle();
+            switch (true) {
+                case order === Order.Ascending && orderBy === OrderBy.RecordedDate:
+                    result._enumerable = result.enumerable.orderBy(x => x.record_date);
+                    break;
+                case order === Order.Ascending && orderBy === OrderBy.CreatedDate:
+                    result._enumerable = result.enumerable.orderBy(x => x.tweet_id, sortCallback);
+                    break;
+                case order === Order.Descending && orderBy === OrderBy.RecordedDate:
+                    result._enumerable = result.enumerable.orderByDescending(x => x.record_date);
+                    break;
+                case order === Order.Descending && orderBy === OrderBy.CreatedDate:
+                    result._enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
+                    break;
+                case order === Order.Shuffle:
+                    result._enumerable = result.enumerable.shuffle();
+                    break;
             }
             return result;
         }
@@ -412,17 +435,17 @@ module RecoTwExplorer {
                     } catch (e) {
                         throw new Error(Resources.INCORRECT_REGEX);
                     }
-                    result.enumerable = result.enumerable.where(x => re.test(x.content));
+                    result._enumerable = result.enumerable.where(x => re.test(x.content));
                 } else {
                     options.body = options.body.toLowerCase();
-                    result.enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
+                    result._enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
                 }
             }
             if (options.usernames !== void 0 && options.usernames.length > 0) {
-                result.enumerable = result.enumerable.where(x => options.usernames.some(y => x.target_sn.toLowerCase() === y.toLowerCase()));
+                result._enumerable = result.enumerable.where(x => options.usernames.some(y => x.target_sn.toLowerCase() === y.toLowerCase()));
             }
             if (options.id !== null) {
-                result.enumerable = result.enumerable.where(x => x.tweet_id === options.id);
+                result._enumerable = result.enumerable.where(x => x.tweet_id === options.id);
             }
             return result;
         }
@@ -440,50 +463,66 @@ module RecoTwExplorer {
         private static RECOTW_POST_URL = "http://api.recotw.black/1/tweet/record_tweet";
         private static RECOTW_COUNT_URL = "http://api.recotw.black/1/tweet/count_tweet";
         private static POLLING_INTERVAL = 20000;
+        private static TWITTER_SNOWFLAKE_EPOCH = 1288834974657;
 
-        private static entries: RecoTwEntryCollection = null;
-        private static statistics: RecoTwStatistics = null;
-        private static pollingID: number = null;
+        private static _entries: RecoTwEntryCollection = null;
+        private static _statistics: RecoTwStatistics = null;
+        private static _pollingID: number = null;
+        private static _notificationCount = 0;
+        private static _favico: Favico = null;
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
          */
         public static init(): void {
+            Model.load();
+            try {
+                Model._favico = new Favico({ animation: "slide" });
+            } catch (e) {
+                console.log(Resources.BADGE_NOT_SUPPORTED);
+            }
+        }
+
+        /**
+         * Loads entries from localStorage and fetch new ones.
+         */
+        private static load(): void {
             var entries: RecoTwEntry[] = [];
-            var item = localStorage.getItem("entries");
+            var item = localStorage ? localStorage.getItem("entries") : null;
             if (item) {
                 entries = JSON.parse(item);
             }
-            Model.getLatestEntries(entries).then(Controller.onEntriesLoaded, Controller.onEntriesLoadFailed);
+            Model.fetchLatestEntries(entries).then(Controller.onEntriesLoaded, Controller.onEntriesLoadFailed);
         }
 
         /**
-         * Save all the entries to localStorage.
+         * Saves all the entries to localStorage.
          */
         public static save(): void {
-            localStorage.setItem("entries", JSON.stringify(Model.entries.reset().getEnumerable().toArray()));
-        }
-
-        /**
-         * Gets an entry by Tweet ID.
-         * @param id The ID of the Tweet.
-         */
-        public static getEntry(id: string): RecoTwEntry {
-            if (Model.entries === null) {
-                return null;
-            } else {
-                return Model.entries.getEnumerable().firstOrDefault(x => x.tweet_id === id);
+            if (localStorage && Model.entries) {
+                localStorage.setItem("entries", JSON.stringify(Model.entries.reset().enumerable.toArray()));
             }
         }
 
         /**
          * Gets an object to enumerate filtered and sorted entries.
          */
-        public static getEntries(): linqjs.IEnumerable<RecoTwEntry> {
+        public static get entries(): RecoTwEntryCollection {
+            if (Model._entries === null) {
+                return null;
+            } else {
+                return Model._entries;
+            }
+        }
+
+        /**
+         * Gets the latest entry on memory or returns null.
+         */
+        public static get latestEntry(): RecoTwEntry {
             if (Model.entries === null) {
                 return null;
             } else {
-                return Model.entries.getEnumerable();
+                return Model.entries.reset().enumerable.lastOrDefault();
             }
         }
 
@@ -491,11 +530,11 @@ module RecoTwExplorer {
          * Gets a statistics information by current options. The data is cached if possible.
          * @param username A username to filter.
          */
-        public static getStatistics(): RecoTwStatistics {
+        public static get statistics(): RecoTwStatistics {
             if (Model.entries === null) {
                 return null;
             } else {
-                return Model.statistics !== null ? Model.statistics : (Model.statistics = Model.entries.createStatistics());
+                return Model._statistics !== null ? Model._statistics : (Model._statistics = Model.entries.createStatistics());
             }
         }
 
@@ -503,39 +542,62 @@ module RecoTwExplorer {
          * Sets options to determine how to enumerate entries.
          * @param options Configurations to enumerate entries.
          */
-        public static setOptions(options: Options): void {
+        public static set options(options: Options) {
             if (Model.entries === null) {
-                return null;
+                return;
             }
-            Model.entries = Model.entries.reset().sort(options).filter(options);
-            Model.statistics = null;
+            Model._entries = Model.entries.reset().sort(options).filter(options);
+            Model._statistics = null;
         }
 
         /**
-         * Validates an input as Tweet URL/ID or throws an error.
-         * @param input A string to validate.
+         * Gets a value that determines if the app is running on a mobile device.
          */
-        public static validateURLorID(input: string): string {
+        public static isMobile(): boolean {
+            return /iPhone|iP[ao]d|Android|Windows.*Phone/.test(navigator.userAgent);
+        }
+
+        /**
+         * Creates IDs from Tweet URL/IDs or throws an error.
+         * @param inputs An array of URLs/IDs.
+         */
+        public static createIDfromURL(inputs: string[]): string[];
+        /**
+         * Creates an ID from a Tweet URL/ID or throws an error.
+         * @param input A string of a URL/ID.
+         */
+        public static createIDfromURL(input: string): string;
+        /**
+         * Creates ID(s) from Tweet URL/ID(s) or throws an error.
+         * @param input A string or array to input.
+         */
+        public static createIDfromURL(input: string | string[]): any {
             var match: RegExpMatchArray;
             if (input === void 0 || input === null || input.length === 0) {
                 return null;
-            } else if ((match = input.match(/^(?:(?:https?:\/\/(?:www\.|mobile\.)?)?twitter\.com\/(?:#!\/)?[a-zA-Z0-9_]+\/status(?:es)?\/(\d+)|(\d+))$/)) !== null) {
-                return match[1] || match[2];
-            } else {
-                throw new Error(Resources.INCORRECT_URL_OR_ID);
+            } else if (typeof input === "string") {
+                if ((match = input.match(Resources.URL_INPUT_REGEX)) !== null) {
+                    return match[1] || match[2];
+                }
+            } else if (Array.isArray(input)) {
+                var ids = input.map(Model.createIDfromURL);
+                if (!ids.every(x => x === null)) {
+                    return ids;
+                }
             }
+            throw new Error(Resources.INCORRECT_URL_OR_ID);
         }
 
         /**
          * Retrieves new entries from the remote.
          * @param entries The entries to initialize with.
          */
-        public static getLatestEntries(entries?: RecoTwEntry[]): JQueryPromise<RecoTwEntry[]> {
+        public static fetchLatestEntries(entries?: RecoTwEntry[]): JQueryPromise<RecoTwEntry[]> {
             var sinceID: number;
             if (Model.entries !== null) {
-                sinceID = +Model.entries.reset().getEnumerable().lastOrDefault().id + 1;
+                sinceID = +Model.latestEntry.id + 1;
             } else if (entries && entries.length > 0) {
-                sinceID = +Enumerable.from(entries).lastOrDefault().id + 1;
+                sinceID = +entries[entries.length - 1].id + 1;
             }
 
             var deferred = $.Deferred<RecoTwEntry[]>();
@@ -545,10 +607,10 @@ module RecoTwExplorer {
                 data: { since_id: sinceID }
             }).done((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
                 if (Model.entries === null) {
-                    Model.entries = new RecoTwEntryCollection(entries);
+                    Model._entries = new RecoTwEntryCollection(entries);
                 }
                 if (data.length > 0) {
-                    Model.entries.addRange(Enumerable.from(data));
+                    Model.entries.addRange(data);
                 }
                 deferred.resolve(data);
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
@@ -558,12 +620,12 @@ module RecoTwExplorer {
         }
 
         /**
-         * Registers a Tweet to RecoTw as an entry.
+         * Registers a Tweet with RecoTw as a new entry.
          * @param input A URL or ID of a Tweet to register.
          */
-        public static postEntriesFromInputs(inputs: string[]): JQueryPromise<RecoTwRecordResponse> {
+        public static registerEntries(inputs: string[]): JQueryPromise<RecoTwRecordResponse> {
             var deferred = $.Deferred<RecoTwRecordResponse>();
-            var ids = inputs.map(x => Model.validateURLorID(x));
+            var ids = Model.createIDfromURL(inputs);
             $.ajax({
                 url: this.RECOTW_POST_URL,
                 type: "POST",
@@ -576,10 +638,10 @@ module RecoTwExplorer {
                 },
                 dataType: "json"
             }).done((data: RecoTwRecordResponse, status: string, xhr: JQueryXHR) => {
-                if (+data.id - 1 === +Model.entries.reset().getEnumerable().lastOrDefault().id) {
+                if (+data.id === +Model.latestEntry.id + 1) {
                     delete data.result;
-                    Model.entries.addRange(Enumerable.make(data));
-                    Controller.onNewEntries();
+                    Model.entries.add(data);
+                    Controller.onNewEntries(1);
                 }
                 deferred.resolve(data);
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
@@ -594,8 +656,8 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a Twitter status URL by the ID.
-         * @param id The ID of the Tweet.
+         * Creates a Twitter status URL by ID.
+         * @param id The ID of a Tweet.
          */
         public static createStatusURL(id: string): string;
         /**
@@ -612,7 +674,7 @@ module RecoTwExplorer {
                 return String.format(Model.TWITTER_STATUS_URL, item);
             } else {
                 if (item.target_sn !== void 0 && item.tweet_id !== void 0) {
-                    return String.format(Model.TWITTER_STATUS_URL.replace(/show/, item.target_sn), item.tweet_id);
+                    return String.format(Model.TWITTER_STATUS_URL.replace("show", item.target_sn), item.tweet_id);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_STATUS_URL);
                 }
@@ -620,8 +682,8 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a Twitter user URL by the screen_name.
-         * @param screenName The screen_name of the user.
+         * Creates a Twitter user URL by screen_name.
+         * @param screenName The screen_name of a user.
          */
         public static createUserURL(screenName: string): string;
         /**
@@ -638,7 +700,7 @@ module RecoTwExplorer {
                 return String.format(Model.TWITTER_USER_URL, item);
             } else {
                 if (item.target_sn !== void 0) {
-                    return String.format(Model.TWITTER_USER_URL, item.target_sn);
+                    return Model.createUserURL(item.target_sn);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_USER_URL);
                 }
@@ -646,8 +708,8 @@ module RecoTwExplorer {
         }
 
         /**
-         * Creates a profile image URL by the ID.
-         * @param id The ID of the user.
+         * Creates a profile image URL by ID.
+         * @param id The ID of a user.
          */
         public static createProfileImageURL(id: string): string;
         /**
@@ -666,9 +728,38 @@ module RecoTwExplorer {
                 return String.format(Model.TWITTER_PROFILE_IMAGE_URL, item);
             } else {
                 if (item.target_sn !== void 0) {
-                    return String.format(Model.TWITTER_PROFILE_IMAGE_URL, item.target_sn);
+                    return Model.createProfileImageURL(item.target_sn);
                 } else {
                     throw new Error(Resources.FAILED_TO_GENERATE_PROFILE_IMAGE_URL);
+                }
+            }
+        }
+
+        /**
+         * Creates a Date objcet by ID.
+         * @param id The ID of a Tweet.
+         */
+        public static createDateByTweetID(id: string): Date;
+        /**
+         * Creates a Date object from an entry.
+         * @param entry An entry from which the ID to be created.
+         */
+        public static createDateByTweetID(entry: RecoTwEntry): Date;
+        /**
+         * Creates a Date object.
+         * @param item An object that contains the ID or itself.
+         */
+        public static createDateByTweetID(item: string | RecoTwEntry): Date {
+            if (typeof item === "string") {
+                // Using String conversion because JavaScript converts a Number to a 32-bit integer to perform shift operation; this is mostly same as following code:
+                // new Date(((+item) >> 22) + Model.TWITTER_SNOWFLAKE_EPOCH);
+                var binary = (+item).toString(2);
+                return new Date(parseInt(binary.substr(0, binary.length - 22), 2) + Model.TWITTER_SNOWFLAKE_EPOCH);
+            } else {
+                if (item.tweet_id !== void 0) {
+                    return Model.createDateByTweetID(item.tweet_id);
+                } else {
+                    return null;
                 }
             }
         }
@@ -689,37 +780,199 @@ module RecoTwExplorer {
          * Starts polling to observe whether new entries would be registered or not.
          */
         public static startPolling(): void {
-            if (Model.pollingID !== null) {
+            if (Model._pollingID !== null) {
                 return;
             }
-            Model.pollingID = window.setInterval(() => Model.getLatestEntries().then(data => {
-                if (data.length > 0) {
-                    Controller.onNewEntries();
-                }
-            }), Model.POLLING_INTERVAL);
+            Model._pollingID = window.setInterval(() => {
+                Model.fetchLatestEntries().done(data => {
+                    if (data.length > 0) {
+                        Controller.onNewEntries(data.length);
+                    }
+                }).fail((xhr: JQueryXHR) => {
+                    console.log(xhr);
+                });
+            }, Model.POLLING_INTERVAL);
         }
 
         /**
          * Stops RecoTw polling.
          */
         public static stopPolling(): void {
-            window.clearInterval(Model.pollingID);
-            Model.pollingID = null;
+            window.clearInterval(Model._pollingID);
+            Model._pollingID = null;
+        }
+
+        /**
+         * Gets a number of notifications.
+         */
+        public static get notificationCount(): number {
+            return Model._notificationCount;
+        }
+
+        /**
+         * Creates a notification.
+         * @param A number of notifications to create.
+         */
+        public static createNotification(count: number): void {
+            if (count < 0) {
+                return;
+            }
+            Model._notificationCount += count;
+            try {
+                Model._favico.badge(Model._notificationCount);
+            } catch (e) {
+                console.log(Resources.BADGE_NOT_SUPPORTED);
+            }
+        }
+
+        /**
+         * Clears all of the notifications.
+         */
+        public static clearNotification(): void {
+            Model._notificationCount = 0;
+            try {
+                Model._favico.reset();
+            } catch (e) {
+                console.log(Resources.BADGE_NOT_SUPPORTED);
+            }
         }
     }
 
     /**
-     * The view.
+     * A tab.
      */
-    class View {
+    class Tab {
+        private _id: string;
+        private _$element: JQuery;
+
+        public rendered: boolean;
+        public static home: HomeTab;
+        public static statistics: StatisticsTab;
+
+        public constructor(id: string) {
+            this._id = id;
+            this._$element = $("a[href='#" + id + "']").on("shown.bs.tab", () => {
+                window.scrollTo(0, 0);
+                this.render();
+            });
+        }
+
+        public get id(): string {
+            return this._id;
+        }
+
+        public get active(): boolean {
+            return this.id === $(".tab-pane.active").attr("id");
+        }
+
+        public get element(): JQuery {
+            return this._$element;
+        }
+
+        public show(): void {
+            this._$element.tab("show");
+        }
+
+        public render(): void {
+            this.rendered = true;
+        }
+
+        public clear(): void {
+            this.rendered = false;
+        }
+    }
+
+    /**
+     * The home tab.
+     */
+    class HomeTab extends Tab {
         private static TWEETS_COUNT = 25;
+        private static WIDGET_OPTIONS: TwitterTweetWidgetOptions = {
+            lang: "ja",
+            linkColor: "#774c80"
+        };
+
+        private _current = 0;
+        private _widgetID = -1;
+
+        public constructor() {
+            super("home-tab");
+        }
+
+        public render(next?: boolean, count?: number) {
+            if (!next && !count && this.rendered) {
+                return;
+            }
+
+            $("#no-result-container").hide();
+            Controller.loading = false;
+
+            var $main = $("#main-area");
+            var element: HTMLElement;
+            var entries = Model.entries.enumerable;
+            if (entries.isEmpty()) {
+                $("#no-result-container").fadeIn();
+                return;
+            }
+
+            if (count) {
+                entries = entries.take(count);
+                element = $("<div></div>").prependTo($main)[0];
+            } else {
+                entries = entries.skip(this._current).take(HomeTab.TWEETS_COUNT);
+                element = $main[0];
+            }
+
+            twttr.ready(() => entries.forEach(x => this.renderTweet(x, element)));
+            this._current += count || HomeTab.TWEETS_COUNT;
+            super.render();
+        }
+
+        private renderTweet(entry: RecoTwEntry, element: HTMLElement): void {
+            var widgetID = ++this._widgetID;
+            twttr.widgets.createTweet(entry.tweet_id, element, HomeTab.WIDGET_OPTIONS).then((widget: HTMLIFrameElement) => {
+                if (!widget) {
+                    this.showStatusLoadFailedMessage(widgetID, entry);
+                } else {
+                    var $contents = $(widget).contents();
+                    $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
+                    $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
+                    $contents.find(".Tweet-author").css("max-width", "none");
+                }
+            });
+        }
+
+        private replaceLinkToURL(target: string): string {
+            return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
+        }
+
+        private showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
+            var tweetDate = Model.createDateByTweetID(entry);
+            var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString());
+            var $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
+
+            $("#twitter-widget-" + widgetID).after($elm).remove();
+            $elm.find("img").on("error", ($event: JQueryEventObject) => (<HTMLImageElement>$event.target).src = Model.createProfileImageURL(null));
+        }
+
+        public clear() {
+            this._current = 0;
+            $("#main-area").empty();
+            super.clear();
+        }
+    }
+
+    /**
+     * The statistics tab.
+     */
+    class StatisticsTab extends Tab {
         private static GRAPH_COLORS = [
             0xcccccc, 0x3366cc, 0xdc3912, 0xff9900, 0x109618, 0x990099, 0x0099c6, 0xdd4477,
             0x66aa00, 0xb82e2e, 0x316395, 0x994499, 0x22aa99, 0xaaaa11, 0x6633cc, 0xe67300,
             0x8b0707, 0x651067, 0x329262, 0x5574a6, 0x3b3eac, 0xb77322, 0x16d620, 0xb91383,
             0xf4359e, 0x9c5935, 0xa9c413, 0x2a778d, 0x668d1c, 0xbea413, 0x0c5922, 0x743411,
         ];
-        private static GRAPH_OPTIONS = {
+        private static GRAPH_OPTIONS: google.visualization.PieChartOptions = {
             backgroundColor: "#FEFEFE",
             chartArea: {
                 width: "90%",
@@ -727,158 +980,113 @@ module RecoTwExplorer {
             },
             is3D: true,
             legend: "none",
-            sliceVisibilityThreshold: 0.0099
+            sliceVisibilityThreshold: 0.0095
         };
-        private static chart: google.visualization.PieChart = null;
-        private static current = 0;
-        private static widgetID = -1;
 
-        public static getTabFromID(id: string): Tab {
-            switch (id) {
-                case "home-tab":
-                    return Tab.Home;
-                case "statistics-tab":
-                    return Tab.Statistics;
-                default:
-                    return Tab.None;
+        private _chart: google.visualization.PieChart = null;
+
+        public constructor() {
+            super("statistics-tab");
+        }
+
+        public get chart(): google.visualization.PieChart {
+            if (this._chart === null) {
+                this._chart = new google.visualization.PieChart($("#statistics-chart")[0]);
+                google.visualization.events.addListener(this._chart, "click", Controller.onChartSliceClick);
             }
+            return this._chart;
         }
 
-        public static getCurrentTab(): Tab {
-            return View.getTabFromID($(".tab-pane.active").attr("id"));
-        }
-
-        public static setCurrentTab(tab: Tab): JQuery {
-            switch (tab) {
-                case Tab.Home:
-                    return $("a[href='#home-tab']").tab("show");
-                case Tab.Statistics:
-                    return $("a[href='#statistics-tab']").tab("show");
-                default:
-                    return null;
+        public render(username?: string) {
+            if (!Model.isMobile() && username === void 0) {
+                $("#statistics-filter-textbox").focus();
+                $("#statistics-table").delay(100).animate({ scrollTop: 0 }, 400);
             }
+            if (Model.entries === null || (username === void 0 && Tab.statistics.rendered)) {
+                return;
+            }
+
+            $("#no-result-container").hide();
+            if (username === void 0) {
+                this.renderChart();
+            }
+
+            var table = Model.statistics.users.map((user, index) => ({ html: this.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
+                                              .filter(x => username === void 0 || x.screenName.startsWith(username));
+
+            $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
+            super.render();
         }
 
-        public static setTitle(title: string): void {
+        private renderChart(): void {
+            var options = Controller.getOptions();
+            if (options.isFiltered()) {
+                $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
+                $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, Model.statistics.length, Model.entries.length));
+            } else {
+                $("#statistics-filter").text("");
+                $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, Model.statistics.length));
+            }
+
+            if (Model.statistics.length === 0) {
+                $("#statistics-chart").hide();
+                $("#no-result-container").fadeIn();
+                return;
+            } else {
+                $("#statistics-chart").show();
+            }
+
+            this.chart.draw(Model.statistics.table, StatisticsTab.GRAPH_OPTIONS);
+        }
+
+        private generateTableRow(user: RecoTwUser, index: number): string {
+            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > StatisticsTab.GRAPH_OPTIONS.sliceVisibilityThreshold ? StatisticsTab.GRAPH_COLORS[index + 1] : StatisticsTab.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage);
+        }
+
+        public clear(): void {
+            $("#statistics-table").empty();
+            super.clear();
+        }
+
+        public applySearchFilter(username: string) {
+            var options = Controller.getOptions();
+            options.usernames = [username];
+            Controller.setOptions(options, true, true, true);
+
+            super.clear();
+            Tab.home.show();
+        }
+
+        public applyChartFilter(username: string) {
+            this.render(username.toLowerCase());
+        }
+    }
+
+    /**
+     * The view.
+     */
+    class View {
+        private static _title = Resources.PAGE_TITLE_NORMAL;
+
+        public static set title(title: string) {
+            View._title = title = title || View._title;
             if (location.hostname === "" || location.hostname === "localhost") {
                 title = "[DEBUG] " + title;
             }
+            if (Model.notificationCount > 0) {
+                title = "* " + title;
+            }
             document.title = title;
-        }
-
-        private static createTwitterCB(callback: (twttr: Twitter) => void): void {
-            if (!twttr.widgets) {
-                twttr.ready(callback);
-            } else {
-                callback(twttr);
-            }
-        }
-
-        public static renderHome(): void {
-            $("#no-result-container").hide();
-            Controller.setLoadingState(false);
-
-            var element = $("#main-area")[0];
-            var option = { lang: "ja" };
-            var entries = Model.getEntries();
-            if (entries.isEmpty()) {
-                $("#no-result-container").fadeIn();
-                return;
-            }
-
-            View.createTwitterCB(() => {
-                entries.skip(View.current).take(View.TWEETS_COUNT).forEach(entry => {
-                    twttr.widgets.createTweet(entry.tweet_id, element, option).then(View.setTweetWidgetStyle.bind(this, ++View.widgetID, entry));
-                });
-                View.current += View.TWEETS_COUNT;
-            });
-        }
-
-        private static setTweetWidgetStyle(widgetID: number, entry: RecoTwEntry, element: Element) {
-            if (!element) {
-                View.showStatusLoadFailedMessage(widgetID, entry);
-            } else {
-                $(element).contents().find(".Tweet-followButton").hide();
-            }
-        }
-
-        public static renderStatistics(username?: string): void {
-            if (Model.getEntries() === null) {
-                return;
-            }
-
-            var statistics = Model.getStatistics();
-            $("#no-result-container").hide();
-
-            if (View.chart === null) {
-                View.chart = new google.visualization.PieChart($("#statistics-chart")[0]);
-                google.visualization.events.addListener(View.chart, "click", Controller.onChartSliceClick);
-            }
-
-            if (username === void 0) {
-                $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT, statistics.entryLength));
-
-                var options = Controller.getOptions();
-                if (options.isFiltered()) {
-                    $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
-                } else {
-                    $("#statistics-filter").text("");
-                }
-
-                if (statistics.entryLength === 0) {
-                    $("#statistics-chart").hide();
-                    $("#no-result-container").fadeIn();
-                    return;
-                } else {
-                    $("#statistics-chart").show();
-                }
-
-                View.chart.draw(statistics.dataTable, View.GRAPH_OPTIONS);
-            }
-
-            View.renderStatisticsTable(username, statistics);
-        }
-
-        private static renderStatisticsTable(username: string, statistics: RecoTwStatistics): void {
-            // Counts colored slices in the chart.
-            var colored = statistics.users.filter(x => x.count / statistics.entryLength > View.GRAPH_OPTIONS.sliceVisibilityThreshold).length;
-            var $table = $("#statistics-table").empty();
-            var html = "";
-            username = username !== void 0 ? username.toLowerCase() : void 0;
-            var isTarget = (x: string) => username === void 0 || x.toLowerCase().startsWith(username);
-
-            for (var i = 0; i < colored; i++) {
-                if (!isTarget(statistics.users[i].target_sn)) {
-                    continue;
-                }
-                html += String.format(Resources.STATISTICS_TABLE_HTML, View.GRAPH_COLORS[i + 1], statistics.users[i].target_sn, statistics.users[i].count, statistics.users[i].count / statistics.entryLength);
-            }
-            for (var i = colored; i < statistics.users.length; i++) {
-                if (!isTarget(statistics.users[i].target_sn)) {
-                    continue;
-                }
-                html += String.format(Resources.STATISTICS_TABLE_HTML, View.GRAPH_COLORS[0], statistics.users[i].target_sn, statistics.users[i].count, statistics.users[i].count / statistics.entryLength);
-            }
-            if (html.length === 0) {
-                $table.append(Resources.NO_RESULT);
-            } else {
-                $table.append(html);
-            }
-        }
-
-        public static clearHome(): void {
-            View.current = 0;
-            $("#main-area").empty();
         }
 
         public static setSearchKeywords(options: Options): void {
             $("#search-box").val(options.toKeywords());
         }
 
-        public static postEntries(): void {
+        public static postEntriesFromModal(): void {
             var inputs: string[] = $("#new-record-modal input[type='text']").map(function () { return $(this).val(); }).get();
             try {
-                Model.postEntriesFromInputs(inputs.filter(x => x.length > 0)).then(View.showPostSuccessMessage, View.showPostFailedMessage);
+                Model.registerEntries(inputs.filter(x => x.length > 0)).then(Controller.onRegistrationSucceeded, Controller.onRegistrationFailed);
                 $("#new-record-modal").modal("hide");
             } catch (e) {
                 $("#inputPostStatus").val("").focus();
@@ -886,51 +1094,29 @@ module RecoTwExplorer {
             }
         }
 
-        private static showPostSuccessMessage(response: RecoTwRecordResponse): void {
-            var $elm = $("#post-result");
-            $elm.hide();
-            $elm[0].className = "alert alert-success";
-            $("#post-failed").hide();
-            $("#post-success").show();
-            $elm.fadeIn();
-        }
-
-        private static showPostFailedMessage(error: string): void {
-            var $elm = $("#post-result");
-            $elm.hide();
-            $elm[0].className = "alert alert-danger";
-            $("#post-success").hide();
-            $("#post-failed").show();
-            $("#post-failed-reason").text(error);
-            $elm.fadeIn();
-        }
-
-        private static replaceLinkToURL(target: string) {
-            return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
-        }
-
-        public static showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
-            $("#twitter-widget-" + widgetID).after(String.format(Resources.TWEET_REMOVED_HTML, Model.createStatusURL(entry), Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, View.replaceLinkToURL(entry.content)))
-                                            .remove();
+        public static postEntriesFromDialog(value: string): void {
+            try {
+                Model.registerEntries([ value ]).then(Controller.onRegistrationSucceeded, Controller.onRegistrationFailed);
+            } catch (e) {
+                window.alert((<Error>e).message);
+            }
         }
     }
 
     /**
      * The controller.
      */
-    export class Controller {
-        private static options = new Options();
-        private static loading = false;
-        private static homeRendered = false;
-        private static statisticsRendered = false;
+    class Controller {
+        private static _options = new Options();
+        public static loading = false;
 
         public static getOptions(): Options {
-            return Controller.options;
+            return Controller._options;
         }
 
         public static setOptions(options: Options, sortOnly: boolean, setQuery: boolean, setKeywords: boolean): void {
             try {
-                Model.setOptions(Controller.options = options);
+                Model.options = Controller._options = options;
             } catch (e) {
                 console.log(e.message);
                 return;
@@ -945,23 +1131,20 @@ module RecoTwExplorer {
 
             if (options.isFiltered()) {
                 $("#clear-search-filter").show();
-                View.setTitle(String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords()));
+                View.title = String.format(Resources.PAGE_TITLE_SEARCH_RESULT, options.toKeywords());
             } else {
                 $("#clear-search-filter").hide();
-                View.setTitle(Resources.PAGE_TITLE_NORMAL);
+                View.title = Resources.PAGE_TITLE_NORMAL;
             }
 
             $("#statistics-filter-textbox").val("");
-            if (Model.getEntries() === null) {
+            if (Model.entries === null) {
                 return;
             }
 
-            var current = View.getCurrentTab();
-            if (current === Tab.Statistics) {
-                View.clearHome();
-                if (sortOnly) {
-                    Controller.homeRendered = false;
-                } else {
+            if (Tab.statistics.active) {
+                Tab.home.clear();
+                if (!sortOnly) {
                     Controller.reload();
                 }
             } else {
@@ -969,49 +1152,56 @@ module RecoTwExplorer {
             }
         }
 
-        public static setLoadingState(state: boolean) {
-            Controller.loading = state;
-        }
-
         public static main(): void {
-            View.setTitle(Resources.PAGE_TITLE_NORMAL);
+            View.title = Resources.PAGE_TITLE_NORMAL;
             $("#app-version").text(APP_VERSION);
-            if (navigator.standalone) {
+
+            if (window.innerHeight >= window.screen.height && navigator.standalone) {
                 $(document.body).addClass("standalone");
             }
 
             Model.init();
+            Tab.home = new HomeTab();
+            Tab.statistics = new StatisticsTab();
+            Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
+
             google.load("visualization", "1.0", { "packages": ["corechart"] });
             $("#loading-recotw").show();
 
-            Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
-
-            $(window).unload(Model.save);
-            $(window).bottom({ proximity: 0.05 });
-            $(window).on("bottom", () => {
-                if (View.getCurrentTab() === Tab.Home) {
+            var $window = $(window);
+            $window.unload(Model.save);
+            $window.bottom({ proximity: 0.05 });
+            $window.on("bottom", () => {
+                if (Tab.home.active) {
                     Controller.onPageBottom();
                 }
             });
-            $(".navbar-nav a[role='tab']").on("shown.bs.tab", $event => {
-                var getTab = (tab: HTMLAnchorElement) => View.getTabFromID(tab.href.substring(tab.href.lastIndexOf("#") + 1));
-                Controller.onTabSwitched(getTab(<HTMLAnchorElement>$event.relatedTarget), getTab(<HTMLAnchorElement>$event.target));
+            $window.on("popstate", () => {
+                Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
-            $("#clear-search-filter").click(() => {
-                Controller.setOptions(Options.fromKeywords("", Controller.getOrder(), Controller.getOrderBy()), false, true, true);
+            Tab.home.element.click(() => {
+                var count = Model.notificationCount;
+                if (Tab.home.active && count > 0) {
+                    Model.clearNotification();
+                    Controller.onNotificationStatusChanged();
+                    Controller.showNewStatuses(count);
+                }
+            });
+            $(".navbar-brand, #clear-search-filter").click(() => {
+                Controller.setOptions(Options.fromKeywords("", Controller.order, Controller.orderBy), false, true, true);
             });
             $("[id^='order-by-']").change(() => {
-                Controller.options.order = Controller.getOrder();
-                Controller.options.orderBy = Controller.getOrderBy();
-                Controller.setOptions(Controller.options, true, false, false);
+                Controller.getOptions().order = Controller.order;
+                Controller.getOptions().orderBy = Controller.orderBy;
+                Controller.setOptions(Controller.getOptions(), true, false, false);
             });
             $("#order-shuffle").click(() => {
-                Controller.options.order = Controller.getOrder();
-                Controller.setOptions(Controller.options, true, false, false);
+                Controller.getOptions().order = Controller.order;
+                Controller.setOptions(Controller.getOptions(), true, false, false);
             });
             $("#search-form").submit($event => {
                 $event.preventDefault();
-                Controller.setOptions(Options.fromKeywords($("#search-box").val(), Controller.getOrder(), Controller.getOrderBy()), false, true, false);
+                Controller.setOptions(Options.fromKeywords($("#search-box").val(), Controller.order, Controller.orderBy), false, true, false);
             });
             $("#search-form-toggle-button").click(function () {
                 var $this = $(this);
@@ -1027,16 +1217,19 @@ module RecoTwExplorer {
                     $elm.css({ cssText: "display: block !important" });
                 }
             });
-            $(window).on("popstate", () => {
-                Controller.setOptions(Options.fromQueryString(location.search, Controller.getOrder(), Controller.getOrderBy()), false, false, true);
-            });
-            $("#reload-entries-link").click(() => {
-                $("#polling-result, #post-result").fadeOut();
-                Controller.showNewStatuses();
+            $("#new-record-toggle-button").click(() => {
+                if (!navigator.standalone) {
+                    $("#new-record-modal").modal("show");
+                } else {
+                    var result = window.prompt(Resources.REGISTER_NEW_TWEET);
+                    if (result !== null) {
+                        View.postEntriesFromDialog(result);
+                    }
+                }
             });
             $("#new-record-form").submit($event => {
                 $event.preventDefault();
-                View.postEntries();
+                View.postEntriesFromModal();
             });
             $("#new-record-modal").on("shown.bs.modal", () => {
                 $("#new-record-form .url-box").focus();
@@ -1044,14 +1237,14 @@ module RecoTwExplorer {
             $("#new-record-modal").on("hidden.bs.modal", () => {
                 $("#new-record-form .modal-body").empty().html(Resources.URL_INPUT_AREA);
             });
-            $("#post-result-close").click(() => {
-                $("#post-result").fadeOut();
+            $("#new-record-modal").on("keyup change input", ".url-box", () => {
+                Controller.onNewRecordFormTextBoxValueChanged();
             });
-            $("#polling-result-close").click(() => {
-                $("#polling-result").fadeOut();
+            $("#statistics-filter-textbox").on("keyup change input", ($event: JQueryEventObject) => {
+                Tab.statistics.applyChartFilter((<HTMLInputElement>$event.target).value);
             });
-            $("#statistics-filter-textbox").on("keyup change", function () {
-                Controller.setChartFilterByUsername($(this).val());
+            $("#statistics-table").on("mousedown", ".statistics-table-header a", ($event: JQueryEventObject) => {
+                Tab.statistics.applySearchFilter($event.target.textContent);
             });
             $("#search-box").popover({
                 placement: "bottom",
@@ -1064,76 +1257,73 @@ module RecoTwExplorer {
                     $(this).popover("hide");
                 }
             });
+            $("#new-record-toggle-button").popover({
+                placement: "bottom",
+                html: true,
+                trigger: "manual"
+            }).on("shown.bs.popover", function () {
+                window.setTimeout(() => $(this).popover("hide"), 5000);
+            });
         }
 
-        public static getOrder(): Order {
+        public static get order(): Order {
             return $(".order-radio-box:checked").data("order");
         }
 
-        public static getOrderBy(): OrderBy {
+        public static get orderBy(): OrderBy {
             return $(".order-radio-box:checked").data("order-by");
         }
 
         public static reload(): void {
-            if (Model.getEntries() === null) {
+            if (Model.entries === null) {
                 return;
             }
-            switch (View.getCurrentTab()) {
-                case Tab.Home:
-                    View.clearHome();
-                    View.renderHome();
-                    $("#statistics-filter-textbox").val("");
-                    Controller.homeRendered = true;
-                    Controller.statisticsRendered = false;
-                    break;
-                case Tab.Statistics:
-                    View.renderStatistics();
-                    Controller.homeRendered = false;
-                    Controller.statisticsRendered = true;
-                    break;
+            Tab.home.clear();
+            Tab.statistics.clear();
+
+            if (Tab.home.active) {
+                Tab.home.render();
+                $("#statistics-filter-textbox").val("");
+            }
+            if (Tab.statistics.active) {
+                Tab.statistics.render();
             }
         }
 
         public static onEntriesLoaded(): void {
-            $("#loading-recotw").fadeOut();
-            $("#loading-panel-container").fadeOut();
-            if (Model.getEntries() === null) {
+            $("#loading-recotw, #loading-panel-container").fadeOut();
+            if (Model.entries === null) {
                 return;
             }
             Model.startPolling();
-            Controller.setOptions(Controller.options, false, false, true);
+            Controller.setOptions(Controller.getOptions(), false, false, true);
         }
 
         public static onEntriesLoadFailed(): void {
             $("#loading-panel").fadeOut().promise().done(() => $("#loading-error-panel").fadeIn());
         }
 
-        public static onNewEntries(): void {
-            $("#polling-result").fadeIn();
+        public static onRegistrationSucceeded(response: RecoTwRecordResponse): void {
+            return;
         }
 
-        public static isMobile(): boolean {
-            return /iPhone|iP[ao]d|Android|Windows.*Phone/.test(navigator.userAgent);
+        public static onRegistrationFailed(error: string): void {
+            $("#new-record-toggle-button").attr("data-content", String.format(Resources.REGISTRATION_FAILED_HTML, error)).popover("show");
         }
 
-        public static onTabSwitched(previous: Tab, current: Tab): void {
-            switch (current) {
-                case Tab.Home:
-                    if (!Controller.homeRendered) {
-                        View.renderHome();
-                        Controller.homeRendered = true;
-                    }
-                    break;
-                case Tab.Statistics:
-                    if (!Controller.isMobile()) {
-                        $("#statistics-filter-textbox").focus();
-                        window.setTimeout(() => $("#statistics-table").animate({ scrollTop: 0 }, 400), 100);
-                    }
-                    if (!Controller.statisticsRendered) {
-                        View.renderStatistics();
-                        Controller.statisticsRendered = true;
-                    }
-                    break;
+        public static onNewEntries(count: number): void {
+            Model.createNotification(count);
+            Controller.onNotificationStatusChanged();
+        }
+
+        public static onNotificationStatusChanged(): void {
+            View.title = null;
+            var count = Model.notificationCount;
+            if (count === 0) {
+                $("#unread-tweets").fadeOut();
+            } else {
+                var badge = count < 100 ? count : "99+";
+                $("#unread-tweets").text(badge).css({ display: "inline-block" });
             }
         }
 
@@ -1142,29 +1332,29 @@ module RecoTwExplorer {
                 return;
             }
             Controller.loading = true;
-            View.renderHome();
-        }
-
-        public static onImageError(element: HTMLImageElement) {
-            element.src = Model.createProfileImageURL(null);
+            Tab.home.render(true);
         }
 
         public static onChartSliceClick(slice: any): void {
-            var id = <string>slice.targetID;
-            if (!id.contains("#")) {
+            var target = <string>slice.targetID;
+            if (!target.contains("#")) {
                 return;
             }
-            Controller.setSearchFilterByUsername(Model.getStatistics().users[+id.substring(id.indexOf("#") + 1)].target_sn);
+            var id = +target.substring(target.indexOf("#") + 1);
+            if (id < 0) {
+                return;
+            }
+            Tab.statistics.applySearchFilter(Model.statistics.users[id].target_sn);
         }
 
         private static onNewRecordFormTextBoxValueChanged(): void {
             var $elements = $(".url-input-area");
-            var inputs: string[] = $(".url-box").map(function () { return $(this).val(); }).get();
+            var inputs: string[] = $(".url-box").map((index: number, element: HTMLInputElement) => element.value).get();
 
             $elements.each(function (index) {
                 $(this).removeClass("has-success has-error");
                 try {
-                    if (Model.validateURLorID(inputs[index]) !== null) {
+                    if (Model.createIDfromURL(inputs[index]) !== null) {
                         $(this).addClass("has-success");
                     }
                 } catch (e) {
@@ -1183,20 +1373,14 @@ module RecoTwExplorer {
             // }
         }
 
-        public static setSearchFilterByUsername(username: string) {
-            View.setCurrentTab(Tab.Home);
-            Controller.options.usernames = [username];
-            Controller.setOptions(Controller.options, false, true, true);
-        }
-
-        private static setChartFilterByUsername(username: string) {
-            View.renderStatistics(username);
-        }
-
-        public static showNewStatuses(): void {
-            View.setCurrentTab(Tab.Home);
-            Controller.setOptions(new Options([], "", null, false, Controller.options.order, Controller.options.orderBy), false, true, true);
-            Controller.reload();
+        public static showNewStatuses(count: number): void {
+            Tab.home.show();
+            var options = Controller.getOptions();
+            if (options.isFiltered() || options.order !== Order.Descending || options.orderBy !== OrderBy.RecordedDate) {
+                Controller.setOptions(new Options([], "", null, false, options.order, options.orderBy), false, true, true);
+            } else {
+                Tab.home.render(false, count);
+            }
         }
     }
 

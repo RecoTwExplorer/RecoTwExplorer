@@ -39,6 +39,7 @@
                         <a href="#home-tab" role="tab" data-toggle="tab">
                             <span class="navbar-label-icon glyphicon glyphicon-home"></span>
                             <span class="navbar-label-text">ホーム</span>
+                            <strong id="unread-tweets"></strong>
                         </a>
                     </li>
                     <li role="presentation">
@@ -48,7 +49,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="javascript:void(0);" data-toggle="modal" data-target="#new-record-modal">
+                        <a href="javascript:void(0);" id="new-record-toggle-button">
                             <span class="navbar-label-icon glyphicon glyphicon-plus"></span>
                             <span class="navbar-label-text">ツイート登録</span>
                         </a>
@@ -70,8 +71,10 @@
                 <div class="input-group">
                     <input type="text" id="search-box" name="body" class="form-control">
                     <span class="input-group-btn">
+                        <button type="button" id="clear-search-filter">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
                         <button class="btn" type="submit">検索</button>
-                        <button class="btn btn-warning" type="button" id="clear-search-filter">解除</button>
                     </span>
                 </div>
             </form>
@@ -79,7 +82,7 @@
                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                     <span class="navbar-label-icon glyphicon glyphicon-sort"></span>
                     <span class="navbar-label-text">並び替え</span>
-                    <span class="caret"></span>
+                    <i class="fa fa-caret-down"></i>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li>
@@ -107,26 +110,6 @@
             </div>
         </nav>
         <div id="page-main">
-            <div id="alerts">
-                <div class="container">
-                    <div id="post-result" class="alert alert-success">
-                        <button type="button" id="post-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                        <div id="post-success" class="alert-body">
-                            <strong>登録完了</strong>&nbsp;&nbsp;ツイートを RecoTw に登録しました。
-                        </div>
-                        <div id="post-failed" class="alert-body">
-                            <strong>登録失敗</strong>&nbsp;&nbsp;<span id="post-failed-reason">原因不明のエラーです。</span>
-                        </div>
-                    </div>
-                    <div id="polling-result" class="alert alert-info">
-                        <button type="button" id="polling-result-close" class="close"><span aria-hidden="true">&times;</span></button>
-                        <div class="alert-body">
-                            <strong>新着</strong>&nbsp;&nbsp;新しいツイートが登録されました。
-                            <a href="javascript:void(0);" id="reload-entries-link" class="alert-link">表示</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div id="loading-panel-container">
                 <div id="loading-panel" class="text-center">
                     <div class="progress">
@@ -180,8 +163,7 @@
                                 <label class="col-sm-2 control-label">ツイート</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="url-box form-control" name="id" placeholder="1145141919&nbsp;&nbsp;or&nbsp;&nbsp;https://twitter.com/user/status/1145141919"
-                                           onkeyup="RecoTwExplorer.Controller.onNewRecordFormTextBoxValueChanged()"
-                                           onchange="RecoTwExplorer.Controller.onNewRecordFormTextBoxValueChanged()">
+                                           pattern="^(?:(?:https?:\/\/(?:www\.|mobile\.)?)?twitter\.com\/(?:#!\/)?[a-zA-Z0-9_]+\/status(?:es)?\/(\d+)|(\d+))$">
                                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
                                     <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                                     <p class="help-block">ツイートの ID または URL を指定します。</p>
@@ -197,7 +179,7 @@
             </div>
         </div>
         <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -208,28 +190,16 @@
                                 RecoTw に登録されているすべての情報について作者（ちとく − <a href="https://twitter.com/java_shit" target="_blank">@java_shit</a>）は一切関知しません。詳しくはサービスの運営元へお問い合わせください。
                                 また、このアプリケーションを使用することによって発生した損害に対して作者は一切の責任を負いかねます。
                             </p>
+                            <h3>ヘルプ</h3>
                             <p>
-                                Internet Explorer 9 以上、Google Chrome、Firefox 上で動作することを確認していますが、これを保障するものではありません。
+                                動作環境、使用サービス/ライブラリについては <a href="https://github.com/RecoTwExplorer/RecoTwExplorer/blob/master/README.md" target="_blank">README.md</a> をご確認ください。<br>
+                                RecoTw Explorer の使い方、動作仕様、開発協力については <a href="https://github.com/RecoTwExplorer/RecoTwExplorer/wiki" target="_blank">Wiki</a> に掲載されています。
                             </p>
+                            <h3>ソースコード</h3>
                             <p>
-                                このアプリケーションは MIT ライセンスのもとに GitHub 上で公開されています：<br>
-                                <a href="https://github.com/RecoTwExplorer/RecoTwExplorer" target="_blank">https://&#x200b;github.com&#x200b;/&#x200b;RecoTwExplorer&#x200b;/&#x200b;RecoTwExplorer</a><br>
+                                このアプリケーションは MIT ライセンスのもとに <a href="https://github.com/RecoTwExplorer/RecoTwExplorer" target="_blank">GitHub</a> で公開されています。<br>
                                 バグ報告ないしプルリクエスト等はこのレポジトリにお願いいたします。
                             </p>
-                            <p>
-                                このアプリケーションは Twitter のユーザーアイコン表示のために次の Web サービスを使用しています：<br>
-                                <a href="http://140note.hitonobetsu.com/apipage/profileimage" target="_blank">Profile Image API For Twitter■140note</a>
-                            </p>
-                            <p style="margin-bottom: 0;">
-                                このアプリケーションは次のライブラリを使用しています：
-                            </p>
-                            <ul style="margin-top: 0;">
-                                <li><a href="http://jquery.com/" target="_blank">jQuery</a></li>
-                                <li><a href="http://linqjs.codeplex.com/" target="_blank">linq.js</a></li>
-                                <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></li>
-                                <li><a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">Font Awesome</a></li>
-                                <li><a href="https://developers.google.com/chart/" target="_blank">Google Charts</a></li>
-                            </ul>
                             <p class="text-center" style="margin-bottom: 0;">
                                 &copy; Chitoku 2014. Powered by RecoTw.
                             </p>
@@ -262,12 +232,14 @@
         <script src="./bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
         <script src="./bower_components/linqjs/linq.js"></script>
         <script src="./bower_components/linqjs/extensions/linq.jquery.js"></script>
+        <script src="./bower_components/favico.js/favico.js"></script>
+        <script src="./bower_components/jQuery-ajaxTransport-XDomainRequest/jQuery.XDomainRequest.js"></script>
         <script src="./lib/js/libstring.js"></script>
         <!-- endbuild -->
         <script src="http://chitoku.jp/lunalys/analyzer/tracker.js"></script>
         <script src="https://www.google.com/jsapi"></script>
         <!-- build:js js/recotw.min.js -->
-        <script src="./dev/js/recotw.js"></script>
+        <script src="./dev/js/main.js"></script>
         <!-- endbuild -->
     </body>
 </html>

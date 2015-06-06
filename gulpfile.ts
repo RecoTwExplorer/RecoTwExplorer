@@ -48,7 +48,7 @@ class Tasks {
 
     private html(): NodeJS.ReadWriteStream {
         var assets = $.useref.assets();
-        return gulp.src(["./index.html"])
+        return gulp.src(["./*.html"])
                    .pipe(assets)
                    .pipe($.if("*.js", $.uglify({ preserveComments: "some" })))
                    .pipe($.if("*.css", $.csso()))
@@ -59,7 +59,7 @@ class Tasks {
     }
 
     private styles(): NodeJS.ReadWriteStream {
-        return gulp.src(["./src/scss/style.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
+        return gulp.src(["./src/scss/*.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
                    .pipe($.sass({
                        precision: 10
                    }))
@@ -115,13 +115,14 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
-/*            ghostMode: {
+            ghostMode: {
                 clicks: true,
                 forms: false,
-                scroll: true
-            },*/
+                scroll: true,
+                get: () => void 0
+            },
             server: ["."],
-            files: ["index.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
+            files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
         gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
@@ -131,12 +132,13 @@ class Tasks {
         browserSync({
             notify: false,
             logPrefix: "WSK",
-            server: "dest"/*,
+            server: "dest",
             ghostMode: {
                 clicks: true,
                 forms: false,
-                scroll: true
-            }*/
+                scroll: true,
+                get: () => void 0
+            }
         });
     }
 
@@ -148,7 +150,7 @@ class Tasks {
 
         gulp.task("default", ["clean"], instance.default);
         gulp.task("assets", ["copy", "images", "fonts"]);
-        gulp.task("full", ["bower"], instance.default);
+        gulp.task("full", ["bower", "clean"], instance.default);
     }
 }
 

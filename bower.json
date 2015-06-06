@@ -1,6 +1,6 @@
 {
   "name": "RecoTwExplorer",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "homepage": "https://github.com/RecoTwExplorer/RecoTwExplorer",
   "authors": [
     "Chitoku",
@@ -20,7 +20,9 @@
   "dependencies": {
     "bootstrap-sass": "~3.3.3",
     "fontawesome": "~4.3.0",
-    "linqjs": "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=linqjs&DownloadId=461390&FileTime=130161449164930000&Build=20988",
-    "jquery_bottom": "https://github.com/jimyi/jquery_bottom.git#master"
+    "linqjs": "https://github.com/hinaloe/linqjs/archive/v3.zip",
+    "jquery_bottom": "https://github.com/jimyi/jquery_bottom.git#master",
+    "favico.js": "~0.3.7",
+    "jQuery-ajaxTransport-XDomainRequest": "~1.0.4"
   }
 }

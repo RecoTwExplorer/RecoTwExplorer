@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The interface for Twitter for Websites.
  */
 interface Twitter {
