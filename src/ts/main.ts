@@ -455,6 +455,50 @@ module RecoTwExplorer {
     }
 
     /**
+     * Provides interface for notification.
+     */
+    class NotificationManager {
+        private _length = 0;
+        private _favico: Favico = null;
+
+        public constructor() {
+            this._favico = new Favico({ animation: "slide" });
+        }
+
+        /**
+         * Gets a number of notifications.
+         */
+        public get length(): number {
+            return this._length;
+        }
+
+        /**
+         * Creates a notification.
+         * @param A number of notifications to create.
+         */
+        public create(count: number): void {
+            this._length += count;
+            try {
+                this._favico.badge(this._length);
+            } catch (e) {
+                console.log(e.message);
+            }
+        }
+
+        /**
+         * Clears all of the notifications.
+         */
+        public clear(): void {
+            this._length = 0;
+            try {
+                this._favico.reset();
+            } catch (e) {
+                console.log(e.message);
+            }
+        }
+    }
+
+    /**
      * The model.
      */
     class Model {
@@ -470,20 +514,14 @@ module RecoTwExplorer {
 
         private static _entries: RecoTwEntryCollection = null;
         private static _statistics: RecoTwStatistics = null;
+        private static _notification: NotificationManager = null;
         private static _pollingID: number = null;
-        private static _notificationCount = 0;
-        private static _favico: Favico = null;
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
          */
         public static init(): void {
             Model.load();
-            try {
-                Model._favico = new Favico({ animation: "slide" });
-            } catch (e) {
-                console.log(Resources.BADGE_NOT_SUPPORTED);
-            }
         }
 
         /**
@@ -531,7 +569,6 @@ module RecoTwExplorer {
 
         /**
          * Gets a statistics information by current options. The data is cached if possible.
-         * @param username A username to filter.
          */
         public static get statistics(): RecoTwStatistics {
             if (Model.entries === null) {
@@ -539,6 +576,13 @@ module RecoTwExplorer {
             } else {
                 return Model._statistics !== null ? Model._statistics : (Model._statistics = Model.entries.createStatistics());
             }
+        }
+
+        /**
+         * Gets a notification manager.
+         */
+        public static get notification(): NotificationManager {
+            return Model._notification !== null ? Model._notification : (Model._notification = new NotificationManager());
         }
 
         /**
@@ -804,41 +848,6 @@ module RecoTwExplorer {
             window.clearInterval(Model._pollingID);
             Model._pollingID = null;
         }
-
-        /**
-         * Gets a number of notifications.
-         */
-        public static get notificationCount(): number {
-            return Model._notificationCount;
-        }
-
-        /**
-         * Creates a notification.
-         * @param A number of notifications to create.
-         */
-        public static createNotification(count: number): void {
-            if (count < 0) {
-                return;
-            }
-            Model._notificationCount += count;
-            try {
-                Model._favico.badge(Model._notificationCount);
-            } catch (e) {
-                console.log(Resources.BADGE_NOT_SUPPORTED);
-            }
-        }
-
-        /**
-         * Clears all of the notifications.
-         */
-        public static clearNotification(): void {
-            Model._notificationCount = 0;
-            try {
-                Model._favico.reset();
-            } catch (e) {
-                console.log(Resources.BADGE_NOT_SUPPORTED);
-            }
-        }
     }
 
     /**
@@ -1076,7 +1085,7 @@ module RecoTwExplorer {
             if (location.hostname === "" || location.hostname === "localhost") {
                 title = "[DEBUG] " + title;
             }
-            if (Model.notificationCount > 0) {
+            if (Model.notification.length > 0) {
                 title = "* " + title;
             }
             document.title = title;
@@ -1183,11 +1192,10 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
             Tab.home.element.click(() => {
-                var count = Model.notificationCount;
-                if (Tab.home.active && count > 0) {
-                    Model.clearNotification();
+                if (Tab.home.active && Model.notification.length > 0) {
+                    Model.notification.clear();
                     Controller.onNotificationStatusChanged();
-                    Controller.showNewStatuses(count);
+                    Controller.showNewStatuses(Model.notification.length);
                 }
             });
             $(".navbar-brand, #clear-search-filter").click(() => {
@@ -1315,13 +1323,13 @@ module RecoTwExplorer {
         }
 
         public static onNewEntries(count: number): void {
-            Model.createNotification(count);
+            Model.notification.create(count);
             Controller.onNotificationStatusChanged();
         }
 
         public static onNotificationStatusChanged(): void {
             View.title = null;
-            var count = Model.notificationCount;
+            var count = Model.notification.length;
             if (count === 0) {
                 $("#unread-tweets").fadeOut();
             } else {
