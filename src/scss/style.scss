@@ -261,6 +261,9 @@ blockquote {
     font: normal normal 14px/1.2 Helvetica, Roboto, "Segoe UI", Calibri, sans-serif;
     padding: 15px 20px 18px;
     text-align: center;
+    a {
+        -webkit-tap-highlight-color: initial;
+    }
     hr {
         margin: 10px 0 15px;
     }
@@ -390,6 +393,7 @@ blockquote {
 }
 .statistics-table-header a {
     color: black;
+    -webkit-tap-highlight-color: initial;
 }
 .statistics-table-header a:hover {
     color: #666;
@@ -412,26 +416,31 @@ blockquote {
 #new-record-form .has-success .glyphicon-ok, #new-record-form .has-error .glyphicon-remove {
     display: block;
 }
-body.standalone #help-modal {
-    margin-top: 20px;
-}
-#help-modal .modal-body div {
-    padding: 10px;
-}
-#help-modal h2 {
-    margin-top: 0;
-    font-size: 24px;
-}
-#help-modal h3 {
-    padding: 0 12px;
-    margin: 26px 18px -5px 4px;
-    border: 0 solid #563d69;
-    border-left-width: 1ex;
-}
-#help-modal p {
-    margin-top: 18px;
-    padding: 0 4px;
-    line-height: 1.8;
+#help-modal {
+    body.standalone & {
+        margin-top: 20px;
+    }
+    .modal-body div {
+        padding: 10px;
+    }
+    a {
+        -webkit-tap-highlight-color: initial;
+    }
+    h2 {
+        margin-top: 0;
+        font-size: 24px;
+    }
+    h3 {
+        padding: 0 12px;
+        margin: 26px 18px -5px 4px;
+        border: 0 solid #563d69;
+        border-left-width: 1ex;
+    }
+    p {
+        margin-top: 18px;
+        padding: 0 4px;
+        line-height: 1.8;
+    }
 }
 
 @media (max-width: 1152px - 1) {
