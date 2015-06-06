@@ -323,7 +323,7 @@ module RecoTwExplorer {
          * @param enumerable An object to enumerate the entries.
          */
         public constructor(elements: RecoTwEntry[], userIDs?: linqjs.IDictionary<string, string>, enumerable?: linqjs.IEnumerable<RecoTwEntry>) {
-            this._elements = elements;
+            this._elements = elements || [];
             this._userIDs = userIDs || null;
             this._enumerable = enumerable || Enumerable.from(elements);
 
@@ -352,7 +352,10 @@ module RecoTwExplorer {
          * @param item The item to add.
          */
         public add(item: RecoTwEntry): void {
-            if (item && +item.id > +this._elements[this._elements.length - 1].id) {
+            if (!item) {
+                throw new Error();
+            }
+            if (this._elements.length === 0 || +item.id > +this._elements[this._elements.length - 1].id) {
                 this._elements[this._elements.length] = item;
             }
         }
