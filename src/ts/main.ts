@@ -27,6 +27,7 @@ module RecoTwExplorer {
     "use strict";
     var APP_NAME = "RecoTw Explorer";
     var APP_VERSION = "2.40";
+    var APP_URL = location.protocol + "//" + location.host + location.pathname;
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
@@ -97,7 +98,7 @@ module RecoTwExplorer {
         public static REGISTER_NEW_TWEET = "ツイートの ID または URL:";
         public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
-        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
+        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"{4}\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
         public static TWEET_TIME_HTML = "<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:yyyy年M月d日 HH:mm}</time></a>";
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
@@ -1019,19 +1020,19 @@ module RecoTwExplorer {
             }
 
             $("#no-result-container").hide();
+            var options = Controller.getOptions();
             if (username === void 0) {
-                this.renderChart();
+                this.renderChart(options);
             }
 
-            var table = Model.statistics.users.map((user, index) => ({ html: this.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
+            var table = Model.statistics.users.map((user, index) => ({ html: this.generateTableRow(user, options, index), screenName: user.target_sn.toLowerCase() }))
                                               .filter(x => username === void 0 || x.screenName.startsWith(username));
 
             $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
             super.render();
         }
 
-        private renderChart(): void {
-            var options = Controller.getOptions();
+        private renderChart(options: Options): void {
             if (options.isFiltered()) {
                 $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
                 $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, Model.statistics.length, Model.entries.length));
@@ -1051,8 +1052,9 @@ module RecoTwExplorer {
             this.chart.draw(Model.statistics.table, StatisticsTab.GRAPH_OPTIONS);
         }
 
-        private generateTableRow(user: RecoTwUser, index: number): string {
-            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > StatisticsTab.GRAPH_OPTIONS.sliceVisibilityThreshold ? StatisticsTab.GRAPH_COLORS[index + 1] : StatisticsTab.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage);
+        private generateTableRow(user: RecoTwUser, current: Options, index: number): string {
+            var options = new Options([user.target_sn], current.body, current.id, current.regex, current.order, current.orderBy);
+            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > StatisticsTab.GRAPH_OPTIONS.sliceVisibilityThreshold ? StatisticsTab.GRAPH_COLORS[index + 1] : StatisticsTab.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage, APP_URL + options.toQueryString());
         }
 
         public clear(): void {
@@ -1254,9 +1256,15 @@ module RecoTwExplorer {
             $("#statistics-filter-textbox").on("keyup change input", ($event: JQueryEventObject) => {
                 Tab.statistics.applyChartFilter((<HTMLInputElement>$event.target).value);
             });
-            $("#statistics-table").on("mousedown", ".statistics-table-header a", ($event: JQueryEventObject) => {
-                Tab.statistics.applySearchFilter($event.target.textContent);
-            });
+            $("#statistics-table").on("mousedown click", ".statistics-table-header a", ($event: JQueryMouseEventObject) => {
+                if ($event.type === "click") {
+                    $event.preventDefault();
+                    return;
+                }
+                if ($event.button === 0) {
+                    Tab.statistics.applySearchFilter($event.target.textContent);
+                }
+            })
             $("#search-box").popover({
                 placement: "bottom",
                 html: true,
