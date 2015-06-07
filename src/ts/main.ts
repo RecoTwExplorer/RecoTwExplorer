@@ -1264,7 +1264,7 @@ module RecoTwExplorer {
                 if ($event.button === 0) {
                     Tab.statistics.applySearchFilter($event.target.textContent);
                 }
-            })
+            });
             $("#search-box").popover({
                 placement: "bottom",
                 html: true,
