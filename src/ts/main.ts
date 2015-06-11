@@ -1373,7 +1373,7 @@ module RecoTwExplorer {
             var elm = <HTMLInputElement>$event.target;
             try {
                 var id = Model.createIDfromURL(elm.value);
-                if (Model.entries.enumerable.any(x => x.tweet_id === id)) {
+                if (Model.entries.reset().enumerable.any(x => x.tweet_id === id)) {
                     $this.addClass("has-warning").find(".help-block").text(Resources.ALREADY_REGISTERED);
                 } else if (id !== null) {
                     $this.addClass("has-success").find(".help-block").text(Resources.REGISTRATION_AVAILABLE);
