@@ -832,7 +832,7 @@ module RecoTwExplorer {
                 return;
             }
             Model._pollingID = window.setInterval(() => {
-                Model.fetchLatestEntries().done(data => {
+                Model.fetchLatestEntries().done((data: RecoTwEntry[]) => {
                     if (data.length > 0) {
                         Controller.onNewEntries(data.length);
                     }
