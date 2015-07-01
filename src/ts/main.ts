@@ -941,6 +941,7 @@ module RecoTwExplorer {
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
                     $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
+                    $contents.find(".EmbeddedTweet").css("max-width", "100%");
                 }
             });
         }
