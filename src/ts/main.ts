@@ -945,7 +945,7 @@ module RecoTwExplorer {
                 if (!widget) {
                     this.showStatusLoadFailedMessage(entry, $element);
                 } else {
-                    var $contents = $(widget).contents();
+                    var $contents = $(widget).css("height", "auto").contents();
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
                     $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
