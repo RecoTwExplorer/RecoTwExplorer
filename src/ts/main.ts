@@ -937,13 +937,13 @@ module RecoTwExplorer {
         }
 
         private renderTweet(entry: RecoTwEntry, $container: JQuery): void {
-            var element = $("<div></div>", { id: "recotw-tweet-" + entry.tweet_id }).appendTo($container)[0];
-            twttr.widgets.createTweet(entry.tweet_id, element, {
+            var $element = $("<div></div>", { id: "recotw-tweet-" + entry.tweet_id }).appendTo($container);
+            twttr.widgets.createTweet(entry.tweet_id, $element[0], {
                 lang: "ja",
                 linkColor: "#774c80"
             }).then((widget: HTMLIFrameElement) => {
                 if (!widget) {
-                    this.showStatusLoadFailedMessage(entry);
+                    this.showStatusLoadFailedMessage(entry, $element);
                 } else {
                     var $contents = $(widget).contents();
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
@@ -958,12 +958,12 @@ module RecoTwExplorer {
             return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
         }
 
-        private showStatusLoadFailedMessage(entry: RecoTwEntry): void {
+        private showStatusLoadFailedMessage(entry: RecoTwEntry, $target: JQuery): void {
             var tweetDate = Model.createDateByTweetID(entry);
             var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString());
             var $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
 
-            $("#recotw-tweet-" + entry.tweet_id).append($elm);
+            $target.append($elm);
             $elm.find("img").on("error", ($event: JQueryEventObject) => (<HTMLImageElement>$event.target).src = Model.createProfileImageURL(null));
         }
 
