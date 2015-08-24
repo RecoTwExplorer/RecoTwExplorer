@@ -900,13 +900,8 @@ module RecoTwExplorer {
      */
     class HomeTab extends Tab {
         private static TWEETS_COUNT = 25;
-        private static WIDGET_OPTIONS: TwitterTweetWidgetOptions = {
-            lang: "ja",
-            linkColor: "#774c80"
-        };
 
         private _current = 0;
-        private _widgetID = -1;
 
         public constructor() {
             super("home-tab");
@@ -921,7 +916,7 @@ module RecoTwExplorer {
             Controller.loading = false;
 
             var $main = $("#main-area");
-            var element: HTMLElement;
+            var $container: JQuery;
             var entries = Model.entries.enumerable;
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
@@ -930,24 +925,27 @@ module RecoTwExplorer {
 
             if (count) {
                 entries = entries.take(count);
-                element = $("<div></div>").prependTo($main)[0];
+                $container = $("<div></div>").prependTo($main);
             } else {
                 entries = entries.skip(this._current).take(HomeTab.TWEETS_COUNT);
-                element = $main[0];
+                $container = $main;
             }
 
-            twttr.ready(() => entries.forEach(x => this.renderTweet(x, element)));
+            twttr.ready(() => entries.forEach(x => this.renderTweet(x, $container)));
             this._current += count || HomeTab.TWEETS_COUNT;
             super.render();
         }
 
-        private renderTweet(entry: RecoTwEntry, element: HTMLElement): void {
-            var widgetID = ++this._widgetID;
-            twttr.widgets.createTweet(entry.tweet_id, element, HomeTab.WIDGET_OPTIONS).then((widget: HTMLIFrameElement) => {
+        private renderTweet(entry: RecoTwEntry, $container: JQuery): void {
+            var $element = $("<div></div>", { id: "recotw-tweet-" + entry.tweet_id }).appendTo($container);
+            twttr.widgets.createTweet(entry.tweet_id, $element[0], {
+                lang: "ja",
+                linkColor: "#774c80"
+            }).then((widget: HTMLIFrameElement) => {
                 if (!widget) {
-                    this.showStatusLoadFailedMessage(widgetID, entry);
+                    this.showStatusLoadFailedMessage(entry, $element);
                 } else {
-                    var $contents = $(widget).contents();
+                    var $contents = $(widget).css("height", "auto").contents();
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
                     $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
@@ -960,12 +958,12 @@ module RecoTwExplorer {
             return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
         }
 
-        private showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
+        private showStatusLoadFailedMessage(entry: RecoTwEntry, $target: JQuery): void {
             var tweetDate = Model.createDateByTweetID(entry);
             var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString());
             var $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
 
-            $("#twitter-widget-" + widgetID).after($elm).remove();
+            $target.append($elm);
             $elm.find("img").on("error", ($event: JQueryEventObject) => (<HTMLImageElement>$event.target).src = Model.createProfileImageURL(null));
         }
 
