@@ -17,9 +17,9 @@ class ErrorNotifier {
 }
 
 class Tasks {
-    // [id: string]: gulp.ITaskCallback;
+    [id: string]: gulp.ITaskCallback;
 
-    private default(callback: (err: Error) => any): ReadWriteStream {
+    private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
         return runSequence("styles", "lint", "build", ["html", "assets"], callback);
     }
 
@@ -27,11 +27,11 @@ class Tasks {
         del(["./dest/*", "./dev/*", "!./dest/.git"], { dot: true }, callback);
     }
 
-    private build(): ReadWriteStream {
+    private build(): NodeJS.ReadWriteStream {
         return this.compile();
     }
 
-    private compile(): ReadWriteStream {
+    private compile(): NodeJS.ReadWriteStream {
         return gulp.src(["./src/ts/*.ts"])
                    .pipe($.sourcemaps.init())
                    .pipe($.typescript({
@@ -46,7 +46,7 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private html(): ReadWriteStream {
+    private html(): NodeJS.ReadWriteStream {
         var assets = $.useref.assets();
         return gulp.src(["./*.html"])
                    .pipe(assets)
@@ -58,7 +58,7 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private styles(): ReadWriteStream {
+    private styles(): NodeJS.ReadWriteStream {
         return gulp.src(["./src/scss/*.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
                    .pipe($.sass({
                        precision: 10
@@ -68,13 +68,13 @@ class Tasks {
                    .pipe($.size({ title: "styles" }));
     }
 
-    private copy(): ReadWriteStream {
+    private copy(): NodeJS.ReadWriteStream {
         return gulp.src(["./favicon.ico", "CNAME"])
                    .pipe(gulp.dest("./dest/"))
                    .pipe($.size({ title: "copy" }));
     }
 
-    private fonts(): ReadWriteStream {
+    private fonts(): NodeJS.ReadWriteStream {
         return gulp.src(["./bower_components/**/fonts/**"])
                    .pipe($.flatten())
                    .pipe(gulp.dest("./dev/fonts/"))
@@ -82,7 +82,7 @@ class Tasks {
                    .pipe($.size({ title: "fonts" }));
    }
 
-    private images(): ReadWriteStream {
+    private images(): NodeJS.ReadWriteStream {
         return gulp.src(["./images/*"])
                    .pipe($.cache($.imagemin({
                        progressive: true,
@@ -92,14 +92,14 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private lint(): ReadWriteStream {
+    private lint(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"))
                    .on("error", ErrorNotifier.getErrorListener("TypeScript Lint Error"));
     }
 
-    private lint_noemit(): ReadWriteStream {
+    private lint_noemit(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"), {
@@ -107,7 +107,7 @@ class Tasks {
                    });
     }
 
-    private bower(): ReadWriteStream {
+    private bower(): NodeJS.ReadWriteStream {
         return $.bower({ cmd: "update" });
     }
 
