@@ -1,9 +1,10 @@
+// Compiled using typings@0.6.8
+// Source: https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/9027703c0bd831319dcdf7f3169f7a468537f448/del/del.d.ts
 // Type definitions for del v2.2.0
 // Project: https://github.com/sindresorhus/del
 // Definitions by: Asana <https://asana.com>, Aya Morisawa <https://github.com/AyaMorisawa>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="../glob/glob.d.ts"/>
 
 declare module "del" {
     import glob = require("glob");
