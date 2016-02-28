@@ -10,6 +10,7 @@
   "devDependencies": {
     "browser-sync": "^2.9.8",
     "del": "^2.2.0",
+    "es6-promise": "^3.1.2",
     "gulp-bower": "0.0.13",
     "gulp-cache": "^0.4.2",
     "gulp-csso": "^1.0.0",

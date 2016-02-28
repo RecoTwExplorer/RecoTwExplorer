@@ -3,6 +3,7 @@
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
+import { Promise } from "es6-promise";
 
 var $ = require("gulp-load-plugins")();
 var runSequence = require("run-sequence");
@@ -17,14 +18,14 @@ class ErrorNotifier {
 }
 
 class Tasks {
-    [id: string]: gulp.ITaskCallback;
+    [id: string]: gulp.TaskCallback;
 
     private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
         return runSequence("styles", "lint", "build", ["html", "assets"], callback);
     }
 
     private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
-        del(["./dest/*", "./dev/*", "!./dest/.git"], { dot: true }, callback);
+        del(["./dest/*", "./dev/*", "!./dest/.git"], callback);
     }
 
     private build(): NodeJS.ReadWriteStream {
@@ -119,7 +120,6 @@ class Tasks {
                 clicks: true,
                 forms: false,
                 scroll: true,
-                get: () => void 0
             },
             server: ["."],
             files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
@@ -137,7 +137,6 @@ class Tasks {
                 clicks: true,
                 forms: false,
                 scroll: true,
-                get: () => void 0
             }
         });
     }
