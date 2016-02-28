@@ -1,27 +1,30 @@
 // Compiled using typings@0.6.8
-// Source: https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/9027703c0bd831319dcdf7f3169f7a468537f448/del/del.d.ts
-// Type definitions for del v2.2.0
+// Source: https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/43866454400dc8fbffd27b1fcfc76e316a570fbc/del/del.d.ts
+// Type definitions for del v1.2.0
 // Project: https://github.com/sindresorhus/del
-// Definitions by: Asana <https://asana.com>, Aya Morisawa <https://github.com/AyaMorisawa>
+// Definitions by: Asana <https://asana.com>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 
 declare module "del" {
     import glob = require("glob");
 
-    function Del(pattern: string): Promise<string[]>;
-    function Del(pattern: string, options: Del.Options): Promise<string[]>;
+    function Del(pattern: string): void;
+    function Del(pattern: string, options: Del.Options): void;
+    function Del(pattern: string, callback: (err: Error, deletedFiles: string[]) => any): void;
+    function Del(pattern: string, options: Del.Options, callback: (err: Error, deletedFiles: string[]) => any): void;
 
-    function Del(patterns: string[]): Promise<string[]>;
-    function Del(patterns: string[], options: Del.Options): Promise<string[]>;
+    function Del(patterns: string[]): void;
+    function Del(patterns: string[], options: Del.Options): void;
+    function Del(patterns: string[], callback: (err: Error, deletedFiles: string[]) => any): void;
+    function Del(patterns: string[], options: Del.Options, callback: (err: Error, deletedFiles: string[]) => any): void;
 
     module Del {
-        function sync(pattern: string, options?: Options): string[];
-        function sync(patterns: string[], options?: Options): string[];
+        function sync(pattern: string, options?: Options): void;
+        function sync(patterns: string[], options?: Options): void;
 
         interface Options extends glob.IOptions {
-            force?: boolean;
-            dryRun?: boolean;
+            force?: boolean
         }
     }
 

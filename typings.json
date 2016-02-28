@@ -1,8 +1,14 @@
 {
   "ambientDependencies": {
     "browser-sync": "github:DefinitelyTyped/DefinitelyTyped/browser-sync/browser-sync.d.ts#d9b5b35ba3a79ac778c5890531393442439df5dd",
-    "del": "github:DefinitelyTyped/DefinitelyTyped/del/del.d.ts#9027703c0bd831319dcdf7f3169f7a468537f448",
+    "chokidar": "github:DefinitelyTyped/DefinitelyTyped/chokidar/chokidar.d.ts#ae81e340a9e897167cfef3122a5a3aed04293814",
+    "del": "github:DefinitelyTyped/DefinitelyTyped/del/del.d.ts#43866454400dc8fbffd27b1fcfc76e316a570fbc",
+    "micromatch": "github:DefinitelyTyped/DefinitelyTyped/micromatch/micromatch.d.ts#7cda84786520fd0673c934fde1aa722083e05f7b",
     "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#48c1e3c1d6baefa4f1a126f188c27c4fefd36bff",
+    "parse-glob": "github:DefinitelyTyped/DefinitelyTyped/parse-glob/parse-glob.d.ts#1ae2ddf27c6e9b98ad7e7fa496788f1aadf37933",
     "require": "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#4de74cb527395c13ba20b438c3a7a419ad931f1c"
+  },
+  "dependencies": {
+    "glob": "github:typed-typings/npm-glob#59ca0f5d4696a8d4da27858035316c1014133fcb"
   }
 }
