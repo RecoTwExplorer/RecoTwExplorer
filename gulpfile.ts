@@ -1,8 +1,8 @@
-/// <reference path="typings/main.d.ts" />
+/// <reference path="typings/main.d.ts"/>
 
-import gulp = require("gulp");
-import del = require("del");
-import browserSync = require("browser-sync");
+import * as gulp from "gulp";
+import * as del from "del";
+import * as browserSync from "browser-sync";
 
 var $ = require("gulp-load-plugins")();
 var runSequence = require("run-sequence");
@@ -17,9 +17,9 @@ class ErrorNotifier {
 }
 
 class Tasks {
-    [id: string]: gulp.ITaskCallback;
+    // [id: string]: gulp.ITaskCallback;
 
-    private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
+    private default(callback: (err: Error) => any): ReadWriteStream {
         return runSequence("styles", "lint", "build", ["html", "assets"], callback);
     }
 
@@ -27,11 +27,11 @@ class Tasks {
         del(["./dest/*", "./dev/*", "!./dest/.git"], { dot: true }, callback);
     }
 
-    private build(): NodeJS.ReadWriteStream {
+    private build(): ReadWriteStream {
         return this.compile();
     }
 
-    private compile(): NodeJS.ReadWriteStream {
+    private compile(): ReadWriteStream {
         return gulp.src(["./src/ts/*.ts"])
                    .pipe($.sourcemaps.init())
                    .pipe($.typescript({
@@ -46,7 +46,7 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private html(): NodeJS.ReadWriteStream {
+    private html(): ReadWriteStream {
         var assets = $.useref.assets();
         return gulp.src(["./*.html"])
                    .pipe(assets)
@@ -58,7 +58,7 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private styles(): NodeJS.ReadWriteStream {
+    private styles(): ReadWriteStream {
         return gulp.src(["./src/scss/*.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
                    .pipe($.sass({
                        precision: 10
@@ -68,13 +68,13 @@ class Tasks {
                    .pipe($.size({ title: "styles" }));
     }
 
-    private copy(): NodeJS.ReadWriteStream {
+    private copy(): ReadWriteStream {
         return gulp.src(["./favicon.ico", "CNAME"])
                    .pipe(gulp.dest("./dest/"))
                    .pipe($.size({ title: "copy" }));
     }
 
-    private fonts(): NodeJS.ReadWriteStream {
+    private fonts(): ReadWriteStream {
         return gulp.src(["./bower_components/**/fonts/**"])
                    .pipe($.flatten())
                    .pipe(gulp.dest("./dev/fonts/"))
@@ -82,7 +82,7 @@ class Tasks {
                    .pipe($.size({ title: "fonts" }));
    }
 
-    private images(): NodeJS.ReadWriteStream {
+    private images(): ReadWriteStream {
         return gulp.src(["./images/*"])
                    .pipe($.cache($.imagemin({
                        progressive: true,
@@ -92,14 +92,14 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private lint(): NodeJS.ReadWriteStream {
+    private lint(): ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"))
                    .on("error", ErrorNotifier.getErrorListener("TypeScript Lint Error"));
     }
 
-    private lint_noemit(): NodeJS.ReadWriteStream {
+    private lint_noemit(): ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"), {
@@ -107,7 +107,7 @@ class Tasks {
                    });
     }
 
-    private bower(): NodeJS.ReadWriteStream {
+    private bower(): ReadWriteStream {
         return $.bower({ cmd: "update" });
     }
 
