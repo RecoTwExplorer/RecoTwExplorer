@@ -6,22 +6,22 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "gulp/gulp.d.ts": {
-      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+      "commit": "b10e5ade29708bb0a7d21916a9fe289973520e89"
     },
     "node/node.d.ts": {
-      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+      "commit": "b10e5ade29708bb0a7d21916a9fe289973520e89"
     },
     "del/del.d.ts": {
-      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+      "commit": "b10e5ade29708bb0a7d21916a9fe289973520e89"
     },
     "glob/glob.d.ts": {
-      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+      "commit": "b10e5ade29708bb0a7d21916a9fe289973520e89"
     },
     "minimatch/minimatch.d.ts": {
-      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+      "commit": "b10e5ade29708bb0a7d21916a9fe289973520e89"
     },
     "browser-sync/browser-sync.d.ts": {
-      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+      "commit": "b10e5ade29708bb0a7d21916a9fe289973520e89"
     }
   }
 }
