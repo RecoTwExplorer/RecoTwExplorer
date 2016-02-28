@@ -24,8 +24,8 @@ class Tasks {
         return runSequence("styles", "lint", "build", ["html", "assets"], callback);
     }
 
-    private clean(callback: (err: Error, deletedFiles: string[]) => any): void {
-        del(["./dest/*", "./dev/*", "!./dest/.git"], callback);
+    private clean(): void {
+        return del.sync(["./dest/*", "./dev/*", "!./dest/.git"]);
     }
 
     private build(): NodeJS.ReadWriteStream {
@@ -48,12 +48,9 @@ class Tasks {
     }
 
     private html(): NodeJS.ReadWriteStream {
-        var assets = $.useref.assets();
         return gulp.src(["./*.html"])
-                   .pipe(assets)
                    .pipe($.if("*.js", $.uglify({ preserveComments: "some" })))
                    .pipe($.if("*.css", $.csso()))
-                   .pipe(assets.restore())
                    .pipe($.useref())
                    .pipe(gulp.dest("./dest/"))
                    .pipe($.size());
@@ -147,7 +144,7 @@ class Tasks {
             gulp.task((<string>task).replace("_", ":"), instance[task].bind(instance));
         }
 
-        gulp.task("default", ["clean"], instance.default);
+        gulp.task("default", ['clean'],  instance.default);
         gulp.task("assets", ["copy", "images", "fonts"]);
         gulp.task("full", ["bower", "clean"], instance.default);
     }
