@@ -1,26 +1,17 @@
 language: node_js
 matrix:
   include:
-    - node_js: "0.8"
-    - node_js: "0.11"
-    - node_js: "0.10"
-    - node_js: "0.12"
-    - node_js: "1"
-    - node_js: "2"
-    - node_js: "3"
     - node_js: "4"
       after_success:
-      - cd dest
-      - git add -A
-      - git commit -m "update $TRAVIS_COMMIT"
-      - '[ "$TRAVIS_BRANCH" == "master" ] && [ $GH_TOKEN ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && git push --quiet https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git gh-pages 2> /dev/null'
-    - node_js: "4"
+        - cd dest
+        - git add -A
+        - git commit -m "update $TRAVIS_COMMIT"
+        - '([ "$TRAVIS_BRANCH" != "master" ] || [ !$GH_TOKEN ] || [ "$TRAVIS_PULL_REQUEST" == "true" ]) && exit 1'
+        - git push --quiet chitoku.jp master 2> /dev/null
+        - git push --quiet github gh-pages 2> /dev/null
       install:
         - npm install -g npm@3
         - npm install
-  allow_failures:
-    - node_js: "0.8"
-    - node_js: "0.11"
   fast_finish: true
 sudo: false
 cache:
@@ -34,9 +25,16 @@ env:
     - GIT_AUTHOR_NAME="Travis ci"
     - GIT_AUTHOR_EMAIL=noreply@github.com
     - secure: "iLUUc/LmjRCozVzudYdTk2nkhonLZ5BL2acguMjGV5ds2Wh6rcy+qvqOE456MpU+sggXtJHwPD5A8cJZyo++iWLUSvOB9GBdi3tfXCsW6/VofhMU8sOzpmGNbJdnTUn6XF0CY06Dw9xVLIaasHl/Zc3Y5g/csJbB+ab+pv1Naaw="
+before_install:
+  - openssl aes-256-cbc -K $encrypted_61cd302c393d_key -iv $encrypted_61cd302c393d_iv -in id_rsa.enc -out id_rsa -d
+  - echo -e "Host chitoku.jp\n\tPort 5324\n\tIdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+  - cp id_rsa ~/.ssh/
+  - chmod 600 ~/.ssh/id_rsa
 before_script:
   - npm install -g gulp
   - git clone --quiet -b gh-pages https://github.com/RecoTwExplorer/RecoTwExplorer dest
+  - git remote add github "https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git"
+  - git remote add chitoku.jp "ssh://chitoku.jp/var/www/vhosts/recotw.chitoku.jp/httpdocs/"
   - pushd dest
   - git checkout gh-pages
   - popd
