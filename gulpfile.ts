@@ -48,9 +48,9 @@ class Tasks {
 
     private html(): NodeJS.ReadWriteStream {
         return gulp.src(["./*.html"])
+                   .pipe($.useref())
                    .pipe($.if("*.js", $.uglify({ preserveComments: "some" })))
                    .pipe($.if("*.css", $.csso()))
-                   .pipe($.useref())
                    .pipe(gulp.dest("./dest/"))
                    .pipe($.size());
     }
