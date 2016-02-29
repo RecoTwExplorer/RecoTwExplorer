@@ -25,7 +25,7 @@ class Tasks {
     }
 
     private clean(): void {
-        return del.sync(["./dest/*", "./dev/*", "!./dest/.git"]);
+        return del(["./dest/**/*", "./dev/**/*", "!./dest/.git"], { dot: true });
     }
 
     private build(): NodeJS.ReadWriteStream {
