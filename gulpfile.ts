@@ -3,7 +3,6 @@
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
-import { Promise } from "es6-promise";
 
 var $ = require("gulp-load-plugins")();
 var runSequence = require("run-sequence");
