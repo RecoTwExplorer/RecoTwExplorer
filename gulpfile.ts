@@ -3,9 +3,9 @@
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
+const runSequence = require("run-sequence");
 
-var $ = require("gulp-load-plugins")();
-var runSequence = require("run-sequence");
+const $ = require("gulp-load-plugins")();
 
 class ErrorNotifier {
     public static getErrorListener(title: string): (error: Error) => void {
@@ -138,7 +138,7 @@ class Tasks {
     }
 
     public static register(): void {
-        var instance = new Tasks();
+        const instance = new Tasks();
         for (var task in instance) {
             gulp.task((<string>task).replace("_", ":"), instance[task].bind(instance));
         }
