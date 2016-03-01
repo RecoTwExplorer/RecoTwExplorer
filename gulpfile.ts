@@ -23,7 +23,7 @@ class Tasks {
         return runSequence("styles", "lint", "build", ["html", "assets"], callback);
     }
 
-    private clean(): void {
+    private clean(): Promise<string[]>  {
         return del(["./dest/**/*", "./dev/**/*"]);
     }
 
