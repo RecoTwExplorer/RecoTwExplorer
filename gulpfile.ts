@@ -1,9 +1,9 @@
 /// <reference path="typings/main.d.ts"/>
 
+import {Gulpclass, Task, SequenceTask} from "./node_modules/gulpclass/src/Decorators";
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
-const runSequence = require("run-sequence");
 
 const $ = require("gulp-load-plugins")();
 
@@ -16,23 +16,27 @@ class ErrorNotifier {
     }
 }
 
-class Tasks {
-    [id: string]: gulp.TaskCallback;
-
-    private default(callback: (err: Error) => any): NodeJS.ReadWriteStream {
-        return runSequence("styles", "lint", "build", ["html", "assets"], callback);
+@Gulpclass()
+export class Tasks {
+    @SequenceTask()
+    default(callback: (err: Error) => any): (string | string[])[] {
+        return ["clean", "styles", "lint", "build", ["html", "assets"]];
     }
 
-    private clean(): Promise<string[]>  {
+    @Task()
+    clean(): Promise<string[]> {
         return del(["./dest/**/*", "./dev/**/*"]);
     }
 
-    private build(): NodeJS.ReadWriteStream {
+    @Task()
+    build(): NodeJS.ReadWriteStream {
         return this.compile();
     }
 
-    private compile(): NodeJS.ReadWriteStream {
+    @Task()
+    compile(): NodeJS.ReadWriteStream {
         return gulp.src(["./src/ts/*.ts"])
+                   .pipe($.tsconfigUpdate())
                    .pipe($.sourcemaps.init())
                    .pipe($.typescript({
                        noEmitOnError: true,
@@ -46,7 +50,8 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private html(): NodeJS.ReadWriteStream {
+    @Task()
+    html(): NodeJS.ReadWriteStream {
         return gulp.src(["./*.html"])
                    .pipe($.useref())
                    .pipe($.if("*.js", $.uglify({ preserveComments: "some" })))
@@ -55,7 +60,8 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private styles(): NodeJS.ReadWriteStream {
+    @Task()
+    styles(): NodeJS.ReadWriteStream {
         return gulp.src(["./src/scss/*.scss", "./lib/css/*.css", "!./lib/css/*.min.css"])
                    .pipe($.sass({
                        precision: 10
@@ -65,21 +71,24 @@ class Tasks {
                    .pipe($.size({ title: "styles" }));
     }
 
-    private copy(): NodeJS.ReadWriteStream {
+    @Task()
+    copy(): NodeJS.ReadWriteStream {
         return gulp.src(["./favicon.ico", "CNAME"])
                    .pipe(gulp.dest("./dest/"))
                    .pipe($.size({ title: "copy" }));
     }
 
-    private fonts(): NodeJS.ReadWriteStream {
+    @Task()
+    fonts(): NodeJS.ReadWriteStream {
         return gulp.src(["./bower_components/**/fonts/**"])
                    .pipe($.flatten())
                    .pipe(gulp.dest("./dev/fonts/"))
                    .pipe(gulp.dest("./dest/fonts/"))
                    .pipe($.size({ title: "fonts" }));
-   }
+    }
 
-    private images(): NodeJS.ReadWriteStream {
+    @Task()
+    images(): NodeJS.ReadWriteStream {
         return gulp.src(["./images/*"])
                    .pipe($.cache($.imagemin({
                        progressive: true,
@@ -89,14 +98,16 @@ class Tasks {
                    .pipe($.size());
     }
 
-    private lint(): NodeJS.ReadWriteStream {
+    @Task()
+    lint(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"))
                    .on("error", ErrorNotifier.getErrorListener("TypeScript Lint Error"));
     }
 
-    private lint_noemit(): NodeJS.ReadWriteStream {
+    @Task("lint-noemit")
+    lintNoemit(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"), {
@@ -104,11 +115,13 @@ class Tasks {
                    });
     }
 
-    private bower(): NodeJS.ReadWriteStream {
+    @Task()
+    bower(): NodeJS.ReadWriteStream {
         return $.bower({ cmd: "update" });
     }
 
-    private serve(): void {
+    @Task()
+    serve(): void {
         browserSync({
             notify: false,
             logPrefix: "WSK",
@@ -124,7 +137,8 @@ class Tasks {
         gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
     }
 
-    private serve_dest(): void {
+    @Task("serve-dest")
+    serve_dest(): void {
         browserSync({
             notify: false,
             logPrefix: "WSK",
@@ -137,16 +151,13 @@ class Tasks {
         });
     }
 
-    public static register(): void {
-        const instance = new Tasks();
-        for (var task in instance) {
-            gulp.task((<string>task).replace("_", ":"), instance[task].bind(instance));
-        }
+    @Task()
+    assets(): string[] {
+        return ["copy", "images", "fonts"];
+    }
 
-        gulp.task("default", ['clean'],  instance.default);
-        gulp.task("assets", ["copy", "images", "fonts"]);
-        gulp.task("full", ["bower", "clean"], instance.default);
+    @SequenceTask()
+    full(): (string | string[])[] {
+        return [["bower", "clean"], "default"];
     }
 }
-
-Tasks.register();

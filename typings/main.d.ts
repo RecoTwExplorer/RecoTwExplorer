@@ -1,7 +1,6 @@
 /// <reference path="main/ambient/browser-sync/browser-sync.d.ts" />
 /// <reference path="main/ambient/chokidar/chokidar.d.ts" />
 /// <reference path="main/ambient/del/del.d.ts" />
-/// <reference path="main/ambient/es6-promise/es6-promise.d.ts" />
 /// <reference path="main/ambient/glob/glob.d.ts" />
 /// <reference path="main/ambient/micromatch/micromatch.d.ts" />
 /// <reference path="main/ambient/minimatch/minimatch.d.ts" />
