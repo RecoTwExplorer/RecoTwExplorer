@@ -106,7 +106,7 @@ export class Tasks {
                    .on("error", ErrorNotifier.getErrorListener("TypeScript Lint Error"));
     }
 
-    @Task("lint-noemit")
+    @Task("lint:noemit")
     lintNoemit(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
