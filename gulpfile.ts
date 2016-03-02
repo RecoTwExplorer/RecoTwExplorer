@@ -1,6 +1,6 @@
 /// <reference path="typings/main.d.ts"/>
 
-import {Gulpclass, Task, SequenceTask} from "./node_modules/gulpclass/src/Decorators";
+import {Gulpclass, Task, SequenceTask} from "gulpclass/Decorators";
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
