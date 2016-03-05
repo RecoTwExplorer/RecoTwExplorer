@@ -31,6 +31,7 @@ cache:
   directories:
     - node_modules
     - bower_components
+    - typings
 env:
   global:
     - GIT_COMMITTER_NAME="Travis ci"
