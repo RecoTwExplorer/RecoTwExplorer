@@ -151,9 +151,9 @@ export class Tasks {
         });
     }
 
-    @Task()
-    assets(): string[] {
-        return ["copy", "images", "fonts"];
+    @SequenceTask()
+    assets(): string[][] {
+        return [["copy", "images", "fonts"]];
     }
 
     @SequenceTask()
