@@ -18,11 +18,11 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-sass": "~3.3.3",
-    "fontawesome": "~4.3.0",
+    "bootstrap-sass": "~3.3.6",
+    "fontawesome": "~4.5.0",
     "linqjs": "https://github.com/hinaloe/linqjs/archive/v3.zip",
     "jquery_bottom": "https://github.com/jimyi/jquery_bottom.git#master",
-    "favico.js": "~0.3.7",
+    "favico.js": "~0.3.10",
     "jQuery-ajaxTransport-XDomainRequest": "~1.0.4"
   }
 }
