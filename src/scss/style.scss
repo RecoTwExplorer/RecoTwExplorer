@@ -399,22 +399,29 @@ blockquote {
     color: #666;
 }
 #statistics-tab {
-  padding: 0 12px;
+    padding: 0 12px;
 }
-#new-record-form .url-input-area label {
-    color: #333;
+.modal-body .url-input-area {
+    label {
+        color: #333;
+    }
+    .help-block {
+        color: #737373;
+    }
+    &:not(:first-child) label {
+        visibility: hidden;
+    }
+    & + .url-input-area {
+        margin-top: -15px;
+    }
 }
-#new-record-form .url-input-area .help-block {
-    color: #737373;
-}
-.modal-body .url-input-area:not(:first-child) label {
-    visibility: hidden;
-}
-.modal-body .url-input-area:not(:last-child) p, #new-record-form .form-control-feedback {
-    display: none;
-}
-#new-record-form .has-success .glyphicon-ok, #new-record-form .has-error .glyphicon-remove {
-    display: block;
+#new-record-form {
+    .form-control-feedback {
+        display: none;
+    }
+    .has-success .glyphicon-ok, .has-error .glyphicon-remove, .has-warning .glyphicon-warning-sign {
+        display: block;
+    }
 }
 #help-modal {
     body.standalone & {
