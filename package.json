@@ -5,7 +5,8 @@
   "main": "recotw.js",
   "dependencies": {
     "gulp": "^3.9.1",
-    "gulp-typescript": "^2.12.1"
+    "gulp-typescript": "^2.12.1",
+    "typings": "^0.6.10"
   },
   "devDependencies": {
     "browser-sync": "^2.11.1",
