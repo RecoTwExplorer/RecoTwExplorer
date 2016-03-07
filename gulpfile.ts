@@ -4,7 +4,9 @@ import {Gulpclass, Task, SequenceTask} from "gulpclass/Decorators";
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
+import * as url from "url";
 
+const proxy = require("proxy-middleware");
 const $ = require("gulp-load-plugins")();
 
 class ErrorNotifier {
@@ -131,7 +133,8 @@ export class Tasks {
                 scroll: true,
             },
             server: ["."],
-            files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
+            files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"],
+            middleware: Tasks.browserSyncMiddleware(),
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
         gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
@@ -147,7 +150,8 @@ export class Tasks {
                 clicks: true,
                 forms: false,
                 scroll: true,
-            }
+            },
+            middleware: Tasks.browserSyncMiddleware(),
         });
     }
 
@@ -159,5 +163,13 @@ export class Tasks {
     @SequenceTask()
     full(): (string | string[])[] {
         return [["bower", "clean"], "default"];
+    }
+
+    static browserSyncMiddleware() {
+        const proxyOptions: any = url.parse("http://157.112.147.23/");
+        proxyOptions.route = "/api/recotw";
+        proxyOptions.headers = {"Host": "api.recotw.black"};
+        return [proxy(proxyOptions)];
+
     }
 }
