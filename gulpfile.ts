@@ -6,6 +6,7 @@ import * as del from "del";
 import * as browserSync from "browser-sync";
 import * as url from "url";
 
+const runSequence = require("run-sequence");
 const proxy = require("proxy-middleware");
 const $ = require("gulp-load-plugins")();
 
@@ -21,8 +22,8 @@ class ErrorNotifier {
 @Gulpclass()
 export class Tasks {
     @SequenceTask()
-    default(callback: (err: Error) => any): (string | string[])[] {
-        return ["clean", "styles", "lint", "build", ["html", "assets"]];
+    default(callback: gulp.TaskCallback): (string | string[] | gulp.TaskCallback)[] {
+        return ["clean", "styles", "lint", "build", ["html", "assets"], callback];
     }
 
     @Task()
@@ -109,7 +110,7 @@ export class Tasks {
     }
 
     @Task("lint:noemit")
-    lintNoemit(): NodeJS.ReadWriteStream {
+    lintNoEmit(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"), {
@@ -123,7 +124,8 @@ export class Tasks {
     }
 
     @Task()
-    serve(): void {
+    async serve(): Promise<void> {
+        await new Promise(resolve => runSequence.apply(runSequence, this.default(resolve)));
         browserSync({
             notify: false,
             logPrefix: "WSK",
@@ -141,7 +143,7 @@ export class Tasks {
     }
 
     @Task("serve-dest")
-    serve_dest(): void {
+    serveDest(): void {
         browserSync({
             notify: false,
             logPrefix: "WSK",
