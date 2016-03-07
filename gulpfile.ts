@@ -165,11 +165,10 @@ export class Tasks {
         return [["bower", "clean"], "default"];
     }
 
-    static browserSyncMiddleware() {
+    static browserSyncMiddleware(): browserSync.MiddlewareHandler {
         const proxyOptions: any = url.parse("http://157.112.147.23/");
         proxyOptions.route = "/api/recotw";
         proxyOptions.headers = {"Host": "api.recotw.black"};
-        return [proxy(proxyOptions)];
-
+        return proxy(proxyOptions);
     }
 }
