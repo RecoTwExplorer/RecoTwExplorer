@@ -22,8 +22,8 @@ class ErrorNotifier {
 @Gulpclass()
 export class Tasks {
     @SequenceTask()
-    default(callback: gulp.TaskCallback): (string | string[] | gulp.TaskCallback)[] {
-        return ["clean", "styles", "lint", "build", ["html", "assets"], callback];
+    default(): (string | string[])[] {
+        return ["clean", "styles", "lint", "build", ["html", "assets"]];
     }
 
     @Task()
@@ -125,7 +125,8 @@ export class Tasks {
 
     @Task()
     async serve(): Promise<void> {
-        await new Promise(resolve => runSequence.apply(runSequence, this.default(resolve)));
+        const tasks: (string | string[] | gulp.TaskCallback)[] = this.default();
+        await new Promise(resolve => runSequence.apply(runSequence, tasks.concat(resolve)));
         browserSync({
             notify: false,
             logPrefix: "WSK",
