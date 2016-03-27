@@ -519,9 +519,9 @@ module RecoTwExplorer {
         private static TWITTER_STATUS_URL = "https://twitter.com/show/status/{0}";
         private static TWITTER_USER_URL = "https://twitter.com/{0}";
         private static TWITTER_PROFILE_IMAGE_URL = "http://www.paper-glasses.com/api/twipi/{0}/";
-        private static RECOTW_GET_ALL_URL = "http://api.recotw.black/1/tweet/get_tweet_all";
-        private static RECOTW_POST_URL = "http://api.recotw.black/1/tweet/record_tweet";
-        private static RECOTW_COUNT_URL = "http://api.recotw.black/1/tweet/count_tweet";
+        private static RECOTW_GET_ALL_URL = "/api/recotw/1/tweet/get_tweet_all";
+        private static RECOTW_POST_URL = "/api/recotw/1/tweet/record_tweet";
+        private static RECOTW_COUNT_URL = "/api/recotw/1/tweet/count_tweet";
         private static POLLING_INTERVAL = 20000;
         private static TWITTER_SNOWFLAKE_EPOCH = 1288834974657;
 

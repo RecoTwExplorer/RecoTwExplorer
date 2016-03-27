@@ -4,7 +4,10 @@ import {Gulpclass, Task, SequenceTask} from "gulpclass/Decorators";
 import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
+import * as url from "url";
 
+const runSequence = require("run-sequence");
+const proxy = require("proxy-middleware");
 const $ = require("gulp-load-plugins")();
 
 class ErrorNotifier {
@@ -19,7 +22,7 @@ class ErrorNotifier {
 @Gulpclass()
 export class Tasks {
     @SequenceTask()
-    default(callback: (err: Error) => any): (string | string[])[] {
+    default(): (string | string[])[] {
         return ["clean", "styles", "lint", "build", ["html", "assets"]];
     }
 
@@ -107,7 +110,7 @@ export class Tasks {
     }
 
     @Task("lint:noemit")
-    lintNoemit(): NodeJS.ReadWriteStream {
+    lintNoEmit(): NodeJS.ReadWriteStream {
         return gulp.src("./src/ts/*.ts")
                    .pipe($.tslint())
                    .pipe($.tslint.report("verbose"), {
@@ -121,7 +124,9 @@ export class Tasks {
     }
 
     @Task()
-    serve(): void {
+    async serve(): Promise<void> {
+        const tasks: (string | string[] | gulp.TaskCallback)[] = this.default();
+        await new Promise(resolve => runSequence.apply(runSequence, tasks.concat(resolve)));
         browserSync({
             notify: false,
             logPrefix: "WSK",
@@ -131,14 +136,15 @@ export class Tasks {
                 scroll: true,
             },
             server: ["."],
-            files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"]
+            files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"],
+            middleware: Tasks.browserSyncMiddleware(),
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
         gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
     }
 
     @Task("serve-dest")
-    serve_dest(): void {
+    serveDest(): void {
         browserSync({
             notify: false,
             logPrefix: "WSK",
@@ -147,7 +153,8 @@ export class Tasks {
                 clicks: true,
                 forms: false,
                 scroll: true,
-            }
+            },
+            middleware: Tasks.browserSyncMiddleware(),
         });
     }
 
@@ -159,5 +166,12 @@ export class Tasks {
     @SequenceTask()
     full(): (string | string[])[] {
         return [["bower", "clean"], "default"];
+    }
+
+    static browserSyncMiddleware(): browserSync.MiddlewareHandler {
+        const proxyOptions: any = url.parse("http://157.112.147.23/");
+        proxyOptions.route = "/api/recotw";
+        proxyOptions.headers = {"Host": "api.recotw.black"};
+        return proxy(proxyOptions);
     }
 }
