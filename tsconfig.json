@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "noImplicitAny": true,
+        "sourceMap": false,
+        "experimentalDecorators": true
+    },
+    "filesGlob": [
+        "./*.ts",
+        "./src/**/*.ts",
+        "./node_modules/typescript/lib/lib.es6.d.ts"
+    ],
+    "files": [
+        "src/ts/bookmarklet.ts",
+        "src/ts/main.d.ts",
+        "src/ts/main.ts",
+        "src/ts/recotw.d.ts"
+    ]
+}

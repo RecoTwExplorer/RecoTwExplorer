@@ -27,6 +27,7 @@ module RecoTwExplorer {
     "use strict";
     var APP_NAME = "RecoTw Explorer";
     var APP_VERSION = "2.40";
+    var APP_URL = location.protocol + "//" + location.host + location.pathname;
 
     /*
      * Bootstrap jQuery Shake Effect snippet - pAMmDzOfnL
@@ -87,17 +88,20 @@ module RecoTwExplorer {
      * The resources for UI.
      */
     class Resources {
-        public static INCORRECT_REGEX = "指定された正規表現は正しくありません。";
-        public static INCORRECT_URL_OR_ID = "指定された URL または ID は正しくありません。";
-        public static BADGE_NOT_SUPPORTED = "通知バッジがサポートされていません。";
-        public static FAILED_TO_GENERATE_STATUS_URL = "ツイートの URL を生成できません。";
-        public static FAILED_TO_GENERATE_USER_URL = "ユーザーへの URL を生成できません。";
-        public static FAILED_TO_GENERATE_PROFILE_IMAGE_URL = "プロフィール画像の URL を生成できません。";
-        public static FAILED_TO_LOAD_EMBEDDED_TWEET = "Twitter 埋め込みツイートの読み込みに失敗しました。";
+        public static INCORRECT_REGEX = "指定された正規表現は正しくありません";
+        public static INCORRECT_URL_OR_ID = "指定された URL または ID は正しくありません";
+        public static ALREADY_REGISTERED = "すでに登録されているツイートです";
+        public static REGISTRATION_AVAILABLE = "このツイートは登録可能です";
+        public static REGISTRATION_DEFAULT = "ツイートの ID または URL を指定します";
+        public static BADGE_NOT_SUPPORTED = "通知バッジがサポートされていません";
+        public static FAILED_TO_GENERATE_STATUS_URL = "ツイートの URL を生成できません";
+        public static FAILED_TO_GENERATE_USER_URL = "ユーザーへの URL を生成できません";
+        public static FAILED_TO_GENERATE_PROFILE_IMAGE_URL = "プロフィール画像の URL を生成できません";
+        public static FAILED_TO_LOAD_EMBEDDED_TWEET = "Twitter 埋め込みツイートの読み込みに失敗しました";
         public static REGISTER_NEW_TWEET = "ツイートの ID または URL:";
         public static REGISTRATION_FAILED_HTML = "<strong>登録失敗</strong><br>{0}";
         public static SEARCH_HELP_HTML = "<dl><dt>ツイート検索</dt><dd><code>/</code> と <code>/</code> で囲むと正規表現検索</dd><dt>ユーザー名検索</dt><dd><code>from:</code> でユーザーを検索<br>カンマ区切りで複数入力</dd><dt>ID 検索</dt><dd><code>id:</code> で ID 検索</dd></dl>";
-        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"javascript:void(0);\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
+        public static STATISTICS_TABLE_HTML = "<span class=\"statistics-table-header\" style=\"border-color: #{0:X6};\"><a href=\"{4}\">{1}</a> ({2})&nbsp;&nbsp;&ndash;&nbsp;&nbsp;{3:P1}</span><br>";
         public static TWEET_TIME_HTML = "<a href=\"{0}\" target=\"_blank\"><time datetime=\"{2}\" title=\"投稿時刻: {1:U} (UTC)\">{1:yyyy年M月d日 HH:mm}</time></a>";
         public static TWEET_REMOVED_HTML = "<blockquote>ツイートは削除されたか、または非公開に設定されています。<hr><div><img src=\"{0}\"><span><a href=\"{1}\" target=\"_blank\">@{2}</a></span><p>{3}</p><p class=\"tweet-date\">{4}</p></div></blockquote>";
         public static LINK_TO_URL_HTML = "<a href=\"{0}\" target=\"_blank\">{0}</a>";
@@ -115,12 +119,12 @@ module RecoTwExplorer {
             [code: string]: string;
             UNKNOWN_ERROR: string;
         } = {
-            "400": "パラメーターが正しくありません。",
-            "403": "ツイートの取得に失敗しました。",
-            "404": "指定されたツイートは存在しません。",
-            "500": "すでに登録されているツイートです。",
-            "503": "サーバーで問題が発生しています。",
-            UNKNOWN_ERROR: "原因不明のエラーです。"
+            "400": "パラメーターが正しくありません",
+            "403": "ツイートの取得に失敗しました",
+            "404": "指定されたツイートは存在しません",
+            "500": Resources.ALREADY_REGISTERED,
+            "503": "サーバーで問題が発生しています",
+            UNKNOWN_ERROR: "原因不明のエラーです"
         };
     }
 
@@ -464,6 +468,50 @@ module RecoTwExplorer {
     }
 
     /**
+     * Provides interface for notification.
+     */
+    class NotificationManager {
+        private _length = 0;
+        private _favico: Favico = null;
+
+        public constructor() {
+            this._favico = new Favico({ animation: "slide" });
+        }
+
+        /**
+         * Gets a number of notifications.
+         */
+        public get length(): number {
+            return this._length;
+        }
+
+        /**
+         * Creates a notification.
+         * @param A number of notifications to create.
+         */
+        public create(count: number): void {
+            this._length += count;
+            try {
+                this._favico.badge(this._length);
+            } catch (e) {
+                console.log(e.message);
+            }
+        }
+
+        /**
+         * Clears all of the notifications.
+         */
+        public clear(): void {
+            this._length = 0;
+            try {
+                this._favico.reset();
+            } catch (e) {
+                console.log(e.message);
+            }
+        }
+    }
+
+    /**
      * The model.
      */
     class Model {
@@ -479,20 +527,14 @@ module RecoTwExplorer {
 
         private static _entries: RecoTwEntryCollection = null;
         private static _statistics: RecoTwStatistics = null;
+        private static _notification: NotificationManager = null;
         private static _pollingID: number = null;
-        private static _notificationCount = 0;
-        private static _favico: Favico = null;
 
         /**
          * Initializes the model, loads the entries from localStorage, and starts to download new entries.
          */
         public static init(): void {
             Model.load();
-            try {
-                Model._favico = new Favico({ animation: "slide" });
-            } catch (e) {
-                console.log(Resources.BADGE_NOT_SUPPORTED);
-            }
         }
 
         /**
@@ -540,7 +582,6 @@ module RecoTwExplorer {
 
         /**
          * Gets a statistics information by current options. The data is cached if possible.
-         * @param username A username to filter.
          */
         public static get statistics(): RecoTwStatistics {
             if (Model.entries === null) {
@@ -548,6 +589,13 @@ module RecoTwExplorer {
             } else {
                 return Model._statistics !== null ? Model._statistics : (Model._statistics = Model.entries.createStatistics());
             }
+        }
+
+        /**
+         * Gets a notification manager.
+         */
+        public static get notification(): NotificationManager {
+            return Model._notification !== null ? Model._notification : (Model._notification = new NotificationManager());
         }
 
         /**
@@ -796,7 +844,7 @@ module RecoTwExplorer {
                 return;
             }
             Model._pollingID = window.setInterval(() => {
-                Model.fetchLatestEntries().done(data => {
+                Model.fetchLatestEntries().done((data: RecoTwEntry[]) => {
                     if (data.length > 0) {
                         Controller.onNewEntries(data.length);
                     }
@@ -812,41 +860,6 @@ module RecoTwExplorer {
         public static stopPolling(): void {
             window.clearInterval(Model._pollingID);
             Model._pollingID = null;
-        }
-
-        /**
-         * Gets a number of notifications.
-         */
-        public static get notificationCount(): number {
-            return Model._notificationCount;
-        }
-
-        /**
-         * Creates a notification.
-         * @param A number of notifications to create.
-         */
-        public static createNotification(count: number): void {
-            if (count < 0) {
-                return;
-            }
-            Model._notificationCount += count;
-            try {
-                Model._favico.badge(Model._notificationCount);
-            } catch (e) {
-                console.log(Resources.BADGE_NOT_SUPPORTED);
-            }
-        }
-
-        /**
-         * Clears all of the notifications.
-         */
-        public static clearNotification(): void {
-            Model._notificationCount = 0;
-            try {
-                Model._favico.reset();
-            } catch (e) {
-                console.log(Resources.BADGE_NOT_SUPPORTED);
-            }
         }
     }
 
@@ -899,13 +912,8 @@ module RecoTwExplorer {
      */
     class HomeTab extends Tab {
         private static TWEETS_COUNT = 25;
-        private static WIDGET_OPTIONS: TwitterTweetWidgetOptions = {
-            lang: "ja",
-            linkColor: "#774c80"
-        };
 
         private _current = 0;
-        private _widgetID = -1;
 
         public constructor() {
             super("home-tab");
@@ -920,7 +928,7 @@ module RecoTwExplorer {
             Controller.loading = false;
 
             var $main = $("#main-area");
-            var element: HTMLElement;
+            var $container: JQuery;
             var entries = Model.entries.enumerable;
             if (entries.isEmpty()) {
                 $("#no-result-container").fadeIn();
@@ -929,27 +937,31 @@ module RecoTwExplorer {
 
             if (count) {
                 entries = entries.take(count);
-                element = $("<div></div>").prependTo($main)[0];
+                $container = $("<div></div>").prependTo($main);
             } else {
                 entries = entries.skip(this._current).take(HomeTab.TWEETS_COUNT);
-                element = $main[0];
+                $container = $main;
             }
 
-            twttr.ready(() => entries.forEach(x => this.renderTweet(x, element)));
+            twttr.ready(() => entries.forEach(x => this.renderTweet(x, $container)));
             this._current += count || HomeTab.TWEETS_COUNT;
             super.render();
         }
 
-        private renderTweet(entry: RecoTwEntry, element: HTMLElement): void {
-            var widgetID = ++this._widgetID;
-            twttr.widgets.createTweet(entry.tweet_id, element, HomeTab.WIDGET_OPTIONS).then((widget: HTMLIFrameElement) => {
+        private renderTweet(entry: RecoTwEntry, $container: JQuery): void {
+            var $element = $("<div></div>", { id: "recotw-tweet-" + entry.tweet_id }).appendTo($container);
+            twttr.widgets.createTweet(entry.tweet_id, $element[0], {
+                lang: "ja",
+                linkColor: "#774c80"
+            }).then((widget: HTMLIFrameElement) => {
                 if (!widget) {
-                    this.showStatusLoadFailedMessage(widgetID, entry);
+                    this.showStatusLoadFailedMessage(entry, $element);
                 } else {
-                    var $contents = $(widget).contents();
+                    var $contents = $(widget).css("height", "auto").contents();
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
                     $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
+                    $contents.find(".EmbeddedTweet").css("max-width", "100%");
                 }
             });
         }
@@ -958,12 +970,12 @@ module RecoTwExplorer {
             return target.replace(/[\r\n]/g, "<br>").replace(/https?:\/\/t\.co\/[A-Za-z0-9]+/g, s => String.format(Resources.LINK_TO_URL_HTML, s));
         }
 
-        private showStatusLoadFailedMessage(widgetID: number, entry: RecoTwEntry): void {
+        private showStatusLoadFailedMessage(entry: RecoTwEntry, $target: JQuery): void {
             var tweetDate = Model.createDateByTweetID(entry);
             var time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString());
             var $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
 
-            $("#twitter-widget-" + widgetID).after($elm).remove();
+            $target.append($elm);
             $elm.find("img").on("error", ($event: JQueryEventObject) => (<HTMLImageElement>$event.target).src = Model.createProfileImageURL(null));
         }
 
@@ -1019,19 +1031,19 @@ module RecoTwExplorer {
             }
 
             $("#no-result-container").hide();
+            var options = Controller.getOptions();
             if (username === void 0) {
-                this.renderChart();
+                this.renderChart(options);
             }
 
-            var table = Model.statistics.users.map((user, index) => ({ html: this.generateTableRow(user, index), screenName: user.target_sn.toLowerCase() }))
+            var table = Model.statistics.users.map((user, index) => ({ html: this.generateTableRow(user, options, index), screenName: user.target_sn.toLowerCase() }))
                                               .filter(x => username === void 0 || x.screenName.startsWith(username));
 
             $("#statistics-table").html(table.length > 0 ? table.map(x => x.html).join("") : Resources.NO_RESULT);
             super.render();
         }
 
-        private renderChart(): void {
-            var options = Controller.getOptions();
+        private renderChart(options: Options): void {
             if (options.isFiltered()) {
                 $("#statistics-filter").text(String.format(Resources.SEARCH_RESULT, options.toKeywords()));
                 $("#statistics-count").text(String.format(Resources.STATISTICS_COUNT_FILTERED, Model.statistics.length, Model.entries.length));
@@ -1051,8 +1063,9 @@ module RecoTwExplorer {
             this.chart.draw(Model.statistics.table, StatisticsTab.GRAPH_OPTIONS);
         }
 
-        private generateTableRow(user: RecoTwUser, index: number): string {
-            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > StatisticsTab.GRAPH_OPTIONS.sliceVisibilityThreshold ? StatisticsTab.GRAPH_COLORS[index + 1] : StatisticsTab.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage);
+        private generateTableRow(user: RecoTwUser, current: Options, index: number): string {
+            var options = new Options([user.target_sn], current.body, current.id, current.regex, current.order, current.orderBy);
+            return String.format(Resources.STATISTICS_TABLE_HTML, user.percentage > StatisticsTab.GRAPH_OPTIONS.sliceVisibilityThreshold ? StatisticsTab.GRAPH_COLORS[index + 1] : StatisticsTab.GRAPH_COLORS[0], user.target_sn, user.count, user.percentage, APP_URL + options.toQueryString());
         }
 
         public clear(): void {
@@ -1085,7 +1098,7 @@ module RecoTwExplorer {
             if (location.hostname === "" || location.hostname === "localhost") {
                 title = "[DEBUG] " + title;
             }
-            if (Model.notificationCount > 0) {
+            if (Model.notification.length > 0) {
                 title = "* " + title;
             }
             document.title = title;
@@ -1192,11 +1205,10 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
             Tab.home.element.click(() => {
-                var count = Model.notificationCount;
-                if (Tab.home.active && count > 0) {
-                    Model.clearNotification();
+                if (Tab.home.active && Model.notification.length > 0) {
+                    Model.notification.clear();
                     Controller.onNotificationStatusChanged();
-                    Controller.showNewStatuses(count);
+                    Controller.showNewStatuses(Model.notification.length);
                 }
             });
             $(".navbar-brand, #clear-search-filter").click(() => {
@@ -1249,14 +1261,18 @@ module RecoTwExplorer {
             $("#new-record-modal").on("hidden.bs.modal", () => {
                 $("#new-record-form .modal-body").empty().html(Resources.URL_INPUT_AREA);
             });
-            $("#new-record-modal").on("keyup change input", ".url-box", () => {
-                Controller.onNewRecordFormTextBoxValueChanged();
-            });
+            $("#new-record-modal").on("keyup change input", ".url-box", Controller.onNewRecordFormTextBoxValueChanged);
             $("#statistics-filter-textbox").on("keyup change input", ($event: JQueryEventObject) => {
                 Tab.statistics.applyChartFilter((<HTMLInputElement>$event.target).value);
             });
-            $("#statistics-table").on("mousedown", ".statistics-table-header a", ($event: JQueryEventObject) => {
-                Tab.statistics.applySearchFilter($event.target.textContent);
+            $("#statistics-table").on("mousedown click", ".statistics-table-header a", ($event: JQueryMouseEventObject) => {
+                if ($event.type === "click") {
+                    $event.preventDefault();
+                    return;
+                }
+                if ($event.button === 0) {
+                    Tab.statistics.applySearchFilter($event.target.textContent);
+                }
             });
             $("#search-box").popover({
                 placement: "bottom",
@@ -1324,13 +1340,13 @@ module RecoTwExplorer {
         }
 
         public static onNewEntries(count: number): void {
-            Model.createNotification(count);
+            Model.notification.create(count);
             Controller.onNotificationStatusChanged();
         }
 
         public static onNotificationStatusChanged(): void {
             View.title = null;
-            var count = Model.notificationCount;
+            var count = Model.notification.length;
             if (count === 0) {
                 $("#unread-tweets").fadeOut();
             } else {
@@ -1349,34 +1365,37 @@ module RecoTwExplorer {
 
         public static onChartSliceClick(slice: any): void {
             var target = <string>slice.targetID;
-            if (!target.contains("#")) {
+            var index = target.indexOf("#");
+            if (index < 0) {
                 return;
             }
-            var id = +target.substring(target.indexOf("#") + 1);
+            var id = +target.substring(index + 1);
             if (id < 0) {
                 return;
             }
             Tab.statistics.applySearchFilter(Model.statistics.users[id].target_sn);
         }
 
-        private static onNewRecordFormTextBoxValueChanged(): void {
-            var $elements = $(".url-input-area");
-            var inputs: string[] = $(".url-box").map((index: number, element: HTMLInputElement) => element.value).get();
-
-            $elements.each(function (index) {
-                $(this).removeClass("has-success has-error");
-                try {
-                    if (Model.createIDfromURL(inputs[index]) !== null) {
-                        $(this).addClass("has-success");
-                    }
-                } catch (e) {
-                    $(this).addClass("has-error");
+        private static onNewRecordFormTextBoxValueChanged($event: JQueryEventObject): void {
+            var $this = $(this).parents(".url-input-area").removeClass("has-success has-warning has-error");
+            var elm = <HTMLInputElement>$event.target;
+            try {
+                var id = Model.createIDfromURL(elm.value);
+                if (Model.entries.reset().enumerable.any(x => x.tweet_id === id)) {
+                    $this.addClass("has-warning").find(".help-block").text(Resources.ALREADY_REGISTERED);
+                } else if (id !== null) {
+                    $this.addClass("has-success").find(".help-block").text(Resources.REGISTRATION_AVAILABLE);
+                } else {
+                    $this.find(".help-block").text(Resources.REGISTRATION_DEFAULT);
                 }
-            });
+            } catch (e) {
+                $this.addClass("has-error").find(".help-block").text(Resources.INCORRECT_URL_OR_ID);
+            }
 
             /**
              * [FUTURE] The following code is to increase text boxes for multiple entries registration.
              */
+            // var inputs: string[] = $(".url-box").map((index: number, element: HTMLInputElement) => element.value).get();
             // if (inputs[inputs.length - 1] !== "") {
             //     $("#new-record-form .modal-body").append(Resources.URL_INPUT_AREA);
             // } else if (inputs.length >= 2 && inputs[inputs.length - 2] === "") {

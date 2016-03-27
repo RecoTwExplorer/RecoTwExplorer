@@ -12,7 +12,7 @@ Internet Explorer 9 以上、Google Chrome、Firefox 上で動作することを
 ## ビルド
 
 このプロジェクトは TypeScript と SCSS を使用しているため動作の確認にはビルド作業が必要です。  
-Node.js v0.10 上で `gulp` を実行することでビルドでき、その結果は `/dest/*` 以下に出力されます。
+Node.js v4 上で `gulp` を実行することでビルドでき、その結果は `/dest/*` 以下に出力されます。
 
 ```
 $ npm install
