@@ -456,6 +456,15 @@ module RecoTwExplorer {
             }
             return result;
         }
+
+        /**
+         * Returns a new instance which memorizes the enumerator.
+         */
+        public memoize(): RecoTwEntryCollection {
+            var result = this.clone();
+            result._enumerable = result.enumerable.memoize();
+            return result;
+        }
     }
 
     /**
@@ -597,7 +606,7 @@ module RecoTwExplorer {
             if (Model.entries === null) {
                 return;
             }
-            Model._entries = Model.entries.reset().sort(options).filter(options);
+            Model._entries = Model.entries.reset().sort(options).filter(options).memoize();
             Model._statistics = null;
         }
 
