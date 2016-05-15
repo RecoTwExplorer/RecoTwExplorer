@@ -26,11 +26,6 @@ $ gulp
 [https://github.com/RecoTwExplorer/RecoTwExplorer](https://github.com/RecoTwExplorer/RecoTwExplorer)  
 バグ報告ないしプルリクエスト等はこのレポジトリにお願いいたします。
 
-## 使用サービス
-
-このアプリケーションは Twitter のユーザーアイコン表示のために次の Web サービスを使用しています：  
-[Profile Image API For Twitter■140note](http://140note.hitonobetsu.com/apipage/profileimage)
-
 ## 使用ライブラリ
 
 このアプリケーションは次のライブラリを使用しています：
