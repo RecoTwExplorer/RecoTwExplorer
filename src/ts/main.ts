@@ -434,15 +434,14 @@ module RecoTwExplorer {
             if (options === void 0 || options === null) {
                 return result;
             }
-            let re: RegExp;
             if (options.body !== void 0 && options.body.length > 0) {
                 if (options.regex) {
                     try {
-                        re = new RegExp(options.body, "i");
+                        const re = new RegExp(options.body, "i");
+                        result._enumerable = result.enumerable.where(x => re.test(x.content));
                     } catch (e) {
                         throw new Error(Resources.INCORRECT_REGEX);
                     }
-                    result._enumerable = result.enumerable.where(x => re.test(x.content));
                 } else {
                     options.body = options.body.toLowerCase();
                     result._enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
