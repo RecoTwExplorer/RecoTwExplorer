@@ -11,8 +11,7 @@ Internet Explorer 9 以上、Google Chrome、Firefox 上で動作することを
 
 ## ビルド
 
-このプロジェクトは TypeScript と SCSS を使用しているため動作の確認にはビルド作業が必要です。  
-Node.js v4 上で `gulp` を実行することでビルドでき、その結果は `/dest/*` 以下に出力されます。
+動作の確認にはビルドが必要で、`/dest/*` 以下に出力されます。Node.js v4, 5, 6 でビルドできることを確認しています。
 
 ```
 $ npm install
@@ -25,11 +24,6 @@ $ gulp
 このアプリケーションは MIT ライセンスのもとに GitHub 上で公開されています：  
 [https://github.com/RecoTwExplorer/RecoTwExplorer](https://github.com/RecoTwExplorer/RecoTwExplorer)  
 バグ報告ないしプルリクエスト等はこのレポジトリにお願いいたします。
-
-## 使用サービス
-
-このアプリケーションは Twitter のユーザーアイコン表示のために次の Web サービスを使用しています：  
-[Profile Image API For Twitter■140note](http://140note.hitonobetsu.com/apipage/profileimage)
 
 ## 使用ライブラリ
 
