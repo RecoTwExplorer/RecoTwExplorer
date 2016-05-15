@@ -49,16 +49,16 @@ module RecoTwExplorer {
         }
 
         public static init(parameters: string): Bookmarklet {
-            var queries = parameters.substring(1).split("&").map(x => x.split("="))
-                                                            .filter(x => x.length === 2)
-                                                            .map(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
+            const queries = parameters.substring(1).split("&").map(x => x.split("="))
+                                                              .filter(x => x.length === 2)
+                                                              .map(x => ({ property: x[0], value: decodeURIComponent(x[1]) }));
 
-            var ids = queries.filter(x => x.property === "id");
+            const ids = queries.filter(x => x.property === "id");
             if (ids.length === 0) {
                 return null;
             }
 
-            var instance = new Bookmarklet(ids[0].value).renderTweet();
+            const instance = new Bookmarklet(ids[0].value).renderTweet();
             $("#register-button").click(() => instance.register.call(instance));
             $("#cancel-button").click(() => window.close());
             return instance;
@@ -81,7 +81,7 @@ module RecoTwExplorer {
             }
             twttr.widgets.createTweet(this._id, $("#tweet-widget")[0], this.WIDGET_OPTIONS).then((elm: HTMLIFrameElement) => {
                 if (elm) {
-                    var $contents = $(elm).contents();
+                    const $contents = $(elm).contents();
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
                     $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
@@ -95,7 +95,7 @@ module RecoTwExplorer {
         }
 
         private register(): JQueryPromise<RecoTwRecordResponse> {
-            var $main = $("#page-main").fadeOut();
+            const $main = $("#page-main").fadeOut();
             $main.promise().done(() => $main.text("しばらくお待ちください...").addClass("border-box").fadeIn());
             return $.ajax({
                 url: this.RECOTW_POST_URL,
@@ -103,9 +103,9 @@ module RecoTwExplorer {
                 data: { id: this._id },
                 dataType: "json"
             }).done(() => {
-                var $timer = $("#close-timer");
-                var remaining = 5;
-                var interval = window.setInterval(() => {
+                const $timer = $("#close-timer");
+                let remaining = 5;
+                const interval = window.setInterval(() => {
                     $timer.text(--remaining);
                     if (remaining === 0) {
                         window.clearInterval(interval);
@@ -117,8 +117,8 @@ module RecoTwExplorer {
                 }, 1000);
                 $main.fadeOut().promise().done(() => $("#page-done").fadeIn());
             }).fail((xhr: JQueryXHR, status: string, e: Error) => {
-                var message: string;
-                var response = <RecoTwErrorResponse>xhr.responseJSON;
+                let message: string;
+                const response = <RecoTwErrorResponse>xhr.responseJSON;
                 if (!response || !response.errors) {
                     message = this.POST_ERRORS.UNKNOWN_ERROR;
                 } else {
