@@ -253,14 +253,14 @@ blockquote, .twitter-tweet-rendered {
     width: 640px !important;
     min-height: 80px !important;
     max-width: 100% !important;
-    background: white;
-    border: 1px solid #e1e8ed;
-    border-radius: 4px;
 }
 blockquote {
     font: normal normal 14px/1.2 Helvetica, Roboto, "Segoe UI", Calibri, sans-serif;
     padding: 15px 20px 18px;
     text-align: center;
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
     a {
         -webkit-tap-highlight-color: initial;
     }
