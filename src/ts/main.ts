@@ -332,7 +332,8 @@ module RecoTwExplorer {
             this._enumerable = enumerable || Enumerable.from(elements);
 
             if (userIDs === null) {
-                this._userIDs = this.enumerable.toDictionary(x => x.target_id, x => x.target_sn);
+                // Override all of target_sn values with the latest ones.
+                this._userIDs = this.enumerable.orderByDescending(x => x.tweet_id, (x: any, y: any) => x - y).toDictionary(x => x.target_id, x => x.target_sn);
                 this.enumerable.forEach(x => x.target_sn = this._userIDs.get(x.target_id));
             }
         }
@@ -443,7 +444,10 @@ module RecoTwExplorer {
                         throw new Error(Resources.INCORRECT_REGEX);
                     }
                 } else {
-                    options.body = options.body.toLowerCase();
+                    options.body = options.body.replace(/&/g, "&amp;")
+                                               .replace(/</g, "&lt;")
+                                               .replace(/>/g, "&gt;")
+                                               .toLowerCase();
                     result._enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
                 }
             }
@@ -542,7 +546,8 @@ module RecoTwExplorer {
         private static load(): void {
             let entries: RecoTwEntry[] = [];
             const item = localStorage ? localStorage.getItem("entries") : null;
-            if (item) {
+            const raw = localStorage ? localStorage.getItem("raw") : false;
+            if (item && raw) {
                 entries = JSON.parse(item);
             }
             Model.fetchLatestEntries(entries).then(Controller.onEntriesLoaded, Controller.onEntriesLoadFailed);
@@ -553,6 +558,7 @@ module RecoTwExplorer {
          */
         public static save(): void {
             if (localStorage && Model.entries) {
+                localStorage.setItem("raw", JSON.stringify(true));
                 localStorage.setItem("entries", JSON.stringify(Model.entries.reset().enumerable.toArray()));
             }
         }
