@@ -444,11 +444,7 @@ module RecoTwExplorer {
                         throw new Error(Resources.INCORRECT_REGEX);
                     }
                 } else {
-                    options.body = options.body.replace(/&/g, "&amp;")
-                                               .replace(/</g, "&lt;")
-                                               .replace(/>/g, "&gt;")
-                                               .toLowerCase();
-                    result._enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body));
+                    result._enumerable = result.enumerable.where(x => x.content.toLowerCase().contains(options.body.toLowerCase()));
                 }
             }
             if (options.usernames !== void 0 && options.usernames.length > 0) {
@@ -653,6 +649,26 @@ module RecoTwExplorer {
             throw new Error(Resources.INCORRECT_URL_OR_ID);
         }
 
+        /*
+         * Escapes a string as HTML.
+         * @param str The string to escape.
+         */
+        public static escapeHtml(str: string): string {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;");
+        }
+
+        /*
+         * Unescapes an HTML string.
+         * @param str The string to unescape.
+         */
+        public static unescapeHtml(str: string): string {
+            return str.replace(/&lt;/g, "<")
+                      .replace(/&gt;/g, ">")
+                      .replace(/&amp;/g, "&");
+        }
+
         /**
          * Retrieves new entries from the remote.
          * @param entries The entries to initialize with.
@@ -674,6 +690,7 @@ module RecoTwExplorer {
                 if (Model.entries === null) {
                     Model._entries = new RecoTwEntryCollection(entries);
                 }
+                data.forEach(x => Model.unescapeHtml(x.content));
                 if (data.length > 0) {
                     Model.entries.addRange(data);
                 }
@@ -978,7 +995,7 @@ module RecoTwExplorer {
         private showStatusLoadFailedMessage(entry: RecoTwEntry, $target: JQuery): void {
             const tweetDate = Model.createDateByTweetID(entry);
             const time = String.format(Resources.TWEET_TIME_HTML, Model.createStatusURL(entry), tweetDate, tweetDate.toISOString());
-            const $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(entry.content), time));
+            const $elm = $(String.format(Resources.TWEET_REMOVED_HTML, Model.createProfileImageURL(entry), Model.createUserURL(entry), entry.target_sn, this.replaceLinkToURL(Model.escapeHtml(entry.content)), time));
 
             $target.empty().append($elm);
             $elm.find("img").on("error", ($event: JQueryEventObject) => (<HTMLImageElement>$event.target).src = Model.createProfileImageURL(null));
