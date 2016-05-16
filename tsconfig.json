@@ -13,6 +13,7 @@
     ],
     "files": [
         "src/ts/bookmarklet.ts",
+        "src/ts/dom.d.ts",
         "src/ts/main.d.ts",
         "src/ts/main.ts",
         "src/ts/recotw.d.ts"

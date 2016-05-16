@@ -1,5 +1,6 @@
 /// <reference path="./main.d.ts"/>
 /// <reference path="./recotw.d.ts"/>
+/// <reference path="./dom.d.ts"/>
 /// <reference path="../../lib/js/typings/bootstrap/bootstrap.d.ts"/>
 /// <reference path="../../lib/js/typings/google.visualization/google.visualization.d.ts"/>
 /// <reference path="../../lib/js/typings/jquery/jquery.d.ts"/>
@@ -979,7 +980,7 @@ module RecoTwExplorer {
                 if (!widget) {
                     this.showStatusLoadFailedMessage(entry, $element);
                 } else {
-                    const $contents = $(widget).css("height", "auto").contents();
+                    const $contents = $(widget.shadowRoot || widget).css("height", "auto").contents();
                     $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
                     $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
                     $contents.find(".Tweet-author").css("max-width", "none");
