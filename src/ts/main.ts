@@ -1233,10 +1233,11 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
             Tab.home.element.click(() => {
-                if (Tab.home.active && Model.notification.length > 0) {
+                const count = Model.notification.length;
+                if (Tab.home.active && count) {
                     Model.notification.clear();
                     Controller.onNotificationStatusChanged();
-                    Controller.showNewStatuses(Model.notification.length);
+                    Controller.showNewStatuses(count);
                 }
             });
             $(".navbar-brand, #clear-search-filter").click(() => {
@@ -1438,6 +1439,8 @@ module RecoTwExplorer {
             if (options.isFiltered() || options.order !== Order.Descending || options.orderBy !== OrderBy.RecordedDate) {
                 Controller.setOptions(new Options([], "", null, false, options.order, options.orderBy), false, true, true);
             } else {
+                // Assign options in order to reset the enumerator
+                Model.options = options;
                 Tab.home.render(false, count);
             }
         }
