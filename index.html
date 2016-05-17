@@ -27,41 +27,41 @@
                 <img src="https://chitoku.jp/lunalys/analyzer/write.php?guid=ON&amp;act=img" width="0" height="0" alt="">
             </noscript>
         </div>
-        <nav class="navbar navbar-violet navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-violet navbar-fixed-top" role="toolbar">
             <div id="statusbar"></div>
             <div class="navbar-header">
-                <a class="navbar-brand navbar-label-icon">
+                <a class="navbar-brand navbar-label-icon" role="banner">
                     <img src="./images/icon_inverse.png" width="32" height="32" alt="">
                 </a>
-                <a class="navbar-brand navbar-label-text">RecoTw Explorer</a>
-                <ul class="nav navbar-nav">
-                    <li role="presentation" class="active">
-                        <a href="#home-tab" role="tab" data-toggle="tab">
+                <a class="navbar-brand navbar-label-text" role="banner">RecoTw Explorer</a>
+                <ul class="nav navbar-nav" role="tablist">
+                    <li class="active">
+                        <a href="#home-tab" data-toggle="tab" role="tab">
                             <span class="navbar-label-icon glyphicon glyphicon-home"></span>
                             <span class="navbar-label-text">ホーム</span>
                             <strong id="unread-tweets"></strong>
                         </a>
                     </li>
-                    <li role="presentation">
-                        <a href="#statistics-tab" role="tab" data-toggle="tab">
+                    <li>
+                        <a href="#statistics-tab" data-toggle="tab" role="tab">
                             <span class="navbar-label-icon fa fa-pie-chart"></span>
                             <span class="navbar-label-text">統計情報</span>
                         </a>
                     </li>
                     <li>
-                        <a href="javascript:void(0);" id="new-record-toggle-button">
+                        <a id="new-record-toggle-button" role="button">
                             <span class="navbar-label-icon glyphicon glyphicon-plus"></span>
                             <span class="navbar-label-text">ツイート登録</span>
                         </a>
                     </li>
                     <li>
-                        <a href="javascript:void(0);" data-toggle="modal" data-target="#help-modal">
+                        <a data-toggle="modal" data-target="#help-modal" role="button">
                             <span class="navbar-label-icon glyphicon glyphicon-question-sign"></span>
                             <span class="navbar-label-text">ヘルプ</span>
                         </a>
                     </li>
                     <li class="visible-xs-inline-block">
-                        <a href="javascript:void(0);" id="search-form-toggle-button">
+                        <a id="search-form-toggle-button" role="button">
                             <span class="navbar-label-icon glyphicon glyphicon-search"></span>
                         </a>
                     </li>
@@ -69,17 +69,17 @@
             </div>
             <form id="search-form" class="navbar-form navbar-right hidden-xs" role="search">
                 <div class="input-group">
-                    <input type="text" id="search-box" name="body" class="form-control">
+                    <input type="text" id="search-box" name="body" class="form-control" role="textbox">
                     <span class="input-group-btn">
                         <button type="button" id="clear-search-filter">
                             <span class="glyphicon glyphicon-remove"></span>
                         </button>
-                        <button class="btn" type="submit">検索</button>
+                        <button class="btn" type="submit" role="button">検索</button>
                     </span>
                 </div>
             </form>
             <div class="btn-group navbar-right">
-                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="navbar-label-icon glyphicon glyphicon-sort"></span>
                     <span class="navbar-label-text">並び替え</span>
                     <i class="fa fa-caret-down"></i>
@@ -87,38 +87,38 @@
                 <ul class="dropdown-menu" role="menu">
                     <li>
                         <input type="radio" class="order-radio-box" id="order-by-recoreded-date-asc" name="order" data-order="1" data-order-by="1">
-                        <a href="javascript:void(0);"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
+                        <a role="menuitemradio"><label for="order-by-recoreded-date-asc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (昇順)</label></a>
                     </li>
                     <li>
                         <input type="radio" class="order-radio-box" id="order-by-recoreded-date-desc" name="order" data-order="2" data-order-by="1" checked>
-                        <a href="javascript:void(0);"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
+                        <a role="menuitemradio"><label for="order-by-recoreded-date-desc"><span class="glyphicon glyphicon-ok"></span> 登録日時 (降順)</label></a>
                     </li>
                     <li>
                         <input type="radio" class="order-radio-box" id="order-by-creatred-date-asc" name="order" data-order="1" data-order-by="2">
-                        <a href="javascript:void(0);"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
+                        <a role="menuitemradio"><label for="order-by-creatred-date-asc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (昇順)</label></a>
                     </li>
                     <li>
                         <input type="radio" class="order-radio-box" id="order-by-creatred-date-desc" name="order" data-order="2" data-order-by="2">
-                        <a href="javascript:void(0);"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
+                        <a role="menuitemradio"><label for="order-by-creatred-date-desc"><span class="glyphicon glyphicon-ok"></span> ツイート日時 (降順)</label></a>
                     </li>
-                    <li role="presentation" class="divider"></li>
+                    <li role="separator" class="divider"></li>
                     <li>
                         <input type="radio" class="order-radio-box" id="order-shuffle" name="order" data-order="3" data-order-by="0">
-                        <a href="javascript:void(0);"><label for="order-shuffle"><span class="glyphicon glyphicon-ok"></span> シャッフル</label></a>
+                        <a role="menuitemradio"><label for="order-shuffle"><span class="glyphicon glyphicon-ok"></span> シャッフル</label></a>
                     </li>
                 </ul>
             </div>
         </nav>
-        <div id="page-main">
+        <div id="page-main" role="application">
             <div id="loading-panel-container">
-                <div id="loading-panel" class="text-center">
+                <div id="loading-panel" class="text-center" role="alert">
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-violet active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
                     </div>
                     <span id="loading-recotw" style="display: none;">RecoTw からツイートを読み込んでいます。<br></span>
                     しばらくお待ちください...
                 </div>
-                <div id="loading-error-panel">
+                <div id="loading-error-panel" role="alert">
                     <div id="loading-error-icon" class="col-sm-2 text-right">
                         <span class="glyphicon glyphicon-file"></span>
                     </div>
@@ -129,7 +129,7 @@
                 </div>
             </div>
             <div class="tab-content">
-                <div id="no-result-container" class="text-center">ツイートが見つかりませんでした。</div>
+                <div role="alert" id="no-result-container" class="text-center">ツイートが見つかりませんでした。</div>
                 <div role="tabpanel" class="tab-pane fade in active" id="home-tab">
                     <div id="main-area" class="container"></div>
                 </div>
@@ -163,7 +163,7 @@
                                 <label class="col-sm-2 control-label">ツイート</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="url-box form-control" name="id" placeholder="1145141919&nbsp;&nbsp;or&nbsp;&nbsp;https://twitter.com/user/status/1145141919"
-                                           pattern="^(?:(?:https?:\/\/(?:www\.|mobile\.)?)?twitter\.com\/(?:#!\/)?[a-zA-Z0-9_]+\/status(?:es)?\/(\d+)|(\d+))$">
+                                           pattern="^(?:(?:https?:\/\/(?:www\.|mobile\.)?)?twitter\.com\/(?:#!\/)?[a-zA-Z0-9_]+\/status(?:es)?\/(\d+)|(\d+))$" role="textbox">
                                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
                                     <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
                                     <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
@@ -172,8 +172,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                            <button type="submit" class="btn btn-violet">登録</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal" role="button">キャンセル</button>
+                            <button type="submit" class="btn btn-violet" role="alert">登録</button>
                         </div>
                     </form>
                 </div>
