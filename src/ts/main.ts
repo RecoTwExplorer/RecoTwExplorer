@@ -691,7 +691,7 @@ module RecoTwExplorer {
                 if (Model.entries === null) {
                     Model._entries = new RecoTwEntryCollection(entries);
                 }
-                data.forEach(x => Model.unescapeHtml(x.content));
+                data.forEach(x => x.content = Model.unescapeHtml(x.content));
                 if (data.length > 0) {
                     Model.entries.addRange(data);
                 }
