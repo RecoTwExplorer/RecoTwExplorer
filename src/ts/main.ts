@@ -1232,11 +1232,16 @@ module RecoTwExplorer {
                 Controller.setOptions(Options.fromQueryString(location.search, Controller.order, Controller.orderBy), false, false, true);
             });
             Tab.home.element.click(() => {
+                if (!Tab.home.active) {
+                    return;
+                }
                 const count = Model.notification.length;
-                if (Tab.home.active && count) {
+                if (count) {
                     Model.notification.clear();
                     Controller.onNotificationStatusChanged();
                     Controller.showNewStatuses(count);
+                } else {
+                    $("html, body").animate({ scrollTop: 0 }, 400);
                 }
             });
             $(".navbar-brand, #clear-search-filter").click(() => {
