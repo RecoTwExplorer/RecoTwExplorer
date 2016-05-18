@@ -1209,10 +1209,6 @@ module RecoTwExplorer {
             View.title = Resources.PAGE_TITLE_NORMAL;
             $("#app-version").text(APP_VERSION);
 
-            if (window.innerHeight >= window.screen.height && navigator.standalone) {
-                $(document.body).addClass("standalone");
-            }
-
             Model.init();
             Tab.home = new HomeTab();
             Tab.statistics = new StatisticsTab();
@@ -1224,6 +1220,9 @@ module RecoTwExplorer {
             const $window = $(window);
             $window.unload(Model.save);
             $window.bottom({ proximity: 0.05 });
+            $window.on("orientationchange", () => {
+                $(document.body).toggleClass("standalone", window.innerHeight >= window.screen.height && navigator.standalone);
+            }).trigger("orientationchange");
             $window.on("bottom", () => {
                 if (Tab.home.active) {
                     Controller.onPageBottom();
@@ -1373,7 +1372,7 @@ module RecoTwExplorer {
             Controller.onNotificationStatusChanged();
         }
 
-        public static onNotificationStatusChanged(): void {
+        private static onNotificationStatusChanged(): void {
             View.title = null;
             const count = Model.notification.length;
             if (count === 0) {
@@ -1384,7 +1383,7 @@ module RecoTwExplorer {
             }
         }
 
-        public static onPageBottom(): void {
+        private static onPageBottom(): void {
             if (Controller.loading) {
                 return;
             }
