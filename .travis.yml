@@ -12,7 +12,7 @@ matrix:
         - git add -A
         - git commit -m "update $TRAVIS_COMMIT"
         - '([ "$TRAVIS_BRANCH" != "master" ] || [ ! $GH_TOKEN ] || [ "$TRAVIS_PULL_REQUEST" == "true" ]) && exit'
-        - git push --quiet chitoku.jp master 2> /dev/null
+        - git push --quiet chitoku.jp gh-pages 2> /dev/null
         - git push --quiet github gh-pages 2> /dev/null
 install:
   - npm install -g npm@3
