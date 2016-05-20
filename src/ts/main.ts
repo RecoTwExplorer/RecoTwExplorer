@@ -27,7 +27,7 @@
 module RecoTwExplorer {
     "use strict";
     const APP_NAME = "RecoTw Explorer";
-    const APP_VERSION = "2.40";
+    const APP_VERSION = "2.50";
     const APP_URL = location.protocol + "//" + location.host + location.pathname;
 
     /*
