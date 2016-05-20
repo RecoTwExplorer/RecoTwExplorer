@@ -40,9 +40,9 @@ before_install:
 before_script:
   - export TZ="Asia/Tokyo"
   - git clone --quiet -b gh-pages https://github.com/RecoTwExplorer/RecoTwExplorer dest
+  - pushd dest
   - git remote add github "https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git"
   - git remote add chitoku.jp "ssh://chitoku.jp/var/www/vhosts/recotw.chitoku.jp/httpdocs/"
-  - pushd dest
   - git checkout gh-pages
   - popd
 script: gulp full
