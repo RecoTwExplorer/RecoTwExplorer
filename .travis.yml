@@ -4,18 +4,9 @@ matrix:
     - node_js: "6"
     - node_js: "5"
     - node_js: "4"
-  compiler: clang-3.6
-  env:
-    - CXX=clang-3.6
-  addons:
-    apt:
-      sources:
-        - llvm-toolchain-precise-3.6
-        - ubuntu-toolchain-r-test
-      packages:
-        - clang-3.6
-        - g++-4.8
-
+      compiler: clang-3.6
+      env:
+        - CXX=clang-3.6
       after_success:
         - cd dest
         - git add -A
@@ -23,11 +14,11 @@ matrix:
         - '([ "$TRAVIS_BRANCH" != "master" ] || [ !$GH_TOKEN ] || [ "$TRAVIS_PULL_REQUEST" == "true" ]) && exit'
         - git push --quiet chitoku.jp master 2> /dev/null
         - git push --quiet github gh-pages 2> /dev/null
-      install:
-        - npm install -g npm@3
-        - npm install
-        - npm install -g gulp-cli
-  fast_finish: true
+install:
+  - npm install -g npm@3
+  - npm install
+  - npm install -g gulp-cli
+fast_finish: true
 sudo: false
 cache:
   directories:
