@@ -8,14 +8,10 @@
     },
     "filesGlob": [
         "./*.ts",
-        "./src/**/*.ts",
-        "./node_modules/typescript/lib/lib.es6.d.ts"
+        "./typings/index.d.ts"
     ],
     "files": [
-        "src/ts/bookmarklet.ts",
-        "src/ts/dom.d.ts",
-        "src/ts/main.d.ts",
-        "src/ts/main.ts",
-        "src/ts/recotw.d.ts"
+        "gulpfile.ts",
+        "typings/index.d.ts"
     ]
 }

@@ -11,12 +11,24 @@ Internet Explorer 9 以上、Google Chrome、Firefox 上で動作することを
 
 ## ビルド
 
-動作の確認にはビルドが必要で、`/dest/*` 以下に出力されます。Node.js v4, 5, 6 でビルドできることを確認しています。
+ビルドを行う前にパッケージをインストールします。
 
 ```
 $ npm install
 $ npm install -g gulp
+```
+
+ビルドの出力は `/dest/*` 以下に行われます。Node.js v4, 5, 6 でビルドできることを確認しています。
+
+```
 $ gulp
+```
+
+ファイルを追加/削除した場合は `tsconfig.json` を更新してからビルドします。
+
+```
+$ npm install -g tsconfig-cli
+$ cd src; tsconfig --update
 ```
 
 ## ソースコード

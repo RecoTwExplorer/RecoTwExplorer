@@ -1,5 +1,3 @@
-/// <reference path="typings/main.d.ts"/>
-
 import {Gulpclass, Task, SequenceTask} from "gulpclass/Decorators";
 import * as gulp from "gulp";
 import * as del from "del";
@@ -38,19 +36,15 @@ export class Tasks {
 
     @Task()
     compile(): NodeJS.ReadWriteStream {
-        return gulp.src(["./src/ts/*.ts"])
-                   .pipe($.tsconfigUpdate())
-                   .pipe($.sourcemaps.init())
-                   .pipe($.typescript({
-                       noEmitOnError: true,
-                       noImplicitAny: true,
-                       target: "ES5",
-                       sortOutput: true
-                   })).js
-                   .on("error", ErrorNotifier.getErrorListener("TypeScript Compilation Error"))
-                   .pipe($.sourcemaps.write("."))
-                   .pipe(gulp.dest("./dev/js/"))
-                   .pipe($.size());
+        const project = $.typescript.createProject("./src/tsconfig.json");
+        return project.src()
+                      .pipe($.sourcemaps.init())
+                      .pipe($.typescript(project).js)
+                      .on("error", ErrorNotifier.getErrorListener("TypeScript Compilation Error"))
+                      .pipe($.sourcemaps.write("."))
+                      .pipe($.flatten())
+                      .pipe(gulp.dest("./dev/js/"))
+                      .pipe($.size());
     }
 
     @Task()

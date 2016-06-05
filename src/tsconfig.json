@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "noImplicitAny": true,
+        "noEmitOnError": true,
+        "sortOutput": true
+    },
+    "filesGlob": [
+        "./ts/*.ts",
+        "../lib/**/*.d.ts",
+        "../typings/index.d.ts",
+        "../node_modules/typescript/lib/lib.es6.d.ts"
+    ],
+    "files": [
+        "ts/bookmarklet.ts",
+        "ts/dom.d.ts",
+        "ts/main.d.ts",
+        "ts/main.ts",
+        "ts/recotw.d.ts",
+        "../lib/js/libstring.d.ts",
+        "../typings/index.d.ts",
+        "../node_modules/typescript/lib/lib.es6.d.ts"
+    ]
+}

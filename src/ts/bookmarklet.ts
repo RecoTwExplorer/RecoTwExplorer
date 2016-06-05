@@ -1,7 +1,3 @@
-/// <reference path="./recotw.d.ts"/>
-/// <reference path="../../lib/js/typings/jquery/jquery.d.ts"/>
-/// <reference path="../../lib/js/typings/twitter.d.ts"/>
-
 /*!
  * RecoTw Explorer - Copyright 2014, Chitoku
  * http://recotw.chitoku.jp/
