@@ -160,8 +160,7 @@ export class Tasks {
 
     @Task()
     async serve(): Promise<void> {
-        const tasks: (string | string[] | gulp.TaskCallback)[] = this.default();
-        await new Promise(resolve => runSequence.apply(runSequence, tasks.concat(resolve)));
+        await new Promise(resolve => runSequence(...this.default(), resolve));
         browserSync({
             notify: false,
             logPrefix: "WSK",
