@@ -3,11 +3,14 @@
     "browser-sync": "registry:dt/browser-sync#0.0.0+20160524142403",
     "chokidar": "registry:dt/chokidar#1.4.3+20160316155526",
     "del": "registry:dt/del#2.2.0+20160317120654",
+    "form-data": "registry:dt/form-data#0.0.0+20160316155526",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "micromatch": "registry:dt/micromatch#2.3.7+20160123140905",
     "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
     "node": "registry:dt/node#6.0.0+20160523035754",
-    "parse-glob": "registry:dt/parse-glob#3.0.4+20160110125512"
+    "parse-glob": "registry:dt/parse-glob#3.0.4+20160110125512",
+    "request": "registry:dt/request#0.0.0+20160524135346",
+    "request-promise": "registry:dt/request-promise#0.4.2+20160316155526"
   },
   "dependencies": {
     "gulp": "registry:npm/gulp#3.8.0+20160211003958"

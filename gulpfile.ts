@@ -3,6 +3,8 @@ import * as gulp from "gulp";
 import * as del from "del";
 import * as browserSync from "browser-sync";
 import * as url from "url";
+import * as http from "http";
+import * as request from "request-promise";
 
 const runSequence = require("run-sequence");
 const proxy = require("proxy-middleware");
@@ -14,6 +16,45 @@ class ErrorNotifier {
             title: title,
             message: error.message.replace(/\u001b\[\d+m/g, "")
         }));
+    }
+}
+
+interface ProxyMiddleware extends url.Url, http.ServerRequest {
+}
+
+class RecoTwMiddleware implements browserSync.PerRouteMiddleware {
+    public route = "/api/recotw";
+    public static proxy: any;
+
+    public constructor() {
+        if (RecoTwMiddleware.proxy) {
+            return;
+        }
+        const options = <ProxyMiddleware>url.parse("http://157.112.147.23/");
+        options.headers = {"Host": "api.recotw.black"};
+        RecoTwMiddleware.proxy = proxy(options);
+    }
+
+    public handle(req: http.ServerRequest, res: http.ServerResponse, next: Function): any {
+        return RecoTwMiddleware.proxy(...arguments);
+    }
+}
+
+class IconMiddleware implements browserSync.PerRouteMiddleware {
+    public route = "/api/icon"
+
+    public async handle(req: http.ServerRequest, res: http.ServerResponse, next: Function): Promise<void> {
+        const name = req.url.replace(/\//g, "");
+        try {
+            const response = await request(`https://twitter.com/intent/user?screen_name=${name}`);
+            const [, icon] = response.match(/src=(?:\"|\')(https:\/\/[ap]bs\.twimg\.com\/[^\"\']+)/) || [, ,];
+            res.setHeader("Location", icon);
+            res.statusCode = 302;
+        } catch (e) {
+            res.statusCode = 404;
+        }
+        res.end();
+        next();
     }
 }
 
@@ -131,7 +172,10 @@ export class Tasks {
             },
             server: ["."],
             files: ["*.html", "./dev/css/*.css", "./dev/js/*.js", "./images/**/*"],
-            middleware: Tasks.browserSyncMiddleware(),
+            middleware: [
+                new RecoTwMiddleware(),
+                new IconMiddleware(),
+            ],
         });
         gulp.watch(["./src/**/*.scss"], ["styles"]);
         gulp.watch(["./src/ts/*.ts"], ["build", "lint:noemit"]);
@@ -148,7 +192,10 @@ export class Tasks {
                 forms: false,
                 scroll: true,
             },
-            middleware: Tasks.browserSyncMiddleware(),
+            middleware: [
+                new RecoTwMiddleware(),
+                new IconMiddleware(),
+            ],
         });
     }
 
@@ -160,12 +207,5 @@ export class Tasks {
     @SequenceTask()
     full(): (string | string[])[] {
         return [["bower", "clean"], "default"];
-    }
-
-    static browserSyncMiddleware(): browserSync.MiddlewareHandler {
-        const proxyOptions: any = url.parse("http://157.112.147.23/");
-        proxyOptions.route = "/api/recotw";
-        proxyOptions.headers = {"Host": "api.recotw.black"};
-        return proxy(proxyOptions);
     }
 }
