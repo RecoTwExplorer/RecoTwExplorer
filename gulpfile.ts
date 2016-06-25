@@ -41,7 +41,7 @@ class RecoTwMiddleware implements browserSync.PerRouteMiddleware {
 }
 
 class IconMiddleware implements browserSync.PerRouteMiddleware {
-    public route = "/api/icon"
+    public route = "/api/icon";
 
     public async handle(req: http.ServerRequest, res: http.ServerResponse, next: Function): Promise<void> {
         const name = req.url.replace(/\//g, "");
