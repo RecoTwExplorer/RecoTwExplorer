@@ -13,7 +13,7 @@
  * - favico.js
  */
 
-module RecoTwExplorer {
+namespace RecoTwExplorer {
     "use strict";
 
     class Bookmarklet {

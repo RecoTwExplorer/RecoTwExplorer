@@ -1,4 +1,4 @@
-declare module RecoTwExplorer {
+declare namespace RecoTwExplorer {
     /**
      * The interface for a response of /api/tweet/count_tweet.
      */

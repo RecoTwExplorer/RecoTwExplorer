@@ -13,7 +13,7 @@
  * - favico.js
  */
 
-module RecoTwExplorer {
+namespace RecoTwExplorer {
     "use strict";
     const APP_NAME = "RecoTw Explorer";
     const APP_VERSION = "2.50";
