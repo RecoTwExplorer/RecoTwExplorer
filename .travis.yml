@@ -29,7 +29,7 @@ env:
     - secure: "iLUUc/LmjRCozVzudYdTk2nkhonLZ5BL2acguMjGV5ds2Wh6rcy+qvqOE456MpU+sggXtJHwPD5A8cJZyo++iWLUSvOB9GBdi3tfXCsW6/VofhMU8sOzpmGNbJdnTUn6XF0CY06Dw9xVLIaasHl/Zc3Y5g/csJbB+ab+pv1Naaw="
 before_install:
   - openssl aes-256-cbc -K $encrypted_61cd302c393d_key -iv $encrypted_61cd302c393d_iv -in id_rsa.enc -out id_rsa -d
-  - echo -e "Host chitoku.jp\n\tPort 5324\n\tUser recotw\n\tIdentityFile ~/.ssh/id_rsa\n\tStrictHostKeyChecking no" >> ~/.ssh/config
+  - echo -e "Host recotw.chitoku.jp\n\tPort 5324\n\tUser recotw\n\tIdentityFile ~/.ssh/id_rsa\n\tStrictHostKeyChecking no" >> ~/.ssh/config
   - cp id_rsa ~/.ssh/
   - chmod 600 ~/.ssh/id_rsa
 before_script:
@@ -37,7 +37,7 @@ before_script:
   - git clone --quiet -b gh-pages https://github.com/RecoTwExplorer/RecoTwExplorer dest
   - pushd dest
   - git remote add github "https://$GH_TOKEN@github.com/RecoTwExplorer/RecoTwExplorer.git"
-  - git remote add chitoku.jp "ssh://chitoku.jp/var/www/vhosts/recotw.chitoku.jp/httpdocs/"
+  - git remote add chitoku.jp "ssh://recotw.chitoku.jp"
   - git checkout gh-pages
   - popd
 script: gulp full

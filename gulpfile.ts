@@ -111,7 +111,7 @@ export class Tasks {
 
     @Task()
     copy(): NodeJS.ReadWriteStream {
-        return gulp.src(["./favicon.ico", "CNAME"])
+        return gulp.src(["./favicon.ico"])
                    .pipe(gulp.dest("./dest/"))
                    .pipe($.size({ title: "copy" }));
     }
