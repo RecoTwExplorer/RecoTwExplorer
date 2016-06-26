@@ -18,7 +18,7 @@ $ npm install
 $ npm install -g gulp
 ```
 
-ビルドの出力は `/dest/*` 以下に行われます。Node.js v4, 5, 6 でビルドできることを確認しています。
+ビルドの出力は `/dest/*` 以下に行われます。Node.js v6 でビルドできることを確認しています。
 
 ```
 $ gulp
