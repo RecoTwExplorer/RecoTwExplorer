@@ -1,0 +1,33 @@
+name: CD Workflow
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker build . -t docker.chitoku.jp/recotwexplorer/recotwexplorer
+      - name: Log into Docker Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: docker.chitoku.jp
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Push to Docker Registry
+        run: docker push docker.chitoku.jp/recotwexplorer/recotwexplorer
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+      - name: Set context
+        uses: azure/k8s-set-context@v1
+        with:
+          method: service-account
+          k8s-url: https://k8s.chitoku.jp
+          k8s-secret: ${{ secrets.K8S_SECRET }}
+      - name: Rollout restart
+        run: kubectl rollout restart deployment/recotwexplorer --insecure-skip-tls-verify=true
