@@ -36,7 +36,10 @@
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "lint": "npm run lint:js && npm run lint:ts",
+    "lint:js": "eslint .",
+    "lint:ts": "eslint 'src/ts/**.ts'"
   },
   "repository": {
     "type": "git",
