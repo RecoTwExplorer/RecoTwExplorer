@@ -17,4 +17,4 @@ RUN apk add --no-cache --virtual build-dependencies \
 FROM nginx:1.17.9-alpine
 COPY conf /etc/nginx/conf.d
 COPY --from=build /usr/src/dist /usr/share/nginx/html
-CMD ["/bin/ash", "-c", "sed -i s/api\\;/$RECOTW_API_HOST\\;/ /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["/bin/ash", "-c", "sed -i s/api:/$RECOTW_API_HOST:/ /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
