@@ -1,20 +1,17 @@
-$icon-font-path:"../fonts/";
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+$fa-font-path: "~font-awesome/fonts";
 
-
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
-@import "../../bower_components/fontawesome/scss/font-awesome";
-
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~font-awesome/scss/font-awesome";
 
 body {
     margin-top: 70px;
     margin-bottom: 55px;
     background: #efefef;
-    /* Suppresses auto scaling in landscape mode of smartphones */
     -webkit-text-size-adjust: 100%;
-    /* Turns off the new scrollbars behavior since IE 10 */
     -ms-overflow-style: scrollbar;
     &.standalone {
-        margin-top:90px;
+        margin-top: 90px;
     }
 }
 a {
@@ -32,12 +29,10 @@ a, a:focus, button {
 .form-control {
     border-color: #977eaf;
     box-shadow: none;
-    -webkit-box-shadow: none;
     border-radius: 4px;
 }
 .form-control:focus {
     border-color: #73618A;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(159, 136, 188, 0.60);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(159, 136, 188, 0.60);
 }
 .btn {
@@ -154,7 +149,6 @@ ul.nav>li>a {
 .navbar-violet .btn:active, .navbar-violet .btn.active, .navbar-violet .btn-group.open .dropdown-toggle {
     box-shadow: none;
     color: white;
-    -webkit-box-shadow: none;
 }
 .navbar-violet .fa-caret-down {
     min-width: 8px;
@@ -186,21 +180,6 @@ ul.nav>li>a {
 .modal-content {
     border-radius: 4px;
 }
-#new-record-toggle-button + .popover {
-    min-width: 300px;
-    margin-top: -3px;
-    border-radius: 0;
-    border-color: rgba(235, 204, 209, 0.8);
-    background-color: #f2dede;
-    color: #a94442;
-    text-align: center;
-    & > .arrow {
-        border-bottom-color: rgba(235, 204, 209, 0.8);
-    }
-    & > .arrow:after {
-        border-bottom-color: #f2dede;
-    }
-}
 #unread-tweets {
     background: #eb4512;
     display: inline-block;
@@ -224,8 +203,6 @@ ul.nav>li>a {
     }
 }
 #loading-panel-container, #no-result-container {
-    /* Force smartphones to enable its hardware acceleration */
-    -webkit-transform: translateZ(0px);
     position: absolute;
     top: 45%;
     width: 100%;
@@ -271,14 +248,13 @@ blockquote {
         text-align: left;
     }
     span a {
-        /* Applies default style of Twitter embedded tweets */
         color: #697882;
     }
     img {
         width: 24px;
         height: 24px;
         margin-right: 8px;
-        border-radius: 3px;
+        border-radius: 50%;
     }
     p {
         font-size: 16px;
@@ -342,8 +318,6 @@ blockquote {
     margin: auto;
 }
 #statistics-area {
-    /* Force smartphones to enable its hardware acceleration */
-    -webkit-transform: translateZ(0px);
     max-width: 860px;
     margin: 108px auto 0;
     background: white;
@@ -372,7 +346,6 @@ blockquote {
     border-color: #977eaf;
 }
 #statistics-table {
-    /* Enables momentum scrolling in smartphones */
     -webkit-overflow-scrolling: touch;
     height: 400px;
     overflow-y: auto;
@@ -383,7 +356,6 @@ blockquote {
     height: 400px;
 }
 #statistics-chart svg>g {
-    /* Change cursors of slices in the Google Pie Chart */
     cursor: pointer;
 }
 .statistics-table-header {
@@ -413,14 +385,6 @@ blockquote {
     }
     & + .url-input-area {
         margin-top: -15px;
-    }
-}
-#new-record-form {
-    .form-control-feedback {
-        display: none;
-    }
-    .has-success .glyphicon-ok, .has-error .glyphicon-remove, .has-warning .glyphicon-warning-sign {
-        display: block;
     }
 }
 #help-modal {
@@ -552,12 +516,10 @@ blockquote {
         margin-top: 0;
         border: 0;
         box-shadow: none;
-        -webkit-box-shadow: none;
         left: auto;
         right: 0;
     }
     .nav > li {
-        display: inline-block;
         float: left;
     }
     #search-form {
@@ -567,7 +529,6 @@ blockquote {
         margin: 0;
         padding: 2px 6px 1px;
         box-shadow: none;
-        -webkit-box-shadow: none;
     }
     #search-box {
         min-width: 0;

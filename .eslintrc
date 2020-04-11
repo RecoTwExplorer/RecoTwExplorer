@@ -1,0 +1,139 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2019
+  },
+  "extends": [
+    "eslint:all"
+  ],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "array-bracket-newline": "off",
+    "array-bracket-spacing": ["error", "always"],
+    "array-element-newline": "off",
+    "arrow-parens": ["error", "as-needed"],
+    "camelcase": "off",
+    "comma-dangle": ["error", "always-multiline"],
+    "dot-location": ["error", "property"],
+    "func-names": "off",
+    "function-call-argument-newline": "off",
+    "id-length": "off",
+    "indent": ["error", 4],
+    "init-declarations": "off",
+    "lines-around-comment": ["error", {
+        "beforeBlockComment": false
+    }],
+    "max-classes-per-file": "off",
+    "max-len": "off",
+    "max-lines": "off",
+    "max-lines-per-function": "off",
+    "max-params": "off",
+    "max-statements": "off",
+    "multiline-comment-style": "off",
+    "multiline-ternary": "off",
+    "new-cap": "off",
+    "no-continue": "off",
+    "no-confusing-arrow": "off",
+    "no-console": "off",
+    "no-extra-parens": "off",
+    "no-invalid-this": "off",
+    "no-magic-numbers": "off",
+    "no-mixed-operators": "off",
+    "no-multi-assign": "off",
+    "no-negated-condition": "off",
+    "no-nested-ternary": "off",
+    "no-param-reassign": "off",
+    "no-process-env": "off",
+    "no-return-assign": "off",
+    "no-ternary": "off",
+    "no-underscore-dangle": "off",
+    "no-warning-comments": "warn",
+    "object-curly-spacing": ["error", "always"],
+    "object-property-newline": "off",
+    "one-var": ["error", {
+      "initialized": "never",
+      "uninitialized": "always"
+    }],
+    "padded-blocks": ["error", "never"],
+    "prefer-arrow-callback": ["error", {
+      "allowNamedFunctions": true
+    }],
+    "prefer-destructuring": "off",
+    "prefer-named-capture-group": "off",
+    "quote-props": ["error", "as-needed"],
+    "quotes": ["error"],
+    "semi": ["error"],
+    "sort-imports": ["warn", {
+      "ignoreDeclarationSort": true
+    }],
+    "sort-keys": "off",
+    "sort-vars": "off",
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "asyncArrow": "always",
+      "named": "never"
+    }],
+    "wrap-regex": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "plugins": [
+        "@typescript-eslint"
+      ],
+      "extends": [
+        "plugin:@typescript-eslint/all",
+        "plugin:@typescript-eslint/eslint-recommended"
+      ],
+      "rules": {
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/explicit-function-return-type": ["warn", {
+          "allowExpressions": true,
+          "allowTypedFunctionExpressions": true
+        }],
+        "@typescript-eslint/indent": ["error", 4],
+        "@typescript-eslint/member-delimiter-style": ["error", {
+          "multiline": {
+            "delimiter": "semi"
+          }
+        }],
+        "@typescript-eslint/member-ordering": "off",
+        "@typescript-eslint/no-extra-parens": ["error", "all"],
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/no-magic-numbers": "off",
+        "@typescript-eslint/no-parameter-properties": "off",
+        "@typescript-eslint/no-type-alias": ["error", {
+          "allowAliases": "always"
+        }],
+        "@typescript-eslint/no-underscore-dangle": "off",
+        "@typescript-eslint/no-unnecessary-condition": ["error", {
+          "ignoreRhs": true
+        }],
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars-experimental": "off",
+        "@typescript-eslint/prefer-readonly-parameter-types": "off",
+        "@typescript-eslint/quotes": ["error"],
+        "@typescript-eslint/restrict-template-expressions": ["error", {
+          "allowBoolean": true,
+          "allowNumber": true
+        }],
+        "@typescript-eslint/semi": ["error"],
+        "@typescript-eslint/space-before-function-paren": ["error", {
+          "anonymous": "always",
+          "asyncArrow": "always",
+          "named": "never"
+        }],
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/typedef": "off"
+      }
+    }
+  ]
+}
