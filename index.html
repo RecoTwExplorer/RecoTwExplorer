@@ -11,22 +11,14 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="RecoTw">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <!-- build:css css/style.min.css -->
-        <link rel="stylesheet" href="./dev/css/style.css">
-        <!-- endbuild -->
+        <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <link rel="apple-touch-icon-precomposed" sizes="120x120" href="./images/apple-icon-120.png">
         <link rel="apple-touch-icon-precomposed" sizes="152x152" href="./images/apple-icon-152.png">
         <link rel="icon" sizes="144x144" href="./images/icon-144.png">
         <link rel="icon" sizes="192x192" href="./images/icon-192.png">
         <link rel="shortcut icon" href="./favicon.ico" />
-        <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
     <body>
-        <div id="tracker">
-            <noscript>
-                <img src="https://chitoku.jp/lunalys/analyzer/write.php?guid=ON&amp;act=img" width="0" height="0" alt="">
-            </noscript>
-        </div>
         <nav class="navbar navbar-violet navbar-fixed-top" role="toolbar">
             <div id="statusbar"></div>
             <div class="navbar-header">
@@ -46,12 +38,6 @@
                         <a href="#statistics-tab" data-toggle="tab" role="tab">
                             <span class="navbar-label-icon fa fa-pie-chart"></span>
                             <span class="navbar-label-text">統計情報</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a id="new-record-toggle-button" role="button">
-                            <span class="navbar-label-icon glyphicon glyphicon-plus"></span>
-                            <span class="navbar-label-text">ツイート登録</span>
                         </a>
                     </li>
                     <li>
@@ -150,35 +136,6 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="new-record-modal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">ツイート登録</h4>
-                    </div>
-                    <form id="new-record-form" action="/api/recotw/1/tweet/record_tweet" method="POST" class="form-horizontal" role="form">
-                        <div class="modal-body">
-                            <div class="form-group url-input-area has-feedback">
-                                <label class="col-sm-2 control-label">ツイート</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="url-box form-control" name="id" placeholder="1145141919&nbsp;&nbsp;or&nbsp;&nbsp;https://twitter.com/user/status/1145141919"
-                                           pattern="^(?:(?:https?:\/\/(?:www\.|mobile\.)?)?twitter\.com\/(?:#!\/)?[a-zA-Z0-9_]+\/status(?:es)?\/(\d+)|(\d+))$" role="textbox">
-                                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-                                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
-                                    <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-                                    <p class="help-block">ツイートの ID または URL を指定します。</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal" role="button">キャンセル</button>
-                            <button type="submit" class="btn btn-violet" role="alert">登録</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -209,38 +166,5 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript">
-            window.twttr = (function (d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0],
-                  t = window.twttr || {};
-                if (d.getElementById(id)) return;
-                js = d.createElement(s);
-                js.id = id;
-                js.src = "https://platform.twitter.com/widgets.js";
-                fjs.parentNode.insertBefore(js, fjs);
-
-                t._e = [];
-                t.ready = function (f) {
-                    t._e.push(f);
-                };
-
-                return t;
-            }(document, "script", "twitter-wjs"));
-        </script>
-        <!-- build:js js/vendor.js -->
-        <script src="./bower_components/jquery/dist/jquery.js"></script>
-        <script src="./bower_components/jquery_bottom/jquery.bottom-1.0.js"></script>
-        <script src="./bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
-        <script src="./bower_components/linqjs/linq.js"></script>
-        <script src="./bower_components/linqjs/extensions/linq.jquery.js"></script>
-        <script src="./bower_components/favico.js/favico.js"></script>
-        <script src="./bower_components/jQuery-ajaxTransport-XDomainRequest/jQuery.XDomainRequest.js"></script>
-        <script src="./lib/js/libstring.js"></script>
-        <!-- endbuild -->
-        <script src="https://chitoku.jp/lunalys/analyzer/tracker.js"></script>
-        <script src="https://www.google.com/jsapi"></script>
-        <!-- build:js js/recotw.min.js -->
-        <script src="./dev/js/main.js"></script>
-        <!-- endbuild -->
     </body>
 </html>
