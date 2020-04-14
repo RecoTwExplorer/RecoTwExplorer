@@ -1,3 +1,3 @@
 interface Navigator {
-    standalone: boolean;
+    standalone?: boolean;
 }
