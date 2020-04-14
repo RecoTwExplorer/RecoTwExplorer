@@ -80,7 +80,7 @@ export class Controller {
         const $window = $(window);
         $window.on("unload", () => Model.save());
         $window.on("orientationchange", () => {
-            $(document.body).toggleClass("standalone", window.innerHeight >= window.screen.height && navigator.standalone);
+            $(document.body).toggleClass("standalone", Boolean(navigator.standalone));
         }).trigger("orientationchange");
         $window.on("scroll", () => {
             const height = Number($(document).height());
