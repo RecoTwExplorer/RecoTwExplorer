@@ -1,5 +1,5 @@
 export const APP_NAME = "RecoTw Explorer";
-export const APP_VERSION = "2.60";
+export const APP_VERSION = "2.62";
 export const APP_URL = `${location.protocol}//${location.host}${location.pathname}`;
 
 export const INCORRECT_REGEX = "指定された正規表現は正しくありません";
