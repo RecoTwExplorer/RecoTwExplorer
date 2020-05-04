@@ -5,7 +5,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "target": "ES6",
+    "target": "ES5",
     "strict": true
   },
   "include": [
