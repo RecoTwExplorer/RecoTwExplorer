@@ -1,6 +1,7 @@
 Dockerfile
 LICENSE
 README.md
+docker-compose.yml
 node_modules
 dist
 .git

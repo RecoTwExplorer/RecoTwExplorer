@@ -12,8 +12,10 @@ const HtmlWebpackTagsPlugin = require("html-webpack-tags-plugin");
 const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
 const StyleExtHtmlWebpackPlugin = require("style-ext-html-webpack-plugin");
 
+const mode = process.env.NODE_ENV || process.env.WEBPACK_DEV_SERVER ? "development" : "production";
 module.exports = {
-    mode: "production",
+    mode,
+    devtool: mode === "production" ? "" : "eval-cheap-module-source-map",
     entry: "./src/ts/index.ts",
     output: {
         filename: "bundle.js",
@@ -28,22 +30,33 @@ module.exports = {
                     { loader: "ts-loader?transpileOnly=true" },
                 ],
             },
-            {
-                test: /\.scss$/u,
-                use: [
-                    { loader: MiniCssExtractPlugin.loader },
-                    { loader: "css-loader" },
-                    { loader: "sass-loader" },
-                ],
-            },
-            {
-                test: /\.(?:ts|js)$/u,
-                enforce: "pre",
-                exclude: /node_modules/u,
-                use: [
-                    { loader: "eslint-loader" },
-                ],
-            },
+            ...(mode === "production" ? [
+                {
+                    test: /\.scss$/u,
+                    use: [
+                        { loader: MiniCssExtractPlugin.loader },
+                        { loader: "css-loader" },
+                        { loader: "sass-loader" },
+                    ],
+                },
+                {
+                    test: /\.(?:ts|js)$/u,
+                    enforce: "pre",
+                    exclude: /node_modules/u,
+                    use: [
+                        { loader: "eslint-loader" },
+                    ],
+                },
+            ] : [
+                {
+                    test: /\.scss$/u,
+                    use: [
+                        { loader: "style-loader" },
+                        { loader: "css-loader" },
+                        { loader: "sass-loader" },
+                    ],
+                },
+            ]),
             {
                 test: /\.(?:woff2?|ttf|eot|svg)(?:\?v=[\d.]+|\?[\s\S]+)?$/u,
                 use: [
@@ -90,12 +103,25 @@ module.exports = {
                 "https://platform.twitter.com/widgets.js",
             ],
         }),
-        new MiniCssExtractPlugin(),
-        new StyleExtHtmlWebpackPlugin(),
-        new ScriptExtHtmlWebpackPlugin({
-            inline: [
-                "bundle.js",
-            ],
-        }),
+        ...(mode === "production" ? [
+            new MiniCssExtractPlugin(),
+            new StyleExtHtmlWebpackPlugin(),
+            new ScriptExtHtmlWebpackPlugin({
+                inline: [
+                    "bundle.js",
+                ],
+            }),
+        ] : []),
     ],
+    devServer: {
+        host: "0.0.0.0",
+        proxy: {
+            "/api": {
+                target: `http://${process.env.RECOTW_API_HOST}:8080`,
+                pathRewrite: {
+                    "^/api": "",
+                },
+            },
+        },
+    },
 };
