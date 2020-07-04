@@ -35,6 +35,7 @@
     "multiline-comment-style": "off",
     "multiline-ternary": "off",
     "new-cap": "off",
+    "newline-per-chained-call": "off",
     "no-continue": "off",
     "no-confusing-arrow": "off",
     "no-console": "off",

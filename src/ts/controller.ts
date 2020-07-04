@@ -82,6 +82,9 @@ export class Controller {
         $window.on("orientationchange", () => {
             $(document.body).toggleClass("standalone", Boolean(navigator.standalone));
         }).trigger("orientationchange");
+        $window.on("resize", () => {
+            $("[id^='twitter-widget-']").width($("#main-area").width() ?? "");
+        });
         $window.on("scroll", () => {
             const height = Number($(document).height());
             const position = Number($window.height()) + Number($window.scrollTop());

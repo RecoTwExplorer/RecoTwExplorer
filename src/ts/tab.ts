@@ -108,17 +108,11 @@ export class HomeTab extends Tab {
         twttr.ready(twttr => {
             twttr.widgets.createTweet(entry.tweet_id, $element[0], {
                 lang: "ja",
-                linkColor: "#774c80",
             }).then((widget?: HTMLElement): void => {
                 if (!widget) {
                     HomeTab.showStatusLoadFailedMessage(entry, $element);
                 } else {
-                    const $contents = $(widget.shadowRoot ?? widget).css("height", "auto")
-                        .contents();
-                    $contents.find(".Tweet-brand .u-hiddenInNarrowEnv").hide();
-                    $contents.find(".Tweet-brand .u-hiddenInWideEnv").css("display", "inline-block");
-                    $contents.find(".Tweet-author").css("max-width", "none");
-                    $contents.find(".EmbeddedTweet").css("max-width", "100%");
+                    $(widget).find("[data-tweet-id]").width($container.width() ?? "");
                 }
             });
         });
