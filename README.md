@@ -19,5 +19,14 @@ $ npm install
 $ npm run build
 ```
 
+## 開発
+
+ブラウザーで動作確認する場合はあわせて [RecoTwStub][] も起動してください。
+
+```bash
+$ docker-compose up -d
+```
+
 [workflow-link]:    https://github.com/RecoTwExplorer/RecoTwExplorer/actions?query=branch:master
 [workflow-badge]:   https://img.shields.io/github/workflow/status/RecoTwExplorer/RecoTwExplorer/CI%20Workflow/master.svg?style=flat-square
+[RecoTwStub]:       https://github.com/RecoTwExplorer/RecoTwStub
