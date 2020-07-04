@@ -1,6 +1,6 @@
 {
   "name": "recotw-explorer",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "description": "A web application to view Tweets recorded in RecoTw.",
   "devDependencies": {
     "@types/bootstrap": "^3.4.0",
