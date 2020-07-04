@@ -4,12 +4,14 @@ $fa-font-path: "~font-awesome/fonts";
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
 @import "~font-awesome/scss/font-awesome";
 
+html, body {
+    margin: 0;
+    padding: 0;
+}
 body {
     margin-top: 70px;
-    margin-bottom: 55px;
     background: #efefef;
     -webkit-text-size-adjust: 100%;
-    -ms-overflow-style: scrollbar;
     &.standalone {
         margin-top: 90px;
     }
@@ -227,28 +229,33 @@ blockquote, .twitter-tweet-rendered {
     position: static !important;
     display: block !important;
     margin: 20px auto !important;
-    width: 640px !important;
+    width: 550px !important;
     min-height: 80px !important;
     max-width: 100% !important;
 }
 blockquote {
-    font: normal normal 14px/1.2 Helvetica, Roboto, "Segoe UI", Calibri, sans-serif;
-    padding: 15px 20px 18px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-size: 15px;
+    padding: 15px 15px 10px;
     text-align: center;
     background: white;
-    border: 1px solid #e1e8ed;
-    border-radius: 4px;
-    a {
+    color: #657786;
+    border: 1px solid #ccd6dd;
+    border-radius: 14px;
+    a, a:hover {
         -webkit-tap-highlight-color: initial;
+        color: #1b95e0;
     }
     hr {
+        border-color: #ccd6dd;
         margin: 10px 0 15px;
     }
     div {
         text-align: left;
     }
-    span a {
-        color: #697882;
+    span a, span a:hover {
+        font-size: 15px;
+        color: #657786;
     }
     img {
         width: 24px;
@@ -257,18 +264,19 @@ blockquote {
         border-radius: 50%;
     }
     p {
-        font-size: 16px;
+        font-size: 19px;
         margin: 9px 0 6px 0;
-        word-break: break-all;
+        color: #14171a;
+        overflow-wrap: break-word;
     }
     .tweet-date {
-        font-size: 14px;
+        font-size: 15px;
         margin-top: 0;
         a {
-            color: #697882;
+            color: #657786;
             text-decoration: none;
             &:hover {
-                color: #927099;
+                text-decoration: underline;
             }
         }
     }
@@ -568,13 +576,7 @@ blockquote {
         margin-top: -14px;
     }
     blockquote {
-        font-size: 12px;
-        p {
-            font-size: 16px;
-        }
-        span a {
-            font-size: 12px;
-        }
+        font-size: 11px;
     }
     #statistics-tab {
         padding: 0 12px;
@@ -630,12 +632,6 @@ blockquote {
 @media (max-width: 373px) {
     blockquote {
         font-size: 11px;
-        p {
-            font-size: 14px;
-            &.tweet-date {
-                font-size: 12.25px;
-            }
-        }
     }
 }
 @media (max-width: 320px) {
