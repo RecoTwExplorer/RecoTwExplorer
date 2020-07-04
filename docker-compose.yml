@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  app:
+    image: node:13.12.0-alpine
+    command: npx webpack-dev-server
+    working_dir: /usr/src
+    environment:
+      RECOTW_API_HOST: "${RECOTW_API_HOST-stub}"
+    networks:
+      - recotw
+    volumes:
+      - .:/usr/src
+
+networks:
+  recotw:
+    name: recotw
