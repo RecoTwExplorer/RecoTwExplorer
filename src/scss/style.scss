@@ -226,16 +226,13 @@ ul.nav>li>a {
     margin: -8px -4px 0 0;
 }
 blockquote, .twitter-tweet-rendered {
-    position: static !important;
-    display: block !important;
     margin: 20px auto !important;
-    width: 550px !important;
-    min-height: 80px !important;
-    max-width: 100% !important;
 }
 blockquote {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
     font-size: 15px;
+    width: 550px;
+    max-width: 100%;
     padding: 15px 15px 10px;
     text-align: center;
     background: white;
