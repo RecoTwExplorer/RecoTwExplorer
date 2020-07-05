@@ -66,7 +66,7 @@ export class Tab {
  * The home tab.
  */
 export class HomeTab extends Tab {
-    private static readonly TWEETS_COUNT = 25;
+    private static readonly TWEETS_COUNT = 10;
 
     private _current = 0;
 
