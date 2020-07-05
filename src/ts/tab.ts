@@ -66,7 +66,7 @@ export class Tab {
  * The home tab.
  */
 export class HomeTab extends Tab {
-    private static readonly TWEETS_COUNT = 25;
+    private static readonly TWEETS_COUNT = 10;
 
     private _current = 0;
 
@@ -98,7 +98,7 @@ export class HomeTab extends Tab {
             $container = $main;
         }
 
-        twttr.ready(() => entries?.forEach(x => HomeTab.renderTweet(x, $container)));
+        entries?.forEach(x => HomeTab.renderTweet(x, $container));
         this._current += count ?? HomeTab.TWEETS_COUNT;
         super.render();
     }
@@ -111,8 +111,6 @@ export class HomeTab extends Tab {
             }).then((widget?: HTMLElement): void => {
                 if (!widget) {
                     HomeTab.showStatusLoadFailedMessage(entry, $element);
-                } else {
-                    $(widget).find("[data-tweet-id]").width($container.width() ?? "");
                 }
             });
         });
