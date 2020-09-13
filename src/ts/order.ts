@@ -6,22 +6,22 @@ export const enum Order {
     /**
      * The default. No sort order is specified.
      */
-    None,
+    none = 0,
 
     /**
      * Entries are sorted in ascending order.
      */
-    Ascending,
+    ascending = 1,
 
     /**
      * Entries are sorted in descending order.
      */
-    Descending,
+    descending = 2,
 
     /**
      * Entries are shuffled.
      */
-    Shuffle,
+    shuffle = 3,
 }
 
 /**
@@ -32,15 +32,15 @@ export const enum OrderBy {
     /**
      * The default. No sort target is specified.
      */
-    None,
+    none = 0,
 
     /**
      * Entries are sorted by their record_date values.
      */
-    RecordedDate,
+    recordedDate = 1,
 
     /**
      * Entries are sorted by their tweet_id values.
      */
-    CreatedDate,
+    createdDate = 2,
 }

@@ -19,8 +19,8 @@ export class Options {
         public body: string = "",
         public id: string | null = null,
         public regex: boolean = false,
-        public order: Order = Order.Descending,
-        public orderBy: OrderBy = OrderBy.RecordedDate,
+        public order: Order = Order.descending,
+        public orderBy: OrderBy = OrderBy.recordedDate,
     ) {}
 
     private isFilteredByUsernames(): boolean {

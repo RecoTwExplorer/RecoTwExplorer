@@ -28,7 +28,7 @@ export class Controller {
     public static setOptions(options: Options, sortOnly: boolean, setQuery: boolean, setKeywords: boolean): void {
         try {
             Model.options = Controller._options = options;
-        } catch (e) {
+        } catch (e: unknown) {
             console.log((e as Error).message);
             return;
         }
@@ -70,7 +70,7 @@ export class Controller {
         Model.init();
         Tab.home = new HomeTab();
         Tab.statistics = new StatisticsTab();
-        Controller.setOptions(Options.fromQueryString(location.search, Order.Descending, OrderBy.RecordedDate), false, false, true);
+        Controller.setOptions(Options.fromQueryString(location.search, Order.descending, OrderBy.recordedDate), false, false, true);
 
         google.charts.load("current", {
             packages: [ "corechart" ],
@@ -98,46 +98,46 @@ export class Controller {
             }
             $("html, body").animate({ scrollTop: 0 }, 400);
         });
-        $(".navbar-brand, #clear-search-filter").click(() => {
+        $(".navbar-brand, #clear-search-filter").on("click", () => {
             Controller.setOptions(Options.fromKeywords("", Controller.order, Controller.orderBy), false, true, true);
         });
-        $("[id^='order-by-']").change(() => {
+        $("[id^='order-by-']").on("change", () => {
             Controller.getOptions().order = Controller.order;
             Controller.getOptions().orderBy = Controller.orderBy;
             Controller.setOptions(Controller.getOptions(), true, false, false);
         });
-        $("#order-shuffle").click(() => {
+        $("#order-shuffle").on("click", () => {
             Controller.getOptions().order = Controller.order;
             Controller.setOptions(Controller.getOptions(), true, false, false);
         });
-        $("#search-form").submit($event => {
+        $("#search-form").on("submit", $event => {
             $event.preventDefault();
             Controller.setOptions(Options.fromKeywords(String($("#search-box").val()), Controller.order, Controller.orderBy), false, true, false);
         });
-        $("#search-form-toggle-button").click(function () {
-            const $this = $(this);
+        $("#search-form-toggle-button").on("click", e => {
+            const $target = $(e.currentTarget);
             const $elm = $("#search-form");
             const $main = $("#page-main");
-            if ($this.hasClass("active")) {
-                $this.removeClass("active");
+            if ($target.hasClass("active")) {
+                $target.removeClass("active");
                 $main.removeClass("main-search-active");
                 $elm.css({ display: "" });
             } else {
-                $this.addClass("active");
+                $target.addClass("active");
                 $main.addClass("main-search-active");
                 $elm.css({ cssText: "display: block !important" });
             }
         });
-        $("#statistics-filter-textbox").on("keyup change input", ($event: JQueryEventObject) => {
-            Tab.statistics.applyChartFilter(($event.target as HTMLInputElement).value);
+        $<HTMLInputElement>("#statistics-filter-textbox").on("keyup change input", e => {
+            Tab.statistics.applyChartFilter(e.target.value);
         });
-        $("#statistics-table").on("mousedown click", ".statistics-table-header a", ($event: JQueryMouseEventObject) => {
-            if ($event.type === "click") {
-                $event.preventDefault();
+        $("#statistics-table").on("mousedown click", ".statistics-table-header a", (e: JQuery.TriggeredEvent<HTMLElement, unknown, HTMLElement, HTMLElement>) => {
+            if (e.type === "click") {
+                e.preventDefault();
                 return;
             }
-            if ($event.button === 0) {
-                Tab.statistics.applySearchFilter($event.target.textContent ?? "");
+            if (e.button === 0) {
+                Tab.statistics.applySearchFilter(e.target.textContent ?? "");
             }
         });
         $("#search-box").popover({
@@ -145,15 +145,13 @@ export class Controller {
             html: true,
             content: SEARCH_HELP_HTML,
             sanitize: false,
-        })
-            .blur(function () {
-                $(this).popover("hide");
-            })
-            .keydown(function ($event) {
-                if ($event.keyCode === 13 || $event.keyCode === 27) {
-                    $(this).popover("hide");
-                }
-            });
+        }).on("blur", e => {
+            $(e.currentTarget).popover("hide");
+        }).on("keydown", e => {
+            if (e.keyCode === 13 || e.keyCode === 27) {
+                $(e.currentTarget).popover("hide");
+            }
+        });
     }
 
     public static get order(): Order {
@@ -217,7 +215,7 @@ export class Controller {
     public static showNewStatuses(count: number): void {
         Tab.home.show();
         const options = Controller.getOptions();
-        if (options.isFiltered() || options.order !== Order.Descending || options.orderBy !== OrderBy.RecordedDate) {
+        if (options.isFiltered() || options.order !== Order.descending || options.orderBy !== OrderBy.recordedDate) {
             Controller.setOptions(new Options([], "", null, false, options.order, options.orderBy), false, true, true);
         } else {
             // Assign options in order to reset the enumerator
