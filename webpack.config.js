@@ -82,12 +82,14 @@ module.exports = {
     plugins: [
         new ForkTsCheckerWebpackPlugin(),
         new CleanWebpackPlugin(),
-        new CopyWebpackPlugin([
-            {
-                from: path.join(__dirname, "/images"),
-                to: path.join(__dirname, "/dist/images"),
-            },
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.join(__dirname, "/images"),
+                    to: path.join(__dirname, "/dist/images"),
+                },
+            ],
+        }),
         new ProvidePlugin({
             $: "jquery",
             jQuery: "jquery",
