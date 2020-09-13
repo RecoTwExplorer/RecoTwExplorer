@@ -1,6 +1,7 @@
-import { IDictionary, IEnumerable, from } from "linq";
+import type { IDictionary, IEnumerable } from "linq";
+import { from } from "linq";
 import { RecoTwStatistics } from "./statistics";
-import { Options } from "./options";
+import type { Options } from "./options";
 import { Order, OrderBy } from "./order";
 import { INCORRECT_REGEX } from "./resources";
 
@@ -95,23 +96,23 @@ export class RecoTwEntryCollection {
      */
     public sort(options: Options): RecoTwEntryCollection {
         const result = this.clone();
-        const order = options.order || Order.Descending;
-        const orderBy = options.orderBy || OrderBy.RecordedDate;
+        const order = options.order || Order.descending;
+        const orderBy = options.orderBy || OrderBy.recordedDate;
         const sortCallback = (x: string, y: string): number => Number(x) - Number(y);
         switch (true) {
-            case order === Order.Ascending && orderBy === OrderBy.RecordedDate:
+            case order === Order.ascending && orderBy === OrderBy.recordedDate:
                 result._enumerable = result.enumerable.orderBy(x => x.record_date);
                 break;
-            case order === Order.Ascending && orderBy === OrderBy.CreatedDate:
+            case order === Order.ascending && orderBy === OrderBy.createdDate:
                 result._enumerable = result.enumerable.orderBy(x => x.tweet_id, sortCallback);
                 break;
-            case order === Order.Descending && orderBy === OrderBy.RecordedDate:
+            case order === Order.descending && orderBy === OrderBy.recordedDate:
                 result._enumerable = result.enumerable.orderByDescending(x => x.record_date);
                 break;
-            case order === Order.Descending && orderBy === OrderBy.CreatedDate:
+            case order === Order.descending && orderBy === OrderBy.createdDate:
                 result._enumerable = result.enumerable.orderByDescending(x => x.tweet_id, sortCallback);
                 break;
-            case order === Order.Shuffle:
+            case order === Order.shuffle:
                 result._enumerable = result.enumerable.shuffle();
                 break;
             default:
@@ -131,7 +132,7 @@ export class RecoTwEntryCollection {
                 try {
                     const re = new RegExp(options.body, "iu");
                     result._enumerable = result.enumerable.where(x => re.test(x.content));
-                } catch (e) {
+                } catch (e: unknown) {
                     throw new Error(INCORRECT_REGEX);
                 }
             } else {

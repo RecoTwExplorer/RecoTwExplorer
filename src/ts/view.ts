@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { PAGE_TITLE_NORMAL } from "./resources";
-import { Options } from "./options";
+import type { Options } from "./options";
 
 /**
  * The view.

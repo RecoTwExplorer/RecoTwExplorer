@@ -1,4 +1,4 @@
-import { IEnumerable } from "linq";
+import type { IEnumerable } from "linq";
 import {
     TWEETS_COUNT,
     USERNAME,
@@ -34,7 +34,7 @@ export class RecoTwStatistics {
         this._length = enumerable.count();
         this._users = enumerable.groupBy(x => x.target_id)
             .select(x => ({ entry: x.firstOrDefault(), count: x.count() }))
-            .select(x => ({ target_sn: x.entry.target_sn, count: x.count, percentage: x.count / this._length }))
+            .select(x => ({ target_sn: x.entry?.target_sn ?? "", count: x.count, percentage: x.count / this._length }))
             .orderByDescending(x => x.count)
             .thenBy(x => x.target_sn.toLowerCase())
             .toArray();

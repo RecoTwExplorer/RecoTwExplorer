@@ -1,31 +1,21 @@
 import $ from "jquery";
 import sffjs from "sffjs";
 import { RecoTwEntryCollection } from "./entry";
-import { RecoTwStatistics } from "./statistics";
-import { Options } from "./options";
+import type { RecoTwStatistics } from "./statistics";
+import type { Options } from "./options";
 import { Controller } from "./controller";
-import {
-    FAILED_TO_GENERATE_PROFILE_IMAGE_URL,
-    FAILED_TO_GENERATE_STATUS_URL,
-    FAILED_TO_GENERATE_USER_URL,
-} from "./resources";
+
+const ALTERNATIVE_ICON_URL = "./images/none.png";
+const TWITTER_STATUS_URL = "https://twitter.com/show/status/{0}";
+const TWITTER_USER_URL = "https://twitter.com/{0}";
+const TWITTER_PROFILE_IMAGE_URL = "/api/icon/{0}/";
+const RECOTW_GET_ALL_URL = "/api/recotw/1/tweet/get_tweet_all";
+const TWITTER_SNOWFLAKE_EPOCH = 1288834974657;
 
 /**
  * The model.
  */
 export class Model {
-    private static readonly ALTERNATIVE_ICON_URL = "./images/none.png";
-
-    private static readonly TWITTER_STATUS_URL = "https://twitter.com/show/status/{0}";
-
-    private static readonly TWITTER_USER_URL = "https://twitter.com/{0}";
-
-    private static readonly TWITTER_PROFILE_IMAGE_URL = "/api/icon/{0}/";
-
-    private static readonly RECOTW_GET_ALL_URL = "/api/recotw/1/tweet/get_tweet_all";
-
-    private static readonly TWITTER_SNOWFLAKE_EPOCH = 1288834974657;
-
     private static _entries: RecoTwEntryCollection | null = null;
 
     private static _statistics: RecoTwStatistics | null = null;
@@ -45,7 +35,7 @@ export class Model {
         const item = localStorage.getItem("entries");
         const raw = localStorage.getItem("raw");
         if (item && raw) {
-            entries = JSON.parse(item);
+            entries = JSON.parse(item) as RecoTwEntry[];
         }
         Model.fetchLatestEntries(entries).then(
             () => Controller.onEntriesLoaded(),
@@ -81,7 +71,7 @@ export class Model {
         if (!Model.entries) {
             return null;
         }
-        return Model.entries.reset().enumerable.lastOrDefault();
+        return Model.entries.reset().enumerable.lastOrDefault() ?? null;
     }
 
     /**
@@ -152,7 +142,7 @@ export class Model {
 
         const deferred = $.Deferred<RecoTwEntry[]>();
         $.ajax({
-            url: Model.RECOTW_GET_ALL_URL,
+            url: RECOTW_GET_ALL_URL,
             dataType: "json",
             data: { since_id: sinceID },
         }).then((data: RecoTwEntry[], status: string, xhr: JQueryXHR) => {
@@ -176,9 +166,9 @@ export class Model {
      */
     public static createStatusURL(item: string | RecoTwEntry): string {
         if (typeof item === "string") {
-            return sffjs(Model.TWITTER_STATUS_URL, item);
+            return sffjs(TWITTER_STATUS_URL, item);
         }
-        return sffjs(Model.TWITTER_STATUS_URL.replace("show", item.target_sn), item.tweet_id);
+        return sffjs(TWITTER_STATUS_URL.replace("show", item.target_sn), item.tweet_id);
     }
 
     /**
@@ -187,7 +177,7 @@ export class Model {
      */
     public static createUserURL(item: string | RecoTwEntry): string {
         if (typeof item === "string") {
-            return sffjs(Model.TWITTER_USER_URL, item);
+            return sffjs(TWITTER_USER_URL, item);
         }
         return Model.createUserURL(item.target_sn);
     }
@@ -198,10 +188,10 @@ export class Model {
      */
     public static createProfileImageURL(item: string | RecoTwEntry | null): string {
         if (item === null) {
-            return Model.ALTERNATIVE_ICON_URL;
+            return ALTERNATIVE_ICON_URL;
         }
         if (typeof item === "string") {
-            return sffjs(Model.TWITTER_PROFILE_IMAGE_URL, item);
+            return sffjs(TWITTER_PROFILE_IMAGE_URL, item);
         }
         return Model.createProfileImageURL(item.target_sn);
     }
@@ -213,9 +203,9 @@ export class Model {
     public static createDateByTweetID(item: string | RecoTwEntry): Date | null {
         if (typeof item === "string") {
             // Using String conversion because JavaScript converts a Number to a 32-bit integer to perform shift operation; this is mostly same as following code:
-            // New Date(((+item) >> 22) + Model.TWITTER_SNOWFLAKE_EPOCH);
+            // New Date(((+item) >> 22) + TWITTER_SNOWFLAKE_EPOCH);
             const binary = Number(item).toString(2);
-            return new Date(parseInt(binary.substr(0, binary.length - 22), 2) + Model.TWITTER_SNOWFLAKE_EPOCH);
+            return new Date(parseInt(binary.substr(0, binary.length - 22), 2) + TWITTER_SNOWFLAKE_EPOCH);
         }
         if (!item.tweet_id) {
             return null;
